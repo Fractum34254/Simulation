@@ -23,16 +23,16 @@ private:
 		void Draw(Graphics& gfx) const
 		{
 			//drawing coordinate system
-			const Vec2 leftTop = { offset + screenRegion.left, offset + screenRegion.top };
-			const Vec2 leftBottom = { offset + screenRegion.left, screenRegion.bottom - offset };
+			const Vec2 leftTop = { offset + (float)screenRegion.left, offset + (float)screenRegion.top };
+			const Vec2 leftBottom = { offset + (float)screenRegion.left, (float)screenRegion.bottom - offset };
 			gfx.DrawLine(leftTop, leftBottom, axisColor);
 			///arrow drawing
 			gfx.DrawLine(leftTop, { leftTop.x - arrowWidth / 2, leftTop.y + arrowLenght }, axisColor);
 			gfx.DrawLine(leftTop, { leftTop.x + arrowWidth / 2, leftTop.y + arrowLenght }, axisColor);
 			if (negative)
 			{
-				const Vec2 leftMiddle = { offset + screenRegion.left, (screenRegion.bottom - screenRegion.top) / 2 + screenRegion.top};
-				const Vec2 rightMiddle = { screenRegion.right - offset, (screenRegion.bottom - screenRegion.top) / 2 + screenRegion.top };
+				const Vec2 leftMiddle = { offset + (float)screenRegion.left, ((float)screenRegion.bottom - (float)screenRegion.top) / 2 + (float)screenRegion.top};
+				const Vec2 rightMiddle = { (float)screenRegion.right - offset, ((float)screenRegion.bottom - (float)screenRegion.top) / 2 + (float)screenRegion.top };
 				gfx.DrawLine(leftMiddle, rightMiddle, axisColor);
 				///arrow drawing
 				gfx.DrawLine(rightMiddle, { rightMiddle.x - arrowLenght, rightMiddle.y - arrowWidth / 2 }, axisColor);
@@ -40,7 +40,7 @@ private:
 			}
 			else 
 			{
-				const Vec2 rightBottom = { screenRegion.right - offset, screenRegion.bottom - offset };
+				const Vec2 rightBottom = { (float)screenRegion.right - offset, (float)screenRegion.bottom - offset };
 				gfx.DrawLine(leftBottom, rightBottom, axisColor);
 				///arrow drawing
 				gfx.DrawLine(rightBottom, { rightBottom.x - arrowLenght, rightBottom.y - arrowWidth / 2 }, axisColor);
@@ -55,10 +55,10 @@ private:
 		}
 		void PutCoordinate(float x, float y)
 		{
-			const int xPixMax = screenRegion.right - offset;
-			const int xPixMin = screenRegion.left + offset;
-			const int yPixMax = screenRegion.bottom - offset;
-			const int yPixMin = screenRegion.top + offset;
+			const int xPixMax = screenRegion.right - (int)offset;
+			const int xPixMin = screenRegion.left + (int)offset;
+			const int yPixMax = screenRegion.bottom - (int)offset;
+			const int yPixMin = screenRegion.top + (int)offset;
 
 			const int deltaX = xPixMax - xPixMin;
 			const int deltaY = yPixMax - yPixMin;
@@ -66,28 +66,28 @@ private:
 			const float xScale = (float)deltaX / xMax;
 			const float yScale = (float)deltaY / (yMax * negative ? 2 : 1);
 
-			const float xAxis = negative ? (yPixMin + deltaY / 2) : yPixMin;
+			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMin;
 
 			x *= xScale;
-			y *= yScale;
+			y *= -yScale;
 
 			x += xPixMin;
 			y += xAxis;
 
-			pixel[++cur] = { x,y };
+			pixel[cur++] = { x,y };
 		}
-		void SetXMax(float newYMax)
+		void SetYMax(float newYMax)
 		{
 			const float scale = newYMax / yMax;
 
-			const int yPixMax = screenRegion.bottom - offset;
-			const int yPixMin = screenRegion.top + offset;
+			const int yPixMax = screenRegion.bottom - (int)offset;
+			const int yPixMin = screenRegion.top + (int)offset;
 
 			const int deltaY = yPixMax - yPixMin;
 
-			const float yScale = (float)deltaY / (yMax * negative ? 2 : 1);
+			const float yScale = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
 
-			const float xAxis = negative ? (yPixMin + deltaY / 2) : yPixMin;
+			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMin;
 
 
 			for (std::pair<const int, std::pair<float, float>>& c : pixel)
@@ -114,5 +114,9 @@ private:
 		std::unordered_map<int, std::pair<float, float>> pixel;
 	};
 public:
+	Graph(float xMax, float yMax, float offset, bool negative, RectI screenRegion, Color axisColor, Color pixelColor)
+		:
+		coords(xMax, yMax, offset, negative, screenRegion, axisColor, pixelColor)
+	{}
 	CoordinateSystem coords;
 };
