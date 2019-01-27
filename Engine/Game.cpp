@@ -24,8 +24,13 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	graph(1000.0f, 2.0f, 5.0f, true, RectI(10, 790, 10, 590), Colors::White, Colors::Yellow)
 {
+	for (int i = 0; i < 1000.0f; i++)
+	{
+		graph.coords.PutCoordinate((float)i, (float)sin(i / 100.0f));
+	}
 }
 
 void Game::Go()
@@ -42,4 +47,5 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	graph.coords.Draw(gfx);
 }
