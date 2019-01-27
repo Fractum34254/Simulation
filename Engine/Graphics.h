@@ -23,6 +23,9 @@
 #include <d3d11.h>
 #include <wrl.h>
 #include "ChiliException.h"
+#include <cassert>
+#include "Rect.h"
+#include "Surface.h"
 #include "Colors.h"
 #include "Vec2.h"
 
@@ -53,12 +56,54 @@ public:
 	Graphics& operator=( const Graphics& ) = delete;
 	void EndFrame();
 	void BeginFrame();
+	Color GetPixel(int x, int y) {
+		return pSysBuffer[Graphics::ScreenWidth * y + x];
+	}
 	void PutPixel( int x,int y,int r,int g,int b )
 	{
 		PutPixel( x,y,{ unsigned char( r ),unsigned char( g ),unsigned char( b ) } );
 	}
 	void PutPixel( int x,int y,Color c );
 	void DrawLine(Vec2 p0, Vec2 p1, Color c);
+	template<typename E> void DrawSprite(int x, int y, const Surface & s, E effect)
+	{
+		DrawSprite(x, y, s.GetRect(), s, effect);
+	}
+	template<typename E> void DrawSprite(int x, int y, const RectI & srcRect, const Surface & s, E effect)
+	{
+		DrawSprite(x, y, srcRect, GetScreenRect(), s, effect);
+	}
+	template<typename E> void DrawSprite(int x, int y, RectI srcRect, const RectI & clipRect, const Surface & s, E effect)
+	{
+		assert(srcRect.left >= 0);
+		assert(srcRect.right <= s.GetWidth());
+		assert(srcRect.top >= 0);
+		assert(srcRect.bottom <= s.GetHeight());
+		if (x < clipRect.left) {
+			srcRect.left += clipRect.left - x;
+			x = clipRect.left;
+		}
+		if (y < clipRect.top) {
+			srcRect.top += clipRect.top - y;
+			y = clipRect.top;
+		}
+		if (x + srcRect.GetWidth() > clipRect.right) {
+			srcRect.right -= x + srcRect.GetWidth() - clipRect.right;
+		}
+		if (y + srcRect.GetHeight() > clipRect.bottom) {
+			srcRect.bottom -= y + srcRect.GetHeight() - clipRect.bottom;
+		}
+		for (int sy = srcRect.top; sy < srcRect.bottom; sy++) {
+			for (int sx = srcRect.left; sx < srcRect.right; sx++) {
+				effect(
+					s.GetPixel(sx, sy),
+					x + sx - srcRect.left,
+					y + sy - srcRect.top,
+					*this
+				);
+			}
+		}
+	}
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
@@ -77,4 +122,7 @@ private:
 public:
 	static constexpr int ScreenWidth = 800;
 	static constexpr int ScreenHeight = 600;
+	static RectI GetScreenRect()  {
+		return Rect_<int>(0, ScreenWidth, 0, ScreenHeight);
+	}
 };
