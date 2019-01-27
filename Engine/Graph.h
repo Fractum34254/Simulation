@@ -64,7 +64,7 @@ private:
 			const int deltaY = yPixMax - yPixMin;
 
 			const float xScale = (float)deltaX / xMax;
-			const float yScale = (float)deltaY / (yMax * negative ? 2 : 1);
+			const float yScale = (float)deltaY / (yMax * (negative ? 2.0f : 1.0f));
 
 			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMin;
 
