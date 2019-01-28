@@ -10,12 +10,11 @@ private:
 	class CoordinateSystem
 	{
 	public:
-		CoordinateSystem(float xMax, float yMax, float offset, bool negative, RectI screenRegion, Color axisColor, Color pixelColor)
+		CoordinateSystem(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor)
 			:
 			xMax(xMax),
 			yMax(yMax),
 			offset(offset),
-			negative(negative),
 			screenRegion(screenRegion),
 			axisColor(axisColor),
 			pixelColor(pixelColor)
@@ -55,6 +54,14 @@ private:
 		}
 		void PutCoordinate(float x, float y)
 		{
+			if (!negative && y < 0.0f)
+			{
+				negative = true;
+			}
+			if (cur++ >= xMax)
+			{
+				SetXMax(1.1f * (float)cur);
+			}
 			const int xPixMax = screenRegion.right - (int)offset;
 			const int xPixMin = screenRegion.left + (int)offset;
 			const int yPixMax = screenRegion.bottom - (int)offset;
@@ -125,7 +132,7 @@ private:
 		float xMax;
 		float yMax;
 		float offset;
-		bool negative;
+		bool negative = false;
 		RectI screenRegion;
 		Color axisColor;
 		Color pixelColor;
@@ -135,9 +142,21 @@ private:
 		std::unordered_map<int, std::pair<float, float>> pixel;
 	};
 public:
-	Graph(float xMax, float yMax, float offset, bool negative, RectI screenRegion, Color axisColor, Color pixelColor)
+	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor)
 		:
-		coords(xMax, yMax, offset, negative, screenRegion, axisColor, pixelColor)
+		coords(xMax, yMax, offset, screenRegion, axisColor, pixelColor)
 	{}
+	void Draw(Graphics& gfx) const
+	{
+		coords.Draw(gfx);
+	}
+	void PutData(float x, float y)
+	{
+		data[cur++] = { x,y };
+		coords.PutCoordinate(x, y);
+	}
+private:
 	CoordinateSystem coords;
+	int cur = 0;
+	std::unordered_map<int, std::pair<float, float>> data;
 };
