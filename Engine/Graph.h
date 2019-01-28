@@ -56,11 +56,15 @@ private:
 		{
 			if (!negative && y < 0.0f)
 			{
-				negative = true;
+				ConvertToNegative();
 			}
-			if (cur++ >= xMax)
+			if (x >= xMax)
 			{
-				SetXMax(1.1f * (float)cur);
+				SetXMax(1.1f * x);
+			}
+			if (std::abs(y) >= yMax)
+			{
+				SetYMax(1.1f * std::abs(y));
 			}
 			const int xPixMax = screenRegion.right - (int)offset;
 			const int xPixMin = screenRegion.left + (int)offset;
@@ -73,7 +77,7 @@ private:
 			const float xScale = (float)deltaX / xMax;
 			const float yScale = (float)deltaY / (yMax * (negative ? 2.0f : 1.0f));
 
-			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMin;
+			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
 
 			x *= xScale;
 			y *= -yScale;
@@ -94,7 +98,7 @@ private:
 
 			const float yScale = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
 
-			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMin;
+			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
 
 
 			for (std::pair<const int, std::pair<float, float>>& c : pixel)
@@ -127,6 +131,32 @@ private:
 				c.second.first += xPixMin;
 			}
 			xMax = newXMax;
+		}
+	private:
+		void ConvertToNegative()
+		{
+			const int yPixMax = screenRegion.bottom - (int)offset;
+			const int yPixMin = screenRegion.top + (int)offset;
+
+			const int deltaY = yPixMax - yPixMin;
+
+			const float yScale = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
+
+			const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
+
+			negative = true;
+
+			const float yScaleNew = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
+
+			const float xAxisNew = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
+
+			for (std::pair<const int, std::pair<float, float>>& c : pixel)
+			{
+				c.second.second -= xAxis;
+				c.second.second /= yScale;
+				c.second.second *= yScaleNew;
+				c.second.second += xAxisNew;
+			}
 		}
 	private:
 		float xMax;
