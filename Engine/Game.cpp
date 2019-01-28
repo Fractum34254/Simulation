@@ -25,7 +25,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	graph(100.0f, 0.7f, 7.0f, RectI(10, 790, 10, 590), Colors::White, Colors::Cyan)
+	graph(RectI(10, 790, 10, 590), Colors::Cyan, "a")
 {
 		
 }
@@ -42,7 +42,11 @@ void Game::UpdateModel()
 {
 	for (int a = 0; a < 3; a++)
 	{
-		graph.PutData(i, sin(i++ / 100.0f));
+		graph.PutData((float)i, sin((float)i++ / 100.0f));
+	}
+	if (i == 300)
+	{
+		graph.WriteToFile("output.txt");
 	}
 }
 

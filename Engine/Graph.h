@@ -2,6 +2,9 @@
 #include "Rect.h"
 #include "Graphics.h"
 #include "Colors.h"
+#include "PhilUtil.h"
+#include <string>
+#include <fstream>
 #include <unordered_map>
 
 class Graph
@@ -172,9 +175,15 @@ private:
 		std::unordered_map<int, std::pair<float, float>> pixel;
 	};
 public:
-	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor)
+	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName)
 		:
-		coords(xMax, yMax, offset, screenRegion, axisColor, pixelColor)
+		coords(xMax, yMax, offset, screenRegion, axisColor, pixelColor),
+		yAxisName(yAxisName)
+	{}
+	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName)
+		:
+		coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
+		yAxisName(yAxisName)
 	{}
 	void Draw(Graphics& gfx) const
 	{
@@ -185,8 +194,30 @@ public:
 		data[cur++] = { x,y };
 		coords.PutCoordinate(x, y);
 	}
+	void WriteToFile(std::string filename) const
+	{
+		std::ofstream file(filename);
+		for (int i = 0; i < cur; i++)
+		{
+			const float x = data.at(i).first;
+			const float y = data.at(i).second;
+			file << "t: " << phil::Crop(x,cropVal) << " "
+				<< yAxisName << ": " << phil::Crop(y, cropVal) << "\n";
+		}
+	}
 private:
+	//config values
+	static constexpr int cropVal = 8;
+	//coordinate system start values
+	static constexpr float xMaxStart = 0.1f;
+	static constexpr float yMaxStart = 0.1f;
+	static constexpr float offset = 7.0f;
+	static constexpr Color axisColor = Colors::White;
+	//yAxis name
+	std::string yAxisName;
+	//coordinate system
 	CoordinateSystem coords;
+	//data
 	int cur = 0;
 	std::unordered_map<int, std::pair<float, float>> data;
 };
