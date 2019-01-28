@@ -78,7 +78,7 @@ private:
 		}
 		void SetYMax(float newYMax)
 		{
-			const float scale = newYMax / yMax;
+			const float scale = yMax / newYMax;
 
 			const int yPixMax = screenRegion.bottom - (int)offset;
 			const int yPixMin = screenRegion.top + (int)offset;
@@ -99,6 +99,27 @@ private:
 				c.second.second += xAxis;
 			}
 			yMax = newYMax;
+		}
+		void SetXMax(float newXMax)
+		{
+			const float scale = xMax / newXMax;
+
+			const int xPixMax = screenRegion.right - (int)offset;
+			const int xPixMin = screenRegion.left + (int)offset;
+
+			const int deltaX = xPixMax - xPixMin;
+
+			const float xScale = (float)deltaX / (float)xMax;
+
+			for (std::pair<const int, std::pair<float, float>>& c : pixel)
+			{
+				c.second.first -= xPixMin;
+				c.second.first /= xScale;
+				c.second.first *= scale;
+				c.second.first *= xScale;
+				c.second.first += xPixMin;
+			}
+			xMax = newXMax;
 		}
 	private:
 		float xMax;
