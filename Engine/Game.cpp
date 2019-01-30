@@ -24,8 +24,7 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd ),
-	graph(RectI(10, 790, 10, 590), Colors::Cyan, "a")
+	gfx( wnd )
 {
 		
 }
@@ -40,17 +39,9 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	for (int a = 0; a < 3; a++)
-	{
-		graph.PutData((float)i, sin((float)i++ / 100.0f));
-	}
-	if (i == 300)
-	{
-		graph.WriteToFile("output.txt");
-	}
 }
 
 void Game::ComposeFrame()
 {
-	graph.Draw(gfx);
+
 }

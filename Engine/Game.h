@@ -44,7 +44,5 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	Graph graph;
-	int i = 0;
 	/********************************/
 };
