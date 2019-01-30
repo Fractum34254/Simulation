@@ -20,4 +20,18 @@ namespace phil
 		}
 		return sstr;
 	}
+	bool IsOperator(std::string op)
+	{
+		return (op == "+") || (op == "-") || (op == "*") || (op == "/");
+	}
+	bool IsOperator(char op)
+	{
+		std::string s;
+		s += op;
+		return IsOperator(s);
+	}
+	bool IsComparison(std::string comp)
+	{
+		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "=");
+	}
 }
