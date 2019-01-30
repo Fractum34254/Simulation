@@ -34,4 +34,27 @@ namespace phil
 	{
 		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "=");
 	}
+	float Assemble(char op, float f1, float f2)
+	{
+		if (op == '+')
+		{
+			return f1 + f2;
+		}
+		else if (op == '-')
+		{
+			return f1 - f2;
+		}
+		else if (op == '*')
+		{
+			return f1 * f2;
+		}
+		else if (op == '/')
+		{
+			return f1 / f2;
+		}
+		else
+		{
+			throw std::exception("unregistered operator");
+		}
+	}
 }
