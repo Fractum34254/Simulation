@@ -25,6 +25,7 @@
 #include "Graphics.h"
 #include "Rect.h"
 #include "Graph.h"
+#include "Parser.h"
 
 class Game
 {

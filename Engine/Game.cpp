@@ -26,7 +26,13 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd )
 {
-		
+	std::string rhs = "var1 + var2 * var3 / var4";
+	std::unordered_map<std::string, float> vars;
+	vars["var1"] = 17.0f;
+	vars["var2"] = 3.0f;
+	vars["var3"] = 12.0f;
+	vars["var4"] = 4.0f;
+	float result = Parser::CalculateRHS(rhs, vars);
 }
 
 void Game::Go()
