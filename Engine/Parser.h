@@ -7,7 +7,8 @@
 
 class Parser
 {
-	float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var)
+public:
+	static float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var)
 	{
 		std::vector<std::string> vars;
 		std::vector<char> ops;
@@ -20,7 +21,7 @@ class Parser
 			std::string s;
 			///extracted character
 			char c = rhs.get();
-			while (!phil::IsOperator(c) && !rhs.eof())
+			while (!IsOperator(c) && !rhs.eof())
 			{
 				if (c != ' ')
 				{
@@ -37,10 +38,10 @@ class Parser
 		}
 
 		//return assembled vectors
-		return Assemble(vars, ops, var);
+		return AssembleVars(vars, ops, var);
 	}
 private:
-	float Assemble(std::vector<std::string> vars, std::vector<char> ops, const std::unordered_map<std::string, float>& var)
+	static float AssembleVars(std::vector<std::string> vars, std::vector<char> ops, const std::unordered_map<std::string, float>& var)
 	{
 		//vector of floats out of the variables
 		std::vector<float> varVals;
@@ -53,9 +54,9 @@ private:
 		{
 			if (ops.at(i) == '*' || ops.at(i) == '/')
 			{
-				varVals[i] = phil::Assemble(ops.at(i), varVals.at(i), varVals.at(++i));
-				varVals.erase(varVals.begin() + i);
-				ops.erase(ops.begin() + --i);
+				varVals[i] = Calculate(ops.at(i), varVals.at(i), varVals.at(i+1));
+				varVals.erase(varVals.begin() + i + 1);
+				ops.erase(ops.begin() + i);
 				i--;
 			}
 		}
@@ -63,8 +64,45 @@ private:
 		float result = varVals.at(0);
 		for (int i = 1; i < varVals.size(); i++)
 		{
-			result = phil::Assemble(ops.at(i - 1), result, varVals.at(i));
+			result = Calculate(ops.at(i - 1), result, varVals.at(i));
 		}
 		return result;
+	}
+	static float Calculate(char op, float f1, float f2)
+	{
+		if (op == '+')
+		{
+			return f1 + f2;
+		}
+		else if (op == '-')
+		{
+			return f1 - f2;
+		}
+		else if (op == '*')
+		{
+			return f1 * f2;
+		}
+		else if (op == '/')
+		{
+			return f1 / f2;
+		}
+		else
+		{
+			throw std::exception("unregistered operator");
+		}
+	}
+	static bool IsOperator(std::string op)
+	{
+		return (op == "+") || (op == "-") || (op == "*") || (op == "/");
+	}
+	static bool IsOperator(char op)
+	{
+		std::string s;
+		s += op;
+		return IsOperator(s);
+	}
+	static bool IsComparison(std::string comp)
+	{
+		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "=");
 	}
 };

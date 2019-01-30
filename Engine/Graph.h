@@ -201,8 +201,8 @@ public:
 		{
 			const float x = data.at(i).first;
 			const float y = data.at(i).second;
-			file << "t: " << phil::Crop(x,cropVal) << " "
-				<< yAxisName << ": " << phil::Crop(y, cropVal) << "\n";
+			file << "t: " << Crop(x,cropVal) << " "
+				<< yAxisName << ": " << Crop(y, cropVal) << "\n";
 		}
 	}
 private:
