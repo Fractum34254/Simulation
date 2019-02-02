@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd )
 {
-	std::string rhs = "var1 + var2 * var3 / var4-25.6";
+	std::string rhs = "var1 + var2 * var3 / (var4-25.6 )-3";
 	std::unordered_map<std::string, float> vars;
 	vars["var1"] = 17.0f;
 	vars["var2"] = 3.0f;
