@@ -36,7 +36,14 @@ public:
 				vars.emplace_back(std::stof(s));
 			}
 			else {
-				vars.emplace_back(var.at(s));
+				if (var.find(s) != var.end())
+				{
+					vars.emplace_back(var.at(s));
+				}
+				else
+				{
+					throw std::exception("uninitialized variable");
+				}
 			}
 			if (!rhs.eof()) {
 				ops.emplace_back(c);
