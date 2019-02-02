@@ -1,5 +1,6 @@
 #pragma once
 #include "PhilUtil.h"
+#include "ChiliException.h"
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -8,7 +9,15 @@
 class Parser
 {
 public:
-	static float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var)
+	class Exception : public ChiliException
+	{
+	public:
+		using ChiliException::ChiliException;
+		virtual std::wstring GetFullMessage() const override { return GetNote() + L"\nAt: " + GetLocation(); }
+		virtual std::wstring GetExceptionType() const override { return L"Parser Exception"; }
+	};
+public:
+	static float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, int line = 0)
 	{
 		std::vector<float> vars;
 		std::vector<char> ops;
@@ -42,7 +51,11 @@ public:
 				}
 				else
 				{
-					throw std::exception("uninitialized variable");
+					std::string info = "Uninitialized variable in line ";	///standart-syntax
+					info += line + 48;										///line number (+48 caused by ascii translation)
+					info += ": ";
+					info += s;												///uninitialized variable name
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
 			}
 			if (!rhs.eof()) {
@@ -118,5 +131,15 @@ private:
 									// Check the entire string was consumed and if either failbit or badbit is set
 									// thx to: Bill the Lizard from stackoverflow.com
 		return iss.eof() && !iss.fail();
+	}
+	static std::wstring towstring(std::string s)
+	{
+		const char* pc = s.c_str();
+		std::wstring ws;
+		for (int i = 0; i < s.size(); i++)
+		{
+			ws += pc[i];
+		}
+		return ws;
 	}
 };
