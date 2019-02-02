@@ -10,7 +10,7 @@ class Parser
 public:
 	static float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var)
 	{
-		std::vector<std::string> vars;
+		std::vector<float> vars;
 		std::vector<char> ops;
 		std::istringstream rhs(rhs_in);
 
@@ -30,25 +30,24 @@ public:
 				}
 				c = rhs.get();
 			}
-			///if c is an operator, s is a ful variable name
-			vars.emplace_back(s);
+			///if c is an operator, s is a full variable name
+			if (isFloat(s))
+			{
+				vars.emplace_back(std::stof(s));
+			}
+			else {
+				vars.emplace_back(var.at(s));
+			}
 			if (!rhs.eof()) {
 				ops.emplace_back(c);
 			}
 		}
-
 		//return assembled vectors
-		return AssembleVars(vars, ops, var);
+		return AssembleVars(vars, ops);
 	}
 private:
-	static float AssembleVars(std::vector<std::string> vars, std::vector<char> ops, const std::unordered_map<std::string, float>& var)
+	static float AssembleVars(std::vector<float> varVals, std::vector<char> ops)
 	{
-		//vector of floats out of the variables
-		std::vector<float> varVals;
-		for (const std::string& v : vars)
-		{
-			varVals.emplace_back(var.at(v));
-		}
 		///first, calculating '*' and '/'
 		for (int i = 0; i < ops.size(); i++)
 		{
@@ -104,5 +103,13 @@ private:
 	static bool IsComparison(std::string comp)
 	{
 		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "=");
+	}
+	static bool isFloat(std::string myString) {
+		std::istringstream iss(myString);
+		float f;
+		iss >> std::noskipws >> f;	// noskipws considers leading whitespace invalid
+									// Check the entire string was consumed and if either failbit or badbit is set
+									// thx to: Bill the Lizard from stackoverflow.com
+		return iss.eof() && !iss.fail();
 	}
 };
