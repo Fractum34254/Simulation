@@ -23,14 +23,14 @@ public:
 		std::vector<char> ops;
 		std::istringstream rhs(rhs_in);
 
-		//split up string in variables and operators
+		//split up string in variable(value)s and operators
 		while (!rhs.eof())
 		{
 			///variable string
 			std::string s;
 			///extracted character
 			char c = rhs.get();
-			while (!IsOperator(c) && !rhs.eof())
+			while (!IsOperator(c) && !rhs.eof() && c != '(')
 			{
 				if (c != ' ')
 				{
@@ -39,35 +39,60 @@ public:
 				}
 				c = rhs.get();
 			}
-			///if c is an operator, s is a full variable name
-			if (isFloat(s))
+			if(c == '(') ///c is a brace
+			{ 
+				std::string brace;
+				for (c = rhs.get(); c != ')'; c = rhs.get())
+				{
+					brace += c;
+				}
+				vars.emplace_back(CalculateRHS(brace, var, line));
+				///test if string ends after brace
+				c = rhs.get();
+				if (!rhs.eof())
+				{
+					///if it does not end, put character back
+					rhs.unget();
+				}
+			}
+			else ///c is not a brace
 			{
-				vars.emplace_back(std::stof(s));
-			}
-			else {
-				if (var.find(s) != var.end())
+				///if c is an operator, s is a full variable name
+				if (isFloat(s))
 				{
-					vars.emplace_back(var.at(s));
+					vars.emplace_back(std::stof(s));
 				}
-				else
-				{
-					std::string info = "Uninitialized variable in line ";	///standart-syntax
-					info += line + 48;										///line number (+48 caused by ascii translation)
-					info += ": ";
-					info += s;												///uninitialized variable name
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+				else {
+					if (var.find(s) != var.end())
+					{
+						vars.emplace_back(var.at(s));
+					}
+					else
+					{
+						std::string info = "Uninitialized variable in line ";	///standart-syntax
+						info += line + 48;										///line number (+48 caused by ascii translation)
+						info += ": ";
+						info += s;												///uninitialized variable name
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+					}
 				}
-			}
-			if (!rhs.eof()) {
-				ops.emplace_back(c);
+				if (!rhs.eof()) {
+					ops.emplace_back(c);
+				}
 			}
 		}
 		//return assembled vectors
-		return AssembleVars(vars, ops);
+		return AssembleVars(vars, ops, line);
 	}
 private:
-	static float AssembleVars(std::vector<float> varVals, std::vector<char> ops)
+	static float AssembleVars(std::vector<float> varVals, std::vector<char> ops, int line)
 	{
+		if (ops.size() + 1 != varVals.size())
+		{
+			std::string info = "Unmatching operators, variables and numbers in line ";	///standart-syntax
+			info += line + 48;															///line number (+48 caused by ascii translation)									///uninitialized variable name
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
 		///first, calculating '*' and '/'
 		for (int i = 0; i < ops.size(); i++)
 		{
