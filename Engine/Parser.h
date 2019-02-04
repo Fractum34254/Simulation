@@ -17,6 +17,29 @@ public:
 		virtual std::wstring GetExceptionType() const override { return L"Parser Exception"; }
 	};
 public:
+	static void Calculate(std::string term_in, std::unordered_map<std::string, float> vars, int line = 0)
+	{
+		///every mathematical expression needs an assignment operator
+		if (term_in.find('=') == term_in.npos)
+		{
+			std::string info = "Expression without '=' in line ";	///standart-syntax
+			info += line + 48;										///line number (+48 caused by ascii translation)
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
+		std::istringstream term(term_in);
+		std::string lval;
+		std::string rval;
+		for (char c = term.get(); c != '='; c = term.get())
+		{
+			lval += c;
+		}
+		for (char c = term.get(); !term.eof(); c = term.get())
+		{
+			rval += c;
+		}
+		vars[lval] = CalculateRHS(rval, vars, line);
+	}
+private:
 	static float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, int line = 0)
 	{
 		std::vector<float> vars;
@@ -85,7 +108,6 @@ public:
 		//return assembled vectors
 		return AssembleVars(vars, ops, line);
 	}
-private:
 	static float AssembleVars(std::vector<float> varVals, std::vector<char> ops, int line)
 	{
 		if (ops.size() + 1 != varVals.size())
@@ -99,7 +121,7 @@ private:
 		{
 			if (ops.at(i) == '*' || ops.at(i) == '/')
 			{
-				varVals[i] = Calculate(ops.at(i), varVals.at(i), varVals.at(i+1));
+				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i+1));
 				varVals.erase(varVals.begin() + i + 1);
 				ops.erase(ops.begin() + i);
 				i--;
@@ -109,11 +131,11 @@ private:
 		float result = varVals.at(0);
 		for (int i = 1; i < varVals.size(); i++)
 		{
-			result = Calculate(ops.at(i - 1), result, varVals.at(i));
+			result = CalculateValue(ops.at(i - 1), result, varVals.at(i));
 		}
 		return result;
 	}
-	static float Calculate(char op, float f1, float f2)
+	static float CalculateValue(char op, float f1, float f2)
 	{
 		if (op == '+')
 		{
