@@ -63,11 +63,12 @@ public:
 					vars.emplace_back(std::stof(s));
 				}
 				else {
+					///if there was a brace, there is no variable -> vars are greater than ops
 					if (var.find(s) != var.end())
 					{
 						vars.emplace_back(var.at(s));
 					}
-					else
+					else if(!(vars.size() > ops.size()))
 					{
 						std::string info = "Uninitialized variable in line ";	///standart-syntax
 						info += line + 48;										///line number (+48 caused by ascii translation)
@@ -147,7 +148,7 @@ private:
 	}
 	static bool IsComparison(std::string comp)
 	{
-		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "=");
+		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "==");
 	}
 	static bool isFloat(std::string myString) {
 		std::istringstream iss(myString);
