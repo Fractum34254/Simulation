@@ -447,7 +447,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 			}
 		} while (!endReached);
 	}
-	/************************************** LOADING + EXECUTING ONCE PROGRAM CODE *********************************************************/
+	/************************************** LOADING PROGRAM CODE ******************************************************************/
 	{
 		bool endReached = false;
 		int lineNmr = 1;
@@ -466,13 +466,13 @@ File::File(std::string name, float offset, RectI screenRegion)
 				}
 			}
 			if (!endReached) {
-				///calculate and save line and advance line number
-				Parser::Calculate(line, vars, lineNmr++);
 				code += line;
 				code += "\n";
 			}
 		} while (!endReached);
 	}
 	/************************************** ASSIGNING VARIABLES TO GRAPH *********************************************************/
-
+	{
+		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
+	}
 }
