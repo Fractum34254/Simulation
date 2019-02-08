@@ -21,6 +21,8 @@ public:
 	};
 public:
 	File(std::string name, float offset, RectI screenRegion);
+	void Calculate(float dt);
+	void Draw(Graphics& gfx) const;
 private:
 	//Standart expression string
 	///IMPORTANT: if adding new ones: also add them to the constructor (two times!)

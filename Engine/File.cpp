@@ -476,3 +476,40 @@ File::File(std::string name, float offset, RectI screenRegion)
 		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
 	}
 }
+
+void File::Calculate(float dt)
+{
+	for (float i = 0.0f; i < dt * repeatVal; i++)
+	{
+		bool endReached = false;
+		int lineNmr = 1;
+		std::stringstream codeFile(code);
+		do
+		{
+			///reading a line
+			std::string line;
+			for (char c = codeFile.get(); !endReached && (c != '\n'); c = codeFile.get())
+			{
+
+				///test, if start vars are finished
+				if (codeFile.eof())
+				{
+					endReached = true;
+				}
+				else {
+					line += c;
+				}
+			}
+			if (!endReached) {
+				///calculate and save line and advance line number
+				Parser::Calculate(line, vars, lineNmr++);
+			}
+		} while (!endReached);
+		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
+	}
+}
+
+void File::Draw(Graphics & gfx) const
+{
+	graph.Draw(gfx);
+}
