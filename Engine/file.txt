@@ -4,9 +4,9 @@ y Value: abcdefg
 Time variable: t
 Repeating per second: 10
 #Head
-abcdefg = 1
+abcdefg = 300
 t = 0
 delta_t = 1
 #Program
-abcdefg = abcdefg+1
+abcdefg = abcdefg- 1
 t = t+delta_t

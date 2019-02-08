@@ -510,7 +510,7 @@ void File::Calculate(float dt)
 
 void File::Draw(Graphics & gfx) const
 {
-	graph.Draw(gfx);
+	graph.Draw(font, gfx);
 	font.DrawText(yAxisName, Vei2(screenRegion.left - (int)offset, screenRegion.top - font.GetHeight()), axisColor, gfx);
-	font.DrawText(timeVar, Vei2(screenRegion.right - 2 * (int)offset, screenRegion.bottom), axisColor, gfx);
+	font.DrawText(timeVar, Vei2(screenRegion.right - 2 * (int)offset, screenRegion.bottom - (graph.IsNegative() ? screenRegion.GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
 }
