@@ -22,6 +22,15 @@ private:
 	class CoordinateSystem
 	{
 	public:
+		class Exception : public ChiliException
+		{
+		public:
+			using ChiliException::ChiliException;
+			virtual std::wstring GetFullMessage() const override { return GetNote() + L"\nAt: " + GetLocation(); }
+			virtual std::wstring GetExceptionType() const override { return L"Coordinate System Exception"; }
+		};
+	public:
+		CoordinateSystem() = default;
 		CoordinateSystem(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor)
 			:
 			xMax(xMax),
@@ -29,10 +38,16 @@ private:
 			offset(offset),
 			screenRegion(screenRegion),
 			axisColor(axisColor),
-			pixelColor(pixelColor)
+			pixelColor(pixelColor),
+			initialized(true)
 		{}
 		void Draw(Graphics& gfx) const
 		{
+			if (!initialized)
+			{
+				std::string info = "Unitialized coordinate system!";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
 			//drawing coordinate system
 			const Vec2 leftTop = { offset + (float)screenRegion.left, offset + (float)screenRegion.top };
 			const Vec2 leftBottom = { offset + (float)screenRegion.left, (float)screenRegion.bottom - offset };
@@ -66,6 +81,11 @@ private:
 		}
 		void PutCoordinate(float x, float y)
 		{
+			if (!initialized)
+			{
+				std::string info = "Unitialized coordinate system!";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
 			if (!negative && y < 0.0f)
 			{
 				ConvertToNegative();
@@ -101,6 +121,11 @@ private:
 		}
 		void SetYMax(float newYMax)
 		{
+			if (!initialized)
+			{
+				std::string info = "Unitialized coordinate system!";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
 			const float scale = yMax / newYMax;
 
 			const int yPixMax = screenRegion.bottom - (int)offset;
@@ -125,6 +150,11 @@ private:
 		}
 		void SetXMax(float newXMax)
 		{
+			if (!initialized)
+			{
+				std::string info = "Unitialized coordinate system!";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
 			const float scale = xMax / newXMax;
 
 			const int xPixMax = screenRegion.right - (int)offset;
@@ -171,6 +201,7 @@ private:
 			}
 		}
 	private:
+		bool initialized = false;
 		float xMax;
 		float yMax;
 		float offset;
