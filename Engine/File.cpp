@@ -359,7 +359,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 		graph = Graph(screenRegion, axisColor, pixelColor, yAxisName);
 	}
 
-	/************************************** LOADING START VARS *********************************************************/
+	/************************************** LOADING  + EXECUTING START VARS ************************************************/
 	{
 		bool endReached = false;
 		int lineNmr = 1;
@@ -369,6 +369,8 @@ File::File(std::string name, float offset, RectI screenRegion)
 			std::string line;
 			for (char c = file.get(); !endReached && (c != '\n'); c = file.get())
 			{
+
+				///test, if start vars are finished
 				if (line == headEnd)
 				{
 					endReached = true;
@@ -384,16 +386,37 @@ File::File(std::string name, float offset, RectI screenRegion)
 					line += c;
 				}
 			}
-			
-			///test, if start vars are finished
-			
 			if(!endReached) {
 				///calculate and save line and advance line number
 				Parser::Calculate(line, vars, lineNmr++);
 			}
 		} while (!endReached);
 	}
-	/************************************** LOADING PROGRAM CODE *********************************************************/
+	/************************************** LOADING + EXECUTING ONCE PROGRAM CODE *********************************************************/
 
-	/************************************** EXECUTING START VARS *********************************************************/
+	{
+		bool endReached = false;
+		int lineNmr = 1;
+		do
+		{
+			///reading a line
+			std::string line;
+			for (char c = file.get(); !endReached && (c != '\n'); c = file.get())
+			{
+				if (c == -1 || file.eof())
+				{
+					endReached = true;
+				}
+				else {
+					line += c;
+				}
+			}
+			if (!endReached) {
+				///calculate and save line and advance line number
+				Parser::Calculate(line, vars, lineNmr++);
+				code += line;
+				code += "\n";
+			}
+		} while (!endReached);
+	}
 }
