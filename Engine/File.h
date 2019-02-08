@@ -38,6 +38,7 @@ private:
 	Color axisColor;
 	Color pixelColor;
 	std::string yAxisName;
+	Graph graph;
 	//File values
 	std::string name;
 	std::string code;
