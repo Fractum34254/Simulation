@@ -3,12 +3,21 @@
 #include "Graphics.h"
 #include "Colors.h"
 #include "PhilUtil.h"
+#include "ChiliException.h"
 #include <string>
 #include <fstream>
 #include <unordered_map>
 
 class Graph
 {
+public:
+	class Exception : public ChiliException
+	{
+	public:
+		using ChiliException::ChiliException;
+		virtual std::wstring GetFullMessage() const override { return GetNote() + L"\nAt: " + GetLocation(); }
+		virtual std::wstring GetExceptionType() const override { return L"Graph Exception"; }
+	};
 private:
 	class CoordinateSystem
 	{
@@ -175,27 +184,51 @@ private:
 		std::unordered_map<int, std::pair<float, float>> pixel;
 	};
 public:
+	Graph() = default;
 	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName)
 		:
 		coords(xMax, yMax, offset, screenRegion, axisColor, pixelColor),
-		yAxisName(yAxisName)
+		yAxisName(yAxisName),
+		initialized(true)
 	{}
 	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName)
 		:
 		coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
-		yAxisName(yAxisName)
+		yAxisName(yAxisName),
+		initialized(true)
+	{}
+	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName)
+		:
+		coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
+		yAxisName(yAxisName),
+		initialized(true)
 	{}
 	void Draw(Graphics& gfx) const
 	{
+		if (!initialized)
+		{
+			std::string info = "Unitialized graph!";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
 		coords.Draw(gfx);
 	}
 	void PutData(float x, float y)
 	{
+		if (!initialized)
+		{
+			std::string info = "Unitialized graph!";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
 		data[cur++] = { x,y };
 		coords.PutCoordinate(x, y);
 	}
 	void WriteToFile(std::string filename) const
 	{
+		if (!initialized)
+		{
+			std::string info = "Unitialized graph!";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
 		std::ofstream file(filename);
 		for (int i = 0; i < cur; i++)
 		{
@@ -208,6 +241,7 @@ public:
 private:
 	//config values
 	static constexpr int cropVal = 8;
+	bool initialized = false;
 	//coordinate system start values
 	static constexpr float xMaxStart = 0.1f;
 	static constexpr float yMaxStart = 0.1f;
@@ -220,4 +254,17 @@ private:
 	//data
 	int cur = 0;
 	std::unordered_map<int, std::pair<float, float>> data;
+
+//utility functions
+private:
+	static std::wstring towstring(std::string s)
+	{
+		const char* pc = s.c_str();
+		std::wstring ws;
+		for (int i = 0; i < s.size(); i++)
+		{
+			ws += pc[i];
+		}
+		return ws;
+	}
 };
