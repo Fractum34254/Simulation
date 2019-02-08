@@ -25,7 +25,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	file("file.txt", 10, RectI(10, 790, 10, 590))
+	file("file.txt", 10, RectI(100, 700, 100, 500))
 {
 }
 

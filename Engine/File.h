@@ -8,6 +8,7 @@
 #include "Rect.h"
 #include "Parser.h"
 #include "Graph.h"
+#include "Font.h"
 
 class File
 {
@@ -45,6 +46,7 @@ private:
 	std::string timeVar;
 	int repeatVal;
 	Graph graph;
+	Font font;
 	//File values
 	std::string name;
 	std::string code;

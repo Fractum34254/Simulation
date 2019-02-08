@@ -4,7 +4,8 @@ File::File(std::string name, float offset, RectI screenRegion)
 	:
 	name(name),
 	offset(offset),
-	screenRegion(screenRegion)
+	screenRegion(screenRegion),
+	font("Font.bmp")
 {
 	std::ifstream file(name);
 	//test, if file exists																							|-> can lead to EXCEPTION
@@ -510,4 +511,6 @@ void File::Calculate(float dt)
 void File::Draw(Graphics & gfx) const
 {
 	graph.Draw(gfx);
+	font.DrawText(yAxisName, Vei2(screenRegion.left - (int)offset, screenRegion.top - font.GetHeight()), axisColor, gfx);
+	font.DrawText(timeVar, Vei2(screenRegion.right - 2 * (int)offset, screenRegion.bottom), axisColor, gfx);
 }
