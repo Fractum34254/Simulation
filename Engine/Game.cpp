@@ -26,6 +26,7 @@ Game::Game( MainWindow& wnd )
 	wnd( wnd ),
 	gfx( wnd )
 {
+	File file("file.txt", 10, RectI(200, 500, 200, 400));
 }
 
 void Game::Go()

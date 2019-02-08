@@ -23,6 +23,7 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
+#include "File.h"
 #include "Rect.h"
 #include "Graph.h"
 #include "Parser.h"
