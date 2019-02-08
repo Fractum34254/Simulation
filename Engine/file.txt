@@ -1,5 +1,7 @@
 Axis Color: 255 255 255
 Graph Color: 255 255 255
-y Value:
+y Value: a
 #Head
+a=4
+f=3*a
 #Program

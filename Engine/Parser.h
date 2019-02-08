@@ -17,7 +17,7 @@ public:
 		virtual std::wstring GetExceptionType() const override { return L"Parser Exception"; }
 	};
 public:
-	static void Calculate(std::string term_in, std::unordered_map<std::string, float> vars, int line = 0)
+	static void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
 	{
 		///every mathematical expression needs an assignment operator
 		if (term_in.find('=') == term_in.npos)
