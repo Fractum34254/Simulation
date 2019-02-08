@@ -65,6 +65,10 @@ public:
 	}
 	void PutPixel( int x,int y,Color c );
 	void DrawLine(Vec2 p0, Vec2 p1, Color c);
+	void DrawLine(float x0, float y0, float x1, float y1, Color c)
+	{
+		DrawLine(Vec2(x0, y0), Vec2(x1, y1), c);
+	}
 	template<typename E> void DrawSprite(int x, int y, const Surface & s, E effect)
 	{
 		DrawSprite(x, y, s.GetRect(), s, effect);
