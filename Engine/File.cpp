@@ -23,6 +23,8 @@ File::File(std::string name, float offset, RectI screenRegion)
 		settingNames.emplace_back(axisColorSet);
 		settingNames.emplace_back(graphColorSet);
 		settingNames.emplace_back(yNameSet);
+		settingNames.emplace_back(timeName);
+		settingNames.emplace_back(repeatingName);
 		///vector of bool to keep track whether a variable is initialized or not
 		std::vector<bool> settingInit;
 		for (size_t i = 0; i < settingNames.size(); i++)
@@ -341,6 +343,59 @@ File::File(std::string name, float offset, RectI screenRegion)
 						yAxisName += c;
 					}
 				}
+				else if (setting == timeName)
+				{
+					file.unget();
+					///test for blank space
+					char c = file.get();
+					while (c == ' ')
+					{
+						c = file.get();
+					}
+					file.unget();
+					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+					{
+						timeVar += c;
+					}
+				}
+				else if (setting == repeatingName)
+				{
+					file.unget();
+					///test for blank space
+					char c = file.get();
+					while (c == ' ')
+					{
+						c = file.get();
+					}
+					file.unget();
+					std::string repeatStr;
+					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+					{
+						repeatStr += c;
+					}
+					///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
+					try
+					{
+						repeatVal = std::stoi(repeatStr);
+						if (repeatVal > 10000)
+						{
+							std::string info = "Too much repeating per second in file \"";
+							info += name;
+							info += "\":\n";
+							info += toString(repeatVal);
+							info += " (more than 10000)\n";
+							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+						}
+					}
+					catch (const std::exception&)
+					{
+						std::string info = "Bad repeating value in file \"";
+						info += name;
+						info += "\": ";
+						info += repeatStr;
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+					}
+				}
 				settingInit.at(findInVector(settingNames, setting)) = true;
 			}
 			else
@@ -393,7 +448,6 @@ File::File(std::string name, float offset, RectI screenRegion)
 		} while (!endReached);
 	}
 	/************************************** LOADING + EXECUTING ONCE PROGRAM CODE *********************************************************/
-
 	{
 		bool endReached = false;
 		int lineNmr = 1;
@@ -419,4 +473,6 @@ File::File(std::string name, float offset, RectI screenRegion)
 			}
 		} while (!endReached);
 	}
+	/************************************** ASSIGNING VARIABLES TO GRAPH *********************************************************/
+
 }

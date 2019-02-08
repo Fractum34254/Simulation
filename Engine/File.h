@@ -24,9 +24,11 @@ public:
 private:
 	//Standart expression string
 	///IMPORTANT: if adding new ones: also add them to the constructor (two times!)
-	const std::string axisColorSet = "Axis Color:";
-	const std::string graphColorSet = "Graph Color:";
-	const std::string yNameSet = "y Value:";
+	const std::string axisColorSet = "Axis Color:";							///added
+	const std::string graphColorSet = "Graph Color:";						///added
+	const std::string yNameSet = "y Value:";								///added
+	const std::string timeName = "Time variable:";							///added
+	const std::string repeatingName = "Repeating per second:";				///added
 	///breaking strings
 	const std::string settingsEnd = "#Head";
 	const std::string headEnd = "#Program";
@@ -38,6 +40,8 @@ private:
 	Color axisColor;
 	Color pixelColor;
 	std::string yAxisName;
+	std::string timeVar;
+	int repeatVal;
 	Graph graph;
 	//File values
 	std::string name;
