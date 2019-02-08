@@ -24,9 +24,9 @@
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
-	gfx( wnd )
+	gfx( wnd ),
+	file("file.txt", 10, RectI(10, 790, 10, 590))
 {
-	File file("file.txt", 10, RectI(200, 500, 200, 400));
 }
 
 void Game::Go()
@@ -39,9 +39,11 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	float dt = ft.Mark();
+	file.Calculate(dt);
 }
 
 void Game::ComposeFrame()
 {
-
+	file.Draw(gfx);
 }

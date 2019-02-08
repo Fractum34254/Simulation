@@ -1,7 +1,12 @@
 Axis Color: 255 255 255
-Graph Color: 255 255 255
+Graph Color: 255 0 0
 y Value: a
+Time variable: t
+Repeating per second: 10
 #Head
-a=4
-f=3*a
+a = 1
+t = 0
+delta_t = 1
 #Program
+a = a+1
+t = t+delta_t

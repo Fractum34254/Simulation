@@ -27,6 +27,7 @@
 #include "Rect.h"
 #include "Graph.h"
 #include "Parser.h"
+#include "FrameTimer.h"
 
 class Game
 {
@@ -46,5 +47,7 @@ private:
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
+	File file;
+	FrameTimer ft;
 	/********************************/
 };
