@@ -8,5 +8,6 @@ abcdefg = 300
 t = 0
 delta_t = 1
 #Program
+//Beginn einer Rechnung
 abcdefg = abcdefg- 1
 t = t+delta_t

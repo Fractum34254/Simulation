@@ -19,6 +19,14 @@ public:
 public:
 	static void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
 	{
+		///test for commentary
+		std::string begin;
+		begin += term_in.at(0);
+		begin += term_in.at(1);
+		if (begin == "//")
+		{
+			return;
+		}
 		///every mathematical expression needs an assignment operator
 		if (term_in.find('=') == term_in.npos)
 		{
