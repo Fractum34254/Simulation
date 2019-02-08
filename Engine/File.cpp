@@ -425,12 +425,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 			for (char c = file.get(); !endReached && (c != '\n'); c = file.get())
 			{
 
-				///test, if start vars are finished
-				if (line == headEnd)
-				{
-					endReached = true;
-				}
-				else if (c == -1 || file.eof())
+				if (c == -1 || file.eof())
 				{
 					std::string info = "Not enough data in file \"";	
 					info += name;										
@@ -441,7 +436,12 @@ File::File(std::string name, float offset, RectI screenRegion)
 					line += c;
 				}
 			}
-			if(!endReached) {
+			///test, if start vars are finished
+			if (line == headEnd)
+			{
+				endReached = true;
+			}
+			else {
 				///calculate and save line and advance line number
 				Parser::Calculate(line, vars, lineNmr++);
 			}
@@ -465,10 +465,8 @@ File::File(std::string name, float offset, RectI screenRegion)
 					line += c;
 				}
 			}
-			if (!endReached) {
-				code += line;
-				code += "\n";
-			}
+			code += line;
+			code += "\n";
 		} while (!endReached);
 	}
 	/************************************** ASSIGNING VARIABLES TO GRAPH *********************************************************/

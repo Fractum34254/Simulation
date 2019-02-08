@@ -31,7 +31,10 @@ public:
 		std::string rval;
 		for (char c = term.get(); c != '='; c = term.get())
 		{
-			lval += c;
+			if (c != ' ')
+			{
+				lval += c;
+			}
 		}
 		for (char c = term.get(); !term.eof(); c = term.get())
 		{
