@@ -70,7 +70,13 @@ public:
 	{
 		return bottom - top;
 	}
-
+	void Translate(Vec2_<T> v)
+	{
+		left += v.x;
+		right += v.x;
+		top += v.y;
+		bottom += v.y;
+	}
 public:
 	T left;
 	T right;
