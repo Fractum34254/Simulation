@@ -95,6 +95,20 @@ public:
 	{
 		dword = (dword & 0xFFFFFF00u) | b;
 	}
+	void Fade(float f)
+	{
+		SetR((unsigned char)(f * (float)GetR()));
+		SetG((unsigned char)(f * (float)GetG()));
+		SetB((unsigned char)(f * (float)GetB()));
+	}
+	Color GetFaded(float f) const
+	{
+		Color c = *this;
+		c.SetR((unsigned char)(f * (float)c.GetR()));
+		c.SetG((unsigned char)(f * (float)c.GetG()));
+		c.SetB((unsigned char)(f * (float)c.GetB()));
+		return c;
+	}
 };
 
 namespace Colors
