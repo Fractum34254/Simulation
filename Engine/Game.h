@@ -49,5 +49,6 @@ private:
 	/*  User Variables              */
 	File file;
 	FrameTimer ft;
+	MouseController mouseControl;
 	/********************************/
 };

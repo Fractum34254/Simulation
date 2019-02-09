@@ -247,6 +247,11 @@ File::File(std::string name, float offset, RectI screenRegion)
 	}
 }
 
+void File::Update(MouseController& mouseControl)
+{
+	graph.Update(mouseControl);
+}
+
 void File::Calculate(float dt)
 {
 	time += dt;

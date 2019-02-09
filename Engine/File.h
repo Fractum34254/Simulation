@@ -22,6 +22,7 @@ public:
 	};
 public:
 	File(std::string name, float offset, RectI screenRegion);
+	void Update(MouseController& mouseControl);
 	void Calculate(float dt);
 	void Draw(Graphics& gfx) const;
 private:

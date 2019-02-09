@@ -5,6 +5,7 @@
 #include "PhilUtil.h"
 #include "ChiliException.h"
 #include "Font.h"
+#include "MouseController.h"
 #include <string>
 #include <algorithm>
 #include <sstream>
@@ -40,15 +41,18 @@ private:
 		void PutCoordinate(float x, float y);
 		void SetYMax(float newYMax);
 		void SetXMax(float newXMax);
+		void SetRectOn(bool b);
 		bool IsNegative() const;
 		float GetOffset() const;
 		float GetHeight() const;
 		float GetWidth() const;
 		float GetYAxis() const;
 		float GetXAxis() const;
+		RectI GetScreenRegion() const;
 	private:
 		void ConvertToNegative();
 	private:
+		bool rectOn = false;
 		bool initialized = false;
 		float xMax;
 		float yMax;
@@ -68,6 +72,7 @@ public:
 	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName);
 	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName);
 	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName);
+	void Update(MouseController& mouseControl);
 	void Draw(const Font& f, Graphics& gfx) const;
 	void PutData(float x, float y);
 	void WriteToFile(std::string filename) const;

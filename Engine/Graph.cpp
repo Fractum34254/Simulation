@@ -90,9 +90,12 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 		f.DrawText(ss.str(), Vei2((int)yAxis + i * (int)deltaX - f.GetWidth() * (int)ss.str().size() / 2, (int)xAxis + lineLength / 2 + textOffset), axisColor, gfx);
 	}
 
-	//draw rectangle
-	RectI rect = RectI(screenRegion.left - f.GetWidth() * (int)yNumberLength, screenRegion.right, screenRegion.top - f.GetHeight() - (int)offset, screenRegion.bottom + f.GetHeight() + (int)offset);
-	gfx.DrawRectLine(rect, 2, 0, axisColor.GetFaded(0.3f));
+	if (rectOn)
+	{
+		//draw rectangle
+		RectI rect = RectI(screenRegion.left - f.GetWidth() * (int)yNumberLength, screenRegion.right, screenRegion.top - f.GetHeight() - (int)offset, screenRegion.bottom + f.GetHeight() + (int)offset);
+		gfx.DrawRectLine(rect, 2, 0, axisColor.GetFaded(0.3f));
+	}
 }
 
 void Graph::CoordinateSystem::PutCoordinate(float x, float y)
@@ -193,6 +196,11 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 	xMax = newXMax;
 }
 
+void Graph::CoordinateSystem::SetRectOn(bool b)
+{
+	rectOn = b;
+}
+
 bool Graph::CoordinateSystem::IsNegative() const
 {
 	return negative;
@@ -228,6 +236,11 @@ float Graph::CoordinateSystem::GetXAxis() const
 	{
 		return (float)screenRegion.bottom - offset;
 	}
+}
+
+RectI Graph::CoordinateSystem::GetScreenRegion() const
+{
+	return screenRegion;
 }
 
 void Graph::CoordinateSystem::ConvertToNegative() 
@@ -276,6 +289,18 @@ Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string 
 	yAxisName(yAxisName),
 	initialized(true)
 {}
+
+void Graph::Update(MouseController& mouseControl)
+{
+	if (coords.GetScreenRegion().Contains(mouseControl.GetMousePos()))
+	{
+		coords.SetRectOn(true);
+	}
+	else
+	{
+		coords.SetRectOn(false);
+	}
+}
 
 void Graph::Draw(const Font & f, Graphics & gfx) const
 {

@@ -150,6 +150,7 @@
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="MouseController.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="PhilUtil.h" />
     <ClInclude Include="Rect.h" />

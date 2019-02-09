@@ -25,7 +25,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	file("file.txt", 10, RectI(100, 700, 100, 500))
+	file("file.txt", 10, RectI(100, 700, 100, 500)),
+	mouseControl(wnd.mouse)
 {
 }
 
@@ -41,6 +42,7 @@ void Game::UpdateModel()
 {
 	float dt = ft.Mark();
 	file.Calculate(dt);
+	file.Update(mouseControl);
 }
 
 void Game::ComposeFrame()
