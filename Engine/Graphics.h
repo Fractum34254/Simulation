@@ -69,6 +69,34 @@ public:
 	{
 		DrawLine(Vec2(x0, y0), Vec2(x1, y1), c);
 	}
+	void DrawLine(int x0, int y0, int x1, int y1, Color c)
+	{
+		DrawLine((float)x0, (float)y0, (float)x1, (float)y1, c);
+	}
+	void DrawRectLine(RectI rect, int thickness, int borderExtension, Color c)
+	{
+		for (int i = 0; i < thickness; i++)
+		{
+			//top
+			DrawLine(rect.left - borderExtension, rect.top - borderExtension + i, rect.right + borderExtension, rect.top - borderExtension + i, c);
+			//bottom
+			DrawLine(rect.left - borderExtension, rect.bottom + borderExtension - i, rect.right + borderExtension, rect.bottom + borderExtension - i, c);
+			//left
+			DrawLine(rect.left - borderExtension + i, rect.top - borderExtension, rect.left - borderExtension + i, rect.bottom + borderExtension, c);
+			//right
+			DrawLine(rect.right + borderExtension - i, rect.top - borderExtension, rect.right + borderExtension - i, rect.bottom + borderExtension, c);
+		}
+	}
+	void DrawRectArea(RectI rect, Color c)
+	{
+		for (int x = rect.left; x <= rect.right; x++)
+		{
+			for (int y = rect.top; y <= rect.bottom; y++)
+			{
+				PutPixel(x, y, c);
+			}
+		}
+	}
 	template<typename E> void DrawSprite(int x, int y, const Surface & s, E effect)
 	{
 		DrawSprite(x, y, s.GetRect(), s, effect);
