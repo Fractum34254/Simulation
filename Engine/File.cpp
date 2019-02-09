@@ -249,7 +249,9 @@ File::File(std::string name, float offset, RectI screenRegion)
 
 void File::Calculate(float dt)
 {
-	for (float i = 0.0f; i < dt * repeatVal; i++)
+	time += dt;
+	const float delta_t = 1.0f / repeatVal;
+	for (; delta_t < time; time -= delta_t)
 	{
 		bool endReached = false;
 		int lineNmr = 1;

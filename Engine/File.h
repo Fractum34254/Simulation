@@ -51,6 +51,7 @@ private:
 	std::string ownName;
 	std::string code;
 	std::string startVars;
+	float time = 0.0f;
 	//Data values
 	std::unordered_map<std::string, float> vars;
 
