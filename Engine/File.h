@@ -40,7 +40,6 @@ private:
 	static constexpr float xMaxStart = 1.0f;
 	static constexpr float yMaxStart = 1.0f;
 	float offset;
-	RectI screenRegion;
 	Color axisColor;
 	Color pixelColor;
 	std::string yAxisName;

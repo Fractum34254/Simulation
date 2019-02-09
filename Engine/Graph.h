@@ -49,6 +49,7 @@ private:
 		float GetYAxis() const;
 		float GetXAxis() const;
 		RectI GetScreenRegion() const;
+		void TranslateScreenRegion(const Vei2& v);
 	private:
 		void ConvertToNegative();
 	private:
@@ -77,10 +78,12 @@ public:
 	void PutData(float x, float y);
 	void WriteToFile(std::string filename) const;
 	bool IsNegative() const;
+	RectI GetScreenRegion() const;
 private:
 	//config values
 	static constexpr int cropVal = 8;
 	bool initialized = false;
+	bool mouseInside = false;
 	//coordinate system start values
 	static constexpr float xMaxStart = 0.0001f;		//minimal start x
 	static constexpr float yMaxStart = 0.0001f;		//minimal start y

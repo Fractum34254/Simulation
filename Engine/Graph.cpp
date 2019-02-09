@@ -243,6 +243,16 @@ RectI Graph::CoordinateSystem::GetScreenRegion() const
 	return screenRegion;
 }
 
+void Graph::CoordinateSystem::TranslateScreenRegion(const Vei2 & v)
+{
+	screenRegion.Translate(v);
+	for (auto& p : pixel)
+	{
+		p.second.first += v.x;
+		p.second.second += v.y;
+	}
+}
+
 void Graph::CoordinateSystem::ConvertToNegative() 
 {
 	const int yPixMax = screenRegion.bottom - (int)offset;
@@ -292,12 +302,25 @@ Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string 
 
 void Graph::Update(MouseController& mouseControl)
 {
+	mouseControl.Update();
 	if (coords.GetScreenRegion().Contains(mouseControl.GetMousePos()))
 	{
 		coords.SetRectOn(true);
+		if (mouseInside)
+		{
+			if (mouseControl.mouse.LeftIsPressed())
+			{
+				coords.TranslateScreenRegion(mouseControl.diff);
+			}
+		}
+		else if (!mouseControl.mouse.LeftIsPressed())
+		{
+			mouseInside = true;
+		}
 	}
 	else
 	{
+		mouseInside = false;
 		coords.SetRectOn(false);
 	}
 }
@@ -355,4 +378,9 @@ void Graph::WriteToFile(std::string filename) const
 bool Graph::IsNegative() const
 {
 	return coords.IsNegative();
+}
+
+RectI Graph::GetScreenRegion() const
+{
+	return coords.GetScreenRegion();
 }

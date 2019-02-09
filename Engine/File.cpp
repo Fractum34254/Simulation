@@ -4,7 +4,6 @@ File::File(std::string name, float offset, RectI screenRegion)
 	:
 	ownName(name),
 	offset(offset),
-	screenRegion(screenRegion),
 	font("Font.bmp")
 {
 	std::ifstream file(ownName);
@@ -289,8 +288,8 @@ void File::Calculate(float dt)
 void File::Draw(Graphics & gfx) const
 {
 	graph.Draw(font, gfx);
-	font.DrawText(yAxisName, Vei2(screenRegion.left - (int)offset, screenRegion.top - font.GetHeight()), axisColor, gfx);
-	font.DrawText(timeVar, Vei2(screenRegion.right - 2 * (int)offset, screenRegion.bottom - (graph.IsNegative() ? screenRegion.GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
+	font.DrawText(yAxisName, Vei2(graph.GetScreenRegion().left - (int)offset, graph.GetScreenRegion().top - font.GetHeight()), axisColor, gfx);
+	font.DrawText(timeVar, Vei2(graph.GetScreenRegion().right - 2 * (int)offset, graph.GetScreenRegion().bottom - (graph.IsNegative() ? graph.GetScreenRegion().GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
 }
 
 char File::toColorChar(std::ifstream & file, const std::string colorName, const std::string& fileName)
