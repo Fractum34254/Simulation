@@ -81,125 +81,11 @@ File::File(std::string name, float offset, RectI screenRegion)
 				{
 					file.unget();
 					///red color value
-					std::string r;
-					int ri;
-					{
-						///test for blank space
-						char c = file.get();
-						while (c == ' ')
-						{
-							c = file.get();
-						}
-						file.unget();
-						///read out r
-						for (c = file.get(); (c != -1) && (c != ' '); c = file.get())
-						{
-							r += c;
-						}
-						///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-						try
-						{
-							ri = std::stoi(r);
-							if (0 > ri || 255 < ri)
-							{
-								std::string info = "Bad red axis color value in file \"";
-								info += name;
-								info += "\":\n";
-								info += toString(ri);
-								info += " (not in range from 0 to 255)\n";
-								throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-							}
-						}
-						catch (const std::exception&)
-						{
-							std::string info = "Bad red axis color value in file \"";
-							info += name;
-							info += "\": ";
-							info += r;
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					char rc = ri;
+					const unsigned char rc = toColorChar(file, "red axis", name);
 					///green color value
-					std::string g;
-					int gi;
-					{
-						///test for blank space
-						char c = file.get();
-						while (c == ' ')
-						{
-							c = file.get();
-						}
-						file.unget();
-						///read out r
-						for (c = file.get(); (c != -1) && (c != ' '); c = file.get())
-						{
-							g += c;
-						}
-						///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-						try
-						{
-							gi = std::stoi(g);
-							if (0 > gi || 255 < gi)
-							{
-								std::string info = "Bad green axis color value in file \"";
-								info += name;
-								info += "\":\n";
-								info += toString(gi);
-								info += " (not in range from 0 to 255)\n";
-								throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-							}
-						}
-						catch (const std::exception&)
-						{
-							std::string info = "Bad green axis color value in file \"";
-							info += name;
-							info += "\": ";
-							info += g;
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					char gc = gi;
+					const unsigned char gc = toColorChar(file, "green axis", name);
 					///blue color value
-					std::string b;
-					int bi;
-					{
-						///test for blank space
-						char c = file.get();
-						while (c == ' ')
-						{
-							c = file.get();
-						}
-						file.unget();
-						///read out r
-						for (c = file.get(); (c != -1) && (c != ' ') && (c != '\n'); c = file.get())
-						{
-							b += c;
-						}
-						///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-						try
-						{
-							bi = std::stoi(b);
-							if (0 > bi || 255 < bi)
-							{
-								std::string info = "Bad blue axis color value in file \"";
-								info += name;
-								info += "\":\n";
-								info += toString(bi);
-								info += " (not in range from 0 to 255)\n";
-								throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-							}
-						}
-						catch (const std::exception&)
-						{
-							std::string info = "Bad blue axis color value in file \"";
-							info += name;
-							info += "\": ";
-							info += b;
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					char bc = bi;
+					const unsigned char bc = toColorChar(file, "blue axis", name);
 					///assemble them in one color
 					axisColor = Color(rc, gc, bc);
 				}
@@ -207,125 +93,11 @@ File::File(std::string name, float offset, RectI screenRegion)
 				{
 					file.unget();
 					///red color value
-					std::string r;
-					int ri;
-					{
-						///test for blank space
-						char c = file.get();
-						while (c == ' ')
-						{
-							c = file.get();
-						}
-						file.unget();
-						///read out r
-						for (c = file.get(); (c != -1) && (c != ' '); c = file.get())
-						{
-							r += c;
-						}
-						///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-						try
-						{
-							ri = std::stoi(r);
-							if (0 > ri || 255 < ri)
-							{
-								std::string info = "Bad red graph color value in file \"";
-								info += name;
-								info += "\":\n";
-								info += toString(ri);
-								info += " (not in range from 0 to 255)\n";
-								throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-							}
-						}
-						catch (const std::exception&)
-						{
-							std::string info = "Bad red graph color value in file \"";
-							info += name;
-							info += "\": ";
-							info += r;
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					char rc = ri;
+					const char rc = toColorChar(file, "red graph", name);
 					///green color value
-					std::string g;
-					int gi;
-					{
-						///test for blank space
-						char c = file.get();
-						while (c == ' ')
-						{
-							c = file.get();
-						}
-						file.unget();
-						///read out r
-						for (c = file.get(); (c != -1) && (c != ' '); c = file.get())
-						{
-							g += c;
-						}
-						///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-						try
-						{
-							gi = std::stoi(g);
-							if (0 > gi || 255 < gi)
-							{
-								std::string info = "Bad green graph color value in file \"";
-								info += name;
-								info += "\":\n";
-								info += toString(gi);
-								info += " (not in range from 0 to 255)\n";
-								throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-							}
-						}
-						catch (const std::exception&)
-						{
-							std::string info = "Bad green graph color value in file \"";
-							info += name;
-							info += "\": ";
-							info += g;
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					char gc = gi;
+					const char gc = toColorChar(file, "green graph", name);
 					///blue color value
-					std::string b;
-					int bi;
-					{
-						///test for blank space
-						char c = file.get();
-						while (c == ' ')
-						{
-							c = file.get();
-						}
-						file.unget();
-						///read out r
-						for (c = file.get(); (c != -1) && (c != ' ') && (c != '\n'); c = file.get())
-						{
-							b += c;
-						}
-						///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-						try
-						{
-							bi = std::stoi(b);
-							if (0 > bi || 255 < bi)
-							{
-								std::string info = "Bad blue graph color value in file \"";
-								info += name;
-								info += "\":\n";
-								info += toString(bi);
-								info += " (not in range from 0 to 255)\n";
-								throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-							}
-						}
-						catch (const std::exception&)
-						{
-							std::string info = "Bad blue graph color value in file \"";
-							info += name;
-							info += "\": ";
-							info += b;
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					char bc = bi;
+					const char bc = toColorChar(file, "blue graph", name);
 					///assemble them in one color
 					pixelColor = Color(rc, gc, bc);
 				}
@@ -513,4 +285,51 @@ void File::Draw(Graphics & gfx) const
 	graph.Draw(font, gfx);
 	font.DrawText(yAxisName, Vei2(screenRegion.left - (int)offset, screenRegion.top - font.GetHeight()), axisColor, gfx);
 	font.DrawText(timeVar, Vei2(screenRegion.right - 2 * (int)offset, screenRegion.bottom - (graph.IsNegative() ? screenRegion.GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
+}
+
+char File::toColorChar(std::ifstream & file, const std::string colorName, const std::string& fileName)
+{
+	std::string colorStr;
+	int colorInt;
+	{
+		///test for blank space
+		char c = file.get();
+		while (c == ' ')
+		{
+			c = file.get();
+		}
+		file.unget();
+		///read out r
+		for (c = file.get(); (c != -1) && (c != ' ') && (c != '\n'); c = file.get())
+		{
+			colorStr += c;
+		}
+		///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
+		try
+		{
+			colorInt = std::stoi(colorStr);
+			if (0 > colorInt || 255 < colorInt)
+			{
+				std::string info = "Bad ";
+				info += colorName;
+				info += " color value in file \"";
+				info += fileName;
+				info += "\":\n";
+				info += toString(colorInt);
+				info += " (not in range from 0 to 255)\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
+		}
+		catch (const std::exception&)
+		{
+			std::string info = "Bad ";
+			info += colorName;
+			info += " color value in file \"";
+			info += fileName;
+			info += "\":\n";
+			info += colorStr;
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
+	}
+	return colorInt;
 }

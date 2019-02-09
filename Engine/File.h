@@ -56,6 +56,7 @@ private:
 
 //utility functions
 private:
+	static char toColorChar(std::ifstream& file, const std::string colorName, const std::string& fileName);
 	static std::wstring towstring(std::string s)
 	{
 		const char* pc = s.c_str();
