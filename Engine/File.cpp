@@ -2,35 +2,122 @@
 
 File::File(std::string name, float offset, RectI screenRegion)
 	:
-	name(name),
+	ownName(name),
 	offset(offset),
 	screenRegion(screenRegion),
 	font("Font.bmp")
 {
-	std::ifstream file(name);
+	std::ifstream file(ownName);
 	//test, if file exists																							|-> can lead to EXCEPTION
 	if (!file)
 	{
 		std::string info = "Can't open file \"";	
-		info += name;								
+		info += ownName;
 		info += "\"";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 	}
 
 	/************************************** LOADING FILE SETTINGS *********************************************************/
 	{
-		///adding setting names together																			|-> ADD NEW SETTINGS HERE
-		std::vector<std::string> settingNames;
-		settingNames.emplace_back(axisColorSet);
-		settingNames.emplace_back(graphColorSet);
-		settingNames.emplace_back(yNameSet);
-		settingNames.emplace_back(timeName);
-		settingNames.emplace_back(repeatingName);
-		///vector of bool to keep track whether a variable is initialized or not
-		std::vector<bool> settingInit;
-		for (size_t i = 0; i < settingNames.size(); i++)
+		///adding setting names together && define functions														|-> ADD NEW SETTINGS HERE
+		std::unordered_map<std::string, std::pair<std::function<void(std::ifstream&)>, bool>> settingNames;
+		settingNames[axisColorSet].first = [this](std::ifstream& file) {
+			file.unget();
+			///red color value
+			const unsigned char rc = toColorChar(file, "red axis", ownName);
+			///green color value
+			const unsigned char gc = toColorChar(file, "green axis", ownName);
+			///blue color value
+			const unsigned char bc = toColorChar(file, "blue axis", ownName);
+			///assemble them in one color
+			axisColor = Color(rc, gc, bc);
+		};
+		settingNames[graphColorSet].first = [this](std::ifstream& file) {
+			file.unget();
+			///red color value
+			const char rc = toColorChar(file, "red graph", ownName);
+			///green color value
+			const char gc = toColorChar(file, "green graph", ownName);
+			///blue color value
+			const char bc = toColorChar(file, "blue graph", ownName);
+			///assemble them in one color
+			pixelColor = Color(rc, gc, bc);
+		};
+		settingNames[yNameSet].first = [this](std::ifstream& file) {
+			file.unget();
+			///test for blank space
+			char c = file.get();
+			while (c == ' ')
+			{
+				c = file.get();
+			}
+			file.unget();
+			for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+			{
+				yAxisName += c;
+			}
+		};
+		settingNames[timeName].first = [this](std::ifstream& file) {
+			file.unget();
+			///test for blank space
+			char c = file.get();
+			while (c == ' ')
+			{
+				c = file.get();
+			}
+			file.unget();
+			for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+			{
+				timeVar += c;
+			}
+		};
+		settingNames[repeatingName].first = [this](std::ifstream& file) {
+			file.unget();
+			///test for blank space
+			char c = file.get();
+			while (c == ' ')
+			{
+				c = file.get();
+			}
+			file.unget();
+			std::string repeatStr;
+			for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+			{
+				repeatStr += c;
+			}
+			///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
+			try
+			{
+				repeatVal = std::stoi(repeatStr);
+				if (repeatVal > 10000)
+				{
+					std::string info = "Too much repeating per second in file \"";
+					info += ownName;
+					info += "\":\n";
+					info += toString(repeatVal);
+					info += " (more than 10000)\n";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+				}
+			}
+			catch (const std::exception&)
+			{
+				std::string info = "Bad repeating value in file \"";
+				info += ownName;
+				info += "\": ";
+				info += repeatStr;
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
+		};
+
+		for(std::pair<const std::string, std::pair<std::function<void(std::ifstream& file)>, bool>>& p : settingNames)
 		{
-			settingInit.emplace_back(false);
+			p.second.second = false;
+		}
+
+		size_t longestSetting = 0;
+		for (const auto& p : settingNames)
+		{
+			longestSetting = std::max(longestSetting, p.first.size());
 		}
 
 		///reading out the settings
@@ -39,21 +126,21 @@ File::File(std::string name, float offset, RectI screenRegion)
 		do {
 			std::string setting;
 			///reading out the name of a setting && testing for end													|-> can lead to EXCEPTION
-			for (char c = file.get(); !endReached && !isInVector(settingNames, setting); c = file.get())
+			for (char c = file.get(); !endReached && (settingNames.find(setting) == settingNames.end()); c = file.get())
 			{
 				if (file.eof())
 				{
-					std::string info = "Not enough data in file \"";				///standart-syntax
-					info += name;													///file with incorrect settings
+					std::string info = "Not enough data in file \"";				
+					info += ownName;													
 					info += "\": Reached end of file";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
 				setting += c;
-				if (setting.size() > std::max(getLongest(settingNames), settingsEnd.size()))
+				if (setting.size() > std::max(longestSetting, settingsEnd.size()))
 				{
-					std::string info = "Wrong spelling of setting name in file ";	///standart-syntax
-					info += name;													///file with incorrect settings
-					info += ": ";
+					std::string info = "Wrong spelling of setting name in file \"";
+					info += ownName;													
+					info += "\": ";
 					info += setting;
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
@@ -66,120 +153,32 @@ File::File(std::string name, float offset, RectI screenRegion)
 			if (!endReached && !file.eof())
 			{
 				///if init is already true, setting was already initialized											|-> can lead to EXCEPTION
-				if (settingInit.at(findInVector(settingNames, setting)))
+				if (settingNames.at(setting).second)
 				{
-					std::string info = "Double initialized setting in file \"";		///standart-syntax
-					info += name;													///file with incorrect settings
+					std::string info = "Double initialized setting in file \"";		
+					info += ownName;													
 					info += "\": ";
 					info += setting;
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
 				///now: setting is not already initialized
-				///'switch' on different strings -> test through ALL setting names									|-> can lead to EXCEPTION
-				///																									|-> ADD NEW SETTINGS HERE
-				if (setting == axisColorSet)
-				{
-					file.unget();
-					///red color value
-					const unsigned char rc = toColorChar(file, "red axis", name);
-					///green color value
-					const unsigned char gc = toColorChar(file, "green axis", name);
-					///blue color value
-					const unsigned char bc = toColorChar(file, "blue axis", name);
-					///assemble them in one color
-					axisColor = Color(rc, gc, bc);
-				}
-				else if (setting == graphColorSet)
-				{
-					file.unget();
-					///red color value
-					const char rc = toColorChar(file, "red graph", name);
-					///green color value
-					const char gc = toColorChar(file, "green graph", name);
-					///blue color value
-					const char bc = toColorChar(file, "blue graph", name);
-					///assemble them in one color
-					pixelColor = Color(rc, gc, bc);
-				}
-				else if (setting == yNameSet)
-				{
-					file.unget();
-					///test for blank space
-					char c = file.get();
-					while (c == ' ')
-					{
-						c = file.get();
-					}
-					file.unget();
-					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
-					{
-						yAxisName += c;
-					}
-				}
-				else if (setting == timeName)
-				{
-					file.unget();
-					///test for blank space
-					char c = file.get();
-					while (c == ' ')
-					{
-						c = file.get();
-					}
-					file.unget();
-					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
-					{
-						timeVar += c;
-					}
-				}
-				else if (setting == repeatingName)
-				{
-					file.unget();
-					///test for blank space
-					char c = file.get();
-					while (c == ' ')
-					{
-						c = file.get();
-					}
-					file.unget();
-					std::string repeatStr;
-					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
-					{
-						repeatStr += c;
-					}
-					///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
-					try
-					{
-						repeatVal = std::stoi(repeatStr);
-						if (repeatVal > 10000)
-						{
-							std::string info = "Too much repeating per second in file \"";
-							info += name;
-							info += "\":\n";
-							info += toString(repeatVal);
-							info += " (more than 10000)\n";
-							throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-						}
-					}
-					catch (const std::exception&)
-					{
-						std::string info = "Bad repeating value in file \"";
-						info += name;
-						info += "\": ";
-						info += repeatStr;
-						throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-					}
-				}
-				settingInit.at(findInVector(settingNames, setting)) = true;
+				///'switch' on setting string																		|-> can lead to EXCEPTION
+				settingNames.at(setting).first(file);
+				settingNames.at(setting).second = true;
 			}
 			else
 			{
 				///checks, if all settings are initialized															|-> can lead to EXCEPTION	
-				if (!std::all_of(settingInit.begin(), settingInit.end(), [](bool b) {return b; }))
+				for (const std::pair<const std::string, std::pair<std::function<void(std::ifstream& file)>, bool>>& p : settingNames)
 				{
-					std::string info = "Not enough settings found in \"";
-					info += name;
-					info += "\"";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+					if (!p.second.second)
+					{
+						std::string info = "Not enough settings found in \"";
+						info += ownName;
+						info += "\":\nMissing setting: ";
+						info += p.first;
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+					}
 				}
 			}
 		} while (!endReached);
@@ -201,7 +200,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 				if (c == -1 || file.eof())
 				{
 					std::string info = "Not enough data in file \"";	
-					info += name;										
+					info += ownName;
 					info += "\": Reached end of file";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}

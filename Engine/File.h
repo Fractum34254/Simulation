@@ -2,8 +2,8 @@
 #include <string>
 #include <unordered_map>
 #include <fstream>
-#include <vector>
 #include <algorithm>
+#include <functional>
 #include "ChiliException.h"
 #include "Rect.h"
 #include "Parser.h"
@@ -26,12 +26,12 @@ public:
 	void Draw(Graphics& gfx) const;
 private:
 	//Standart expression string
-	///IMPORTANT: if adding new ones: also add them to the constructor (two times!)
-	const std::string axisColorSet = "Axis Color:";							///added
-	const std::string graphColorSet = "Graph Color:";						///added
-	const std::string yNameSet = "y Value:";								///added
-	const std::string timeName = "Time variable:";							///added
-	const std::string repeatingName = "Repeating per second:";				///added
+	///IMPORTANT: if adding new ones: also add them to the constructor!
+	const std::string axisColorSet = "Axis Color:";							
+	const std::string graphColorSet = "Graph Color:";						
+	const std::string yNameSet = "y Value:";								
+	const std::string timeName = "Time variable:";							
+	const std::string repeatingName = "Repeating per second:";				
 	///breaking strings
 	const std::string settingsEnd = "#Head";
 	const std::string headEnd = "#Program";
@@ -48,7 +48,7 @@ private:
 	Graph graph;
 	Font font;
 	//File values
-	std::string name;
+	std::string ownName;
 	std::string code;
 	std::string startVars;
 	//Data values
@@ -66,39 +66,6 @@ private:
 			ws += pc[i];
 		}
 		return ws;
-	}
-	template<typename T>
-	static bool isInVector(std::vector<T> vec, T val)
-	{
-		for (const T& v : vec)
-		{
-			if (v == val)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	template<typename T>
-	static size_t findInVector(std::vector<T> vec, T val)
-	{
-		for (size_t i = 0; i < vec.size(); i++)
-		{
-			if (vec.at(i) == val)
-			{
-				return i;
-			}
-		}
-		return vec.size() + 1;
-	}
-	static size_t getLongest(std::vector<std::string>& vec)
-	{
-		size_t maxLength = 0;
-		for (const std::string& s : vec)
-		{
-			maxLength = std::max(maxLength, s.size());
-		}
-		return maxLength;
 	}
 	static std::string toString(int i)
 	{
