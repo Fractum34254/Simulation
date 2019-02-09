@@ -92,7 +92,8 @@ private:
 			///0
 			gfx.DrawLine(yAxis - lineLength / 2.0f, xAxis, yAxis + lineLength / 2.0f, xAxis, axisColor);
 			f.DrawText("0", Vei2((int)yAxis - lineLength / 2 - f.GetWidth() - textOffset, (int)xAxis- f.GetHeight() / 2 + textOffset), axisColor, gfx);
-
+			///maximum number length for rect calculation later
+			size_t yNumberLength = 0;
 			///yAxis
 			for (int i = 1; i < 5; i++)
 			{
@@ -100,6 +101,7 @@ private:
 				std::stringstream ss;
 				ss << yMaxAxis / 5.0f * i;
 				f.DrawText(ss.str(), Vei2((int)yAxis - lineLength / 2 - f.GetWidth() * (int)ss.str().size() - textOffset, (int)xAxis - i * (int)deltaY - f.GetHeight() / 2 + textOffset), axisColor, gfx);
+				yNumberLength = std::max(yNumberLength, ss.str().size());
 			}
 			if (IsNegative())
 			{
@@ -109,6 +111,7 @@ private:
 					std::stringstream ss;
 					ss << yMaxAxis / 5.0f * i;
 					f.DrawText(ss.str(), Vei2((int)yAxis - lineLength / 2- f.GetWidth() * (int)ss.str().size() - textOffset, (int)xAxis + i * (int)deltaY - f.GetHeight() / 2 + textOffset), axisColor, gfx);
+					yNumberLength = std::max(yNumberLength, ss.str().size());
 				}
 			}
 			///xAxis
@@ -119,6 +122,10 @@ private:
 				ss << xMaxAxis / 5.0f * i;
 				f.DrawText(ss.str(), Vei2((int)yAxis + i * (int)deltaX - f.GetWidth() * (int)ss.str().size() / 2, (int)xAxis + lineLength / 2 + textOffset), axisColor, gfx);
 			}
+
+			//draw rectangle
+			RectI rect = RectI(screenRegion.left - f.GetWidth() * (int)yNumberLength, screenRegion.right, screenRegion.top - f.GetHeight() - (int)offset, screenRegion.bottom + f.GetHeight() + (int)offset);
+			gfx.DrawRectLine(rect, 2, 0, axisColor.GetFaded(0.3f));
 		}
 		void PutCoordinate(float x, float y)
 		{
