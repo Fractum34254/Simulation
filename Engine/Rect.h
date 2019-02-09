@@ -45,7 +45,7 @@ public:
 		return poT.x >= left && poT.x < right && poT.y >= top && poT.y < bottom;
 	}
 
-	Rect_ FromCenter(const Vec2_<T> & center, T halfWidth, T halfHeight)
+	static Rect_ FromCenter(const Vec2_<T> & center, T halfWidth, T halfHeight)
 	{
 		const Vec2_<T> half(halfWidth, halfHeight);
 		return Rect_(center - half, center + half);
