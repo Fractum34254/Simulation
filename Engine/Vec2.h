@@ -13,7 +13,12 @@ public:
 		y(y_in)
 	{
 	}
-	template<typename type>	explicit Vec2_(const Vec2_<type>& src) 
+	Vec2_(std::pair<T, T> p)
+		:
+		x(p.first),
+		y(p.second)
+	{}
+	template<typename type>	explicit Vec2_(const Vec2_<type>& src)
 		:
 		x((T)src.x),
 		y((T)src.y)
