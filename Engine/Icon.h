@@ -18,25 +18,28 @@ public:
 		Play,
 		Pause
 	};
-	Icon(Surface s, int x, int y)
+	Icon(Surface s, int x = 0, int y = 0)
 		:
 		surf(s),
 		pos(x,y)
 	{}
-	Icon(Surface s, Vei2 v)
+	Icon(Surface s, Vei2 v = { 0,0 })
 		:
 		surf(s),
 		pos(v)
 	{}
 	void Draw(Graphics& gfx) const
 	{
-		if (isHighlighted)
+		if (visible)
 		{
-			gfx.DrawSprite(pos.x, pos.y, surf, SpriteEffect::Substitution(chroma, highlightedColor));
-		}
-		else
-		{
-			gfx.DrawSprite(pos.x, pos.y, surf, SpriteEffect::Substitution(chroma, normalColor));
+			if (isHighlighted)
+			{
+				gfx.DrawSprite(pos.x, pos.y, surf, SpriteEffect::Substitution(chroma, highlightedColor));
+			}
+			else
+			{
+				gfx.DrawSprite(pos.x, pos.y, surf, SpriteEffect::Substitution(chroma, normalColor));
+			}
 		}
 	}
 	bool IsInside(const Vei2& v) const
@@ -52,7 +55,29 @@ public:
 		return surf.GetRect().GetTranslated(pos);
 	}
 	virtual Type GetType() const = 0;
-private:
+	void SetPos(int x, int y)
+	{
+		pos.x = x;
+		pos.y = y;
+	}
+	void SetPos(Vei2 p)
+	{
+		pos = p;
+	}
+	int GetWidth() const
+	{
+		return surf.GetWidth();
+	}
+	void SetVisible(bool b)
+	{
+		visible = b;
+	}
+	bool GetVisible() const
+	{
+		return visible;
+	}
+protected:
+	bool visible = true;
 	static constexpr Color chroma = Colors::White;
 	static constexpr Color highlightedColor = Colors::White;
 	static constexpr Color normalColor = Colors::Gray;
@@ -64,7 +89,7 @@ private:
 class SaveIcon : public Icon
 {
 public:
-	SaveIcon(Surface s, int x, int y)
+	SaveIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
 	{}
@@ -81,7 +106,7 @@ public:
 class RefreshIcon : public Icon
 {
 public:
-	RefreshIcon(Surface s, int x, int y)
+	RefreshIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
 	{}
@@ -98,7 +123,7 @@ public:
 class PauseIcon : public Icon
 {
 public:
-	PauseIcon(Surface s, int x, int y)
+	PauseIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
 	{}
@@ -115,7 +140,7 @@ public:
 class PlayIcon : public Icon
 {
 public:
-	PlayIcon(Surface s, int x, int y)
+	PlayIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
 	{}
@@ -132,7 +157,7 @@ public:
 class ForwardIcon : public Icon
 {
 public:
-	ForwardIcon(Surface s, int x, int y)
+	ForwardIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
 	{}
@@ -149,7 +174,7 @@ public:
 class BackwardIcon : public Icon
 {
 public:
-	BackwardIcon(Surface s, int x, int y)
+	BackwardIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
 	{}
