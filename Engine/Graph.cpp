@@ -201,7 +201,7 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 void Graph::CoordinateSystem::Refresh(const std::unordered_map<int, std::pair<float, float>>& data)
 {
 	pixel.clear();
-	for (size_t i = 0; i < data.size(); i++)
+	for (int i = 0; i < data.size(); i++)
 	{
 		PutCoordinate(data.at(i).first, data.at(i).second);
 	}
