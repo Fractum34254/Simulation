@@ -4,7 +4,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 	:
 	ownName(name),
 	offset(offset),
-	font("Font.bmp")
+	font("Bitmaps\\Font.bmp")
 {
 	std::ifstream file(ownName);
 	//test, if file exists																							|-> can lead to EXCEPTION

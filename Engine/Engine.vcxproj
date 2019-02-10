@@ -243,8 +243,14 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Bitmaps\backward-icon.bmp" />
+    <Image Include="Bitmaps\Font.bmp" />
+    <Image Include="Bitmaps\forward-icon.bmp" />
+    <Image Include="Bitmaps\pause-icon.bmp" />
+    <Image Include="Bitmaps\play-icon.bmp" />
+    <Image Include="Bitmaps\refresh-icon.bmp" />
+    <Image Include="Bitmaps\save-icon.bmp" />
     <Image Include="Chili.ico" />
-    <Image Include="Font.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="file.txt" />

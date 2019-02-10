@@ -246,3 +246,5 @@ ModelManifest.xml
 
 # Precompiled Shader Header Files
 *.shh
+/Engine/Bitmaps
+/Icons

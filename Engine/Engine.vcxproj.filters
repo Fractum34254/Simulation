@@ -152,7 +152,25 @@
     <Image Include="Chili.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Font.bmp">
+    <Image Include="Bitmaps\backward-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\Font.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\forward-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\pause-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\play-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\refresh-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\save-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
