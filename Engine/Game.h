@@ -21,6 +21,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
@@ -29,7 +30,7 @@
 #include "Graph.h"
 #include "Parser.h"
 #include "FrameTimer.h"
-#include "Surface.h"
+#include "Icon.h"
 
 class Game
 {
@@ -52,6 +53,6 @@ private:
 	File file;
 	FrameTimer ft;
 	MouseController mouseControl;
-	std::vector<Surface> buttons;
+	std::vector<std::unique_ptr<Icon>> buttons;
 	/********************************/
 };
