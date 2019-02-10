@@ -253,6 +253,10 @@ void File::Update(MouseController& mouseControl)
 
 void File::Calculate(float dt)
 {
+	if (!calculating)
+	{
+		return;
+	}
 	time += dt;
 	const float delta_t = 1.0f / (float)repeatVal;
 	for (; delta_t < time; time -= delta_t)
@@ -300,6 +304,28 @@ void File::SetRepeatValue(int rv)
 int File::GetRepeatVal() const
 {
 	return repeatVal;
+}
+
+void File::Save() const
+{
+	std::string fname = "output - ";
+	fname += ownName;
+	graph.WriteToFile(fname);
+}
+
+void File::RefreshGraph()
+{
+	graph.Refresh();
+}
+
+void File::SetCalculating(bool b)
+{
+	calculating = b;
+}
+
+bool File::GetCalculating() const
+{
+	return calculating;
 }
 
 char File::toColorChar(std::ifstream & file, const std::string colorName, const std::string& fileName)

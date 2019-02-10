@@ -27,6 +27,10 @@ public:
 	void Draw(Graphics& gfx) const;
 	void SetRepeatValue(int rv);
 	int GetRepeatVal() const;
+	void Save() const;
+	void RefreshGraph();
+	void SetCalculating(bool b);
+	bool GetCalculating() const;
 private:
 	//Standart expression string
 	///IMPORTANT: if adding new ones: also add them to the constructor!
@@ -47,6 +51,7 @@ private:
 	std::string yAxisName;
 	std::string timeVar;
 	int repeatVal;
+	bool calculating = true;
 	Graph graph;
 	Font font;
 	//File values
