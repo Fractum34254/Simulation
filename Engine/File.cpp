@@ -298,7 +298,7 @@ void File::Draw(Graphics & gfx) const
 
 void File::SetRepeatValue(int rv)
 {
-	repeatVal = rv;
+	repeatVal = std::max(rv, 5);
 }
 
 int File::GetRepeatVal() const
