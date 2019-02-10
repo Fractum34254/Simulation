@@ -20,6 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteEffect.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -28,6 +29,10 @@ Game::Game( MainWindow& wnd )
 	file("file.txt", 10, RectI(100, 700, 100, 500)),
 	mouseControl(wnd.mouse)
 {
+	buttons.emplace_back(Surface("Bitmaps\\play-icon.bmp"));
+	buttons.emplace_back(Surface("Bitmaps\\pause-icon.bmp"));
+	buttons.emplace_back(Surface("Bitmaps\\forward-icon.bmp"));
+	buttons.emplace_back(Surface("Bitmaps\\backward-icon.bmp"));
 }
 
 void Game::Go()
@@ -48,4 +53,8 @@ void Game::UpdateModel()
 void Game::ComposeFrame()
 {
 	file.Draw(gfx);
+	for (int i = 0; i < buttons.size(); i++)
+	{
+		gfx.DrawSprite(i * buttons.at(i).GetWidth(), 5, buttons.at(i), SpriteEffect::Substitution(Colors::White, Colors::Blue));
+	}
 }
