@@ -1,6 +1,5 @@
 #pragma once
 #include "Rect.h"
-#include "File.h"
 #include "Vec2.h"
 #include "SpriteEffect.h"
 #include "Colors.h"
@@ -10,6 +9,15 @@
 class Icon
 {
 public:
+	enum Type
+	{
+		Save,
+		Refresh,
+		Forward,
+		Backward,
+		Play,
+		Pause
+	};
 	Icon(Surface s, int x, int y)
 		:
 		surf(s),
@@ -43,7 +51,7 @@ public:
 	{
 		return surf.GetRect().GetTranslated(pos);
 	}
-	virtual void Action(File& file) const = 0;
+	virtual Type GetType() const = 0;
 private:
 	static constexpr Color chroma = Colors::White;
 	static constexpr Color highlightedColor = Colors::White;
@@ -58,15 +66,15 @@ class SaveIcon : public Icon
 public:
 	SaveIcon(Surface s, int x, int y)
 		:
-		Icon(s,x,y)
+		Icon(s, x, y)
 	{}
 	SaveIcon(Surface s, Vei2 v)
 		:
 		Icon(s, v)
 	{}
-	void Action(File& file) const override
+	Type GetType() const override
 	{
-		file.Save();
+		return Type::Save;
 	}
 };
 
@@ -81,9 +89,9 @@ public:
 		:
 		Icon(s, v)
 	{}
-	void Action(File& file) const override
+	Type GetType() const override
 	{
-		file.RefreshGraph();
+		return Type::Refresh;
 	}
 };
 
@@ -98,9 +106,9 @@ public:
 		:
 		Icon(s, v)
 	{}
-	void Action(File& file) const override
+	Type GetType() const override
 	{
-		file.SetCalculating(false);
+		return Type::Pause;
 	}
 };
 
@@ -115,9 +123,9 @@ public:
 		:
 		Icon(s, v)
 	{}
-	void Action(File& file) const override
+	Type GetType() const override
 	{
-		file.SetCalculating(true);
+		return Type::Play;
 	}
 };
 
@@ -132,9 +140,9 @@ public:
 		:
 		Icon(s, v)
 	{}
-	void Action(File& file) const override
+	Type GetType() const override
 	{
-		file.SetRepeatValue((int)((float)file.GetRepeatVal() * 1.2f));
+		return Type::Forward;
 	}
 };
 
@@ -149,8 +157,8 @@ public:
 		:
 		Icon(s, v)
 	{}
-	void Action(File& file) const override
+	Type GetType() const override
 	{
-		file.SetRepeatValue((int)((float)file.GetRepeatVal() * 0.8f));
+		return Type::Backward;
 	}
 };
