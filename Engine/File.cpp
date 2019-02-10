@@ -254,7 +254,7 @@ void File::Update(MouseController& mouseControl)
 void File::Calculate(float dt)
 {
 	time += dt;
-	const float delta_t = 1.0f / repeatVal;
+	const float delta_t = 1.0f / (float)repeatVal;
 	for (; delta_t < time; time -= delta_t)
 	{
 		bool endReached = false;
@@ -290,6 +290,16 @@ void File::Draw(Graphics & gfx) const
 	graph.Draw(gfx);
 	font.DrawText(yAxisName, Vei2(graph.GetScreenRegion().left - (int)offset, graph.GetScreenRegion().top - font.GetHeight()), axisColor, gfx);
 	font.DrawText(timeVar, Vei2(graph.GetScreenRegion().right - 2 * (int)offset, graph.GetScreenRegion().bottom - (graph.IsNegative() ? graph.GetScreenRegion().GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
+}
+
+void File::SetRepeatValue(int rv)
+{
+	repeatVal = rv;
+}
+
+int File::GetRepeatVal() const
+{
+	return repeatVal;
 }
 
 char File::toColorChar(std::ifstream & file, const std::string colorName, const std::string& fileName)

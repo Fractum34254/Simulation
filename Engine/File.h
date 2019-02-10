@@ -25,6 +25,8 @@ public:
 	void Update(MouseController& mouseControl);
 	void Calculate(float dt);
 	void Draw(Graphics& gfx) const;
+	void SetRepeatValue(int rv);
+	int GetRepeatVal() const;
 private:
 	//Standart expression string
 	///IMPORTANT: if adding new ones: also add them to the constructor!
