@@ -77,6 +77,15 @@ public:
 		top += v.y;
 		bottom += v.y;
 	}
+	Rect_<T> GetTranslated(Vec2_<T> v)
+	{
+		Rect_<T> r = *this;
+		r.left += v.x;
+		r.right += v.x;
+		r.top += v.y;
+		r.bottom += v.y;
+		return r;
+	}
 	void Resize(Vec2_<T> v)
 	{
 		right += v.x;
