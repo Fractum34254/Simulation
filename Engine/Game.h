@@ -53,6 +53,5 @@ private:
 	File file;
 	FrameTimer ft;
 	MouseController mouseControl;
-	std::vector<std::unique_ptr<Icon>> buttons;
 	/********************************/
 };

@@ -29,12 +29,6 @@ Game::Game( MainWindow& wnd )
 	file("file.txt", 10, RectI(100, 700, 100, 500)),
 	mouseControl(wnd.mouse)
 {
-	buttons.emplace_back(std::make_unique<SaveIcon>(SaveIcon(Surface("Bitmaps\\save-icon.bmp"), 5,5)));
-	buttons.emplace_back(std::make_unique<RefreshIcon>(RefreshIcon(Surface("Bitmaps\\refresh-icon.bmp"), 25, 25)));
-	buttons.emplace_back(std::make_unique<PlayIcon>(PlayIcon(Surface("Bitmaps\\play-icon.bmp"), 45, 45)));
-	buttons.emplace_back(std::make_unique<PauseIcon>(PauseIcon(Surface("Bitmaps\\pause-icon.bmp"), 65, 65)));
-	buttons.emplace_back(std::make_unique<ForwardIcon>(ForwardIcon(Surface("Bitmaps\\forward-icon.bmp"), 85, 85)));
-	buttons.emplace_back(std::make_unique<BackwardIcon>(BackwardIcon(Surface("Bitmaps\\backward-icon.bmp"), 105, 105)));
 }
 
 void Game::Go()
@@ -50,32 +44,9 @@ void Game::UpdateModel()
 	float dt = ft.Mark();
 	file.Calculate(dt);
 	file.Update(mouseControl);
-	for (auto& icon : buttons)
-	{
-		if (icon->IsInside(wnd.mouse.GetPos()))
-		{
-			icon->SetHighlighted(true);
-			while (!wnd.mouse.IsEmpty())
-			{
-				const auto e = wnd.mouse.Read();
-				if (e.GetType() == Mouse::Event::Type::LPress)
-				{
-					icon->Action(file);
-				}
-			}
-		}
-		else
-		{
-			icon->SetHighlighted(false);
-		}
-	}
 }
 
 void Game::ComposeFrame()
 {
 	file.Draw(gfx);
-	for (auto& icon : buttons)
-	{
-		icon->Draw(gfx);
-	}
 }
