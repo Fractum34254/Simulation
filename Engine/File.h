@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include "ChiliException.h"
+#include "Icon.h"
 #include "Rect.h"
 #include "Parser.h"
 #include "Graph.h"
@@ -31,6 +32,9 @@ public:
 	void RefreshGraph();
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
+private:
+	void Action(Icon::Type t);
+	void SetUpButtons();
 private:
 	//Standart expression string
 	///IMPORTANT: if adding new ones: also add them to the constructor!
@@ -61,6 +65,7 @@ private:
 	float time = 0.0f;
 	//Data values
 	std::unordered_map<std::string, float> vars;
+	std::vector<std::unique_ptr<Icon>> buttons;
 
 //utility functions
 private:

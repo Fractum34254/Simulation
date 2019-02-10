@@ -244,11 +244,42 @@ File::File(std::string name, float offset, RectI screenRegion)
 	{
 		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
 	}
+
+	/************************************** BUTTON SETUP *********************************************************/
+	///IMPORTANT: DO NOT CHANGE ORDER!!
+	buttons.emplace_back(std::make_unique<SaveIcon>(Surface("Bitmaps\\save-icon.bmp")));
+	buttons.emplace_back(std::make_unique<RefreshIcon>(Surface("Bitmaps\\refresh-icon.bmp")));
+	buttons.emplace_back(std::make_unique<PlayIcon>(Surface("Bitmaps\\play-icon.bmp")));
+	buttons.emplace_back(std::make_unique<PauseIcon>(Surface("Bitmaps\\pause-icon.bmp")));
+	buttons.emplace_back(std::make_unique<ForwardIcon>(Surface("Bitmaps\\forward-icon.bmp")));
+	buttons.emplace_back(std::make_unique<BackwardIcon>(Surface("Bitmaps\\backward-icon.bmp")));
+
+	SetUpButtons();
 }
 
 void File::Update(MouseController& mouseControl)
 {
 	graph.Update(mouseControl);
+	SetUpButtons();
+	for (auto& icon : buttons)
+	{
+		if (icon->IsInside(mouseControl.GetMousePos()))
+		{
+			icon->SetHighlighted(true);
+			while (!mouseControl.mouse.IsEmpty())
+			{
+				const auto e = mouseControl.mouse.Read();
+				if (e.GetType() == Mouse::Event::Type::LPress)
+				{
+					Action(icon->GetType());
+				}
+			}
+		}
+		else
+		{
+			icon->SetHighlighted(false);
+		}
+	}
 }
 
 void File::Calculate(float dt)
@@ -294,6 +325,10 @@ void File::Draw(Graphics & gfx) const
 	graph.Draw(gfx);
 	font.DrawText(yAxisName, Vei2(graph.GetScreenRegion().left - (int)offset, graph.GetScreenRegion().top - font.GetHeight()), axisColor, gfx);
 	font.DrawText(timeVar, Vei2(graph.GetScreenRegion().right - 2 * (int)offset, graph.GetScreenRegion().bottom - (graph.IsNegative() ? graph.GetScreenRegion().GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
+	for (const auto& b : buttons)
+	{
+		b->Draw(gfx);
+	}
 }
 
 void File::SetRepeatValue(int rv)
@@ -316,6 +351,7 @@ void File::Save() const
 void File::RefreshGraph()
 {
 	graph.Refresh();
+	SetUpButtons();
 }
 
 void File::SetCalculating(bool b)
@@ -326,6 +362,57 @@ void File::SetCalculating(bool b)
 bool File::GetCalculating() const
 {
 	return calculating;
+}
+
+void File::Action(Icon::Type t)
+{
+	switch (t)
+	{
+	case Icon::Type::Save:
+		Save();
+		break;
+	case Icon::Type::Refresh:
+		RefreshGraph();
+		break;
+	case Icon::Type::Play:
+	case Icon::Type::Pause:
+		SetCalculating(!calculating);
+		buttons.at(2)->SetVisible(!calculating);
+		buttons.at(3)->SetVisible(calculating);
+		break;
+	case Icon::Type::Forward:
+		SetRepeatValue((int)((float)GetRepeatVal() * 1.2f));
+		break;
+	case Icon::Type::Backward:
+		SetRepeatValue((int)((float)GetRepeatVal() * 0.8f));
+		break;
+	}
+}
+
+void File::SetUpButtons()
+{
+	RectI rect = graph.GetScreenRegion();
+	rect.bottom += font.GetHeight() + (int)offset;
+	Vei2 startPos = Vei2((rect.right - rect.left) / 2 + rect.left, rect.bottom);
+	startPos.x -= buttons.at(2)->GetWidth() / 2;
+	Vei2 oldStart = startPos;
+	///play && pause button
+	buttons.at(2)->SetPos(startPos);
+	buttons.at(2)->SetVisible(!calculating);
+	buttons.at(3)->SetPos(startPos);
+	buttons.at(3)->SetVisible(calculating);
+	///Refresh button
+	startPos.x -= 2 * buttons.at(1)->GetWidth();
+	buttons.at(1)->SetPos(startPos);
+	///Save button
+	startPos.x -= buttons.at(1)->GetWidth() + 3;
+	buttons.at(0)->SetPos(startPos);
+	///Backward button
+	oldStart.x += 2 * buttons.at(5)->GetWidth();
+	buttons.at(5)->SetPos(oldStart);
+	///Forward button
+	oldStart.x += buttons.at(4)->GetWidth() + 3;
+	buttons.at(4)->SetPos(oldStart);
 }
 
 char File::toColorChar(std::ifstream & file, const std::string colorName, const std::string& fileName)
