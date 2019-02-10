@@ -41,6 +41,7 @@ private:
 		void PutCoordinate(float x, float y);
 		void SetYMax(float newYMax);
 		void SetXMax(float newXMax);
+		void Refresh(const std::unordered_map<int, std::pair<float, float>>& data);
 		void SetRectOn(bool b);
 		bool IsNegative() const;
 		float GetOffset() const;
@@ -50,6 +51,9 @@ private:
 		float GetXAxis() const;
 		RectI GetScreenRegion() const;
 		void TranslateScreenRegion(const Vei2& v);
+		void ResizeScreenRegion(const Vei2& v);
+		float GetXMax() const;
+		float GetYMax() const;
 	private:
 		void ConvertToNegative();
 	private:
@@ -70,20 +74,23 @@ private:
 	};
 public:
 	Graph() = default;
-	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName);
-	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName);
-	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName);
+	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
+	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName, Font f);
+	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
 	void Update(MouseController& mouseControl);
-	void Draw(const Font& f, Graphics& gfx) const;
+	void Draw(Graphics& gfx) const;
 	void PutData(float x, float y);
 	void WriteToFile(std::string filename) const;
 	bool IsNegative() const;
 	RectI GetScreenRegion() const;
+	void Refresh();
 private:
 	//config values
 	static constexpr int cropVal = 8;
 	bool initialized = false;
 	bool mouseInside = false;
+	bool mouseZooming = false;
+	Font font;
 	//coordinate system start values
 	static constexpr float xMaxStart = 0.0001f;		//minimal start x
 	static constexpr float yMaxStart = 0.0001f;		//minimal start y

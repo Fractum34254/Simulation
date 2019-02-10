@@ -95,6 +95,8 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 		//draw rectangle
 		RectI rect = RectI(screenRegion.left - f.GetWidth() * (int)yNumberLength, screenRegion.right, screenRegion.top - f.GetHeight() - (int)offset, screenRegion.bottom + f.GetHeight() + (int)offset);
 		gfx.DrawRectLine(rect, 2, 0, axisColor.GetFaded(0.3f));
+		RectI zoomRect = RectI::FromCenter(Vei2(rect.right, rect.bottom), 10, 10);
+		gfx.DrawRectLine(zoomRect, 2, 0, axisColor.GetFaded(0.3f));
 	}
 }
 
@@ -196,6 +198,15 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 	xMax = newXMax;
 }
 
+void Graph::CoordinateSystem::Refresh(const std::unordered_map<int, std::pair<float, float>>& data)
+{
+	pixel.clear();
+	for (size_t i = 0; i < data.size(); i++)
+	{
+		PutCoordinate(data.at(i).first, data.at(i).second);
+	}
+}
+
 void Graph::CoordinateSystem::SetRectOn(bool b)
 {
 	rectOn = b;
@@ -253,6 +264,21 @@ void Graph::CoordinateSystem::TranslateScreenRegion(const Vei2 & v)
 	}
 }
 
+void Graph::CoordinateSystem::ResizeScreenRegion(const Vei2 & v)
+{
+	screenRegion.Resize(v);
+}
+
+float Graph::CoordinateSystem::GetXMax() const
+{
+	return xMax;
+}
+
+float Graph::CoordinateSystem::GetYMax() const
+{
+	return yMax;
+}
+
 void Graph::CoordinateSystem::ConvertToNegative() 
 {
 	const int yPixMax = screenRegion.bottom - (int)offset;
@@ -279,38 +305,63 @@ void Graph::CoordinateSystem::ConvertToNegative()
 	}
 }
 
-Graph::Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName)
+Graph::Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f)
 	:
 	coords(xMax, yMax, offset, screenRegion, axisColor, pixelColor),
 	yAxisName(yAxisName),
-	initialized(true)
+	initialized(true),
+	font(f)
 {}
 
-Graph::Graph(RectI screenRegion, Color pixelColor, std::string yAxisName)
+Graph::Graph(RectI screenRegion, Color pixelColor, std::string yAxisName, Font f)
 	:
 	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
 	yAxisName(yAxisName),
-	initialized(true)
+	initialized(true),
+	font(f)
 {}
 
-Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName)
+Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f)
 	:
 	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
 	yAxisName(yAxisName),
-	initialized(true)
+	initialized(true),
+	font(f)
 {}
 
 void Graph::Update(MouseController& mouseControl)
 {
 	mouseControl.Update();
-	if (coords.GetScreenRegion().Contains(mouseControl.GetMousePos()))
+	RectI rect = coords.GetScreenRegion();
+	rect.bottom += font.GetHeight() + (int)coords.GetOffset() + 15;
+	rect.right += 15;
+
+	if (rect.Contains(mouseControl.GetMousePos()))
 	{
 		coords.SetRectOn(true);
 		if (mouseInside)
 		{
 			if (mouseControl.mouse.LeftIsPressed())
 			{
-				coords.TranslateScreenRegion(mouseControl.diff);
+				const Vei2 corner = Vei2( coords.GetScreenRegion().right, coords.GetScreenRegion().bottom + font.GetHeight() + (int)coords.GetOffset());
+				RectI zoomRect = RectI::FromCenter(corner, 10, 10);
+
+				if (zoomRect.Contains(mouseControl.GetMousePos()))
+				{
+					//zooming
+					mouseZooming = true;
+					coords.ResizeScreenRegion(mouseControl.diff);
+					coords.Refresh(data);
+				}
+				else if(!mouseZooming)
+				{
+					//translation
+					coords.TranslateScreenRegion(mouseControl.diff);
+				}
+			}
+			else 
+			{
+				mouseZooming = false;
 			}
 		}
 		else if (!mouseControl.mouse.LeftIsPressed())
@@ -325,14 +376,14 @@ void Graph::Update(MouseController& mouseControl)
 	}
 }
 
-void Graph::Draw(const Font & f, Graphics & gfx) const
+void Graph::Draw(Graphics & gfx) const
 {
 	if (!initialized)
 	{
 		std::string info = "Unitialized graph!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 	}
-	coords.Draw(f, gfx, maxXNumber, maxYNumber);
+	coords.Draw(font, gfx, maxXNumber, maxYNumber);
 }
 
 void Graph::PutData(float x, float y)
@@ -383,4 +434,9 @@ bool Graph::IsNegative() const
 RectI Graph::GetScreenRegion() const
 {
 	return coords.GetScreenRegion();
+}
+
+void Graph::Refresh()
+{
+	coords.Refresh(data);
 }
