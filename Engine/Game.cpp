@@ -33,6 +33,8 @@ Game::Game( MainWindow& wnd )
 	buttons.emplace_back(Surface("Bitmaps\\pause-icon.bmp"));
 	buttons.emplace_back(Surface("Bitmaps\\forward-icon.bmp"));
 	buttons.emplace_back(Surface("Bitmaps\\backward-icon.bmp"));
+	buttons.emplace_back(Surface("Bitmaps\\refresh-icon.bmp"));
+	buttons.emplace_back(Surface("Bitmaps\\save-icon.bmp"));
 }
 
 void Game::Go()
