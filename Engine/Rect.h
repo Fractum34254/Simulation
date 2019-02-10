@@ -77,6 +77,11 @@ public:
 		top += v.y;
 		bottom += v.y;
 	}
+	void Resize(Vec2_<T> v)
+	{
+		right += v.x;
+		bottom += v.y;
+	}
 public:
 	T left;
 	T right;
