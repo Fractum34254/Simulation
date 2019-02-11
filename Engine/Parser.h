@@ -1,6 +1,7 @@
 #pragma once
 #include "PhilUtil.h"
 #include "ChiliException.h"
+#include <algorithm>
 #include <functional>
 #include <cmath>
 #include <string>
@@ -33,36 +34,139 @@ public:
 	}
 	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
 	{
-		///test for commentary
 		std::string begin;
-		begin += term_in.at(0);
-		begin += term_in.at(1);
+		///test for blank spaces
+		int i = 0;
+		char c = term_in.at(i);
+		while (c == ' ')
+		{
+			c = term_in.at(++i);
+		}
+		begin += term_in.at(i++);
+		begin += term_in.at(i);
+		///test for commentary
 		if (begin == "//")
 		{
 			return;
 		}
-		///every mathematical expression needs an assignment operator
-		if (term_in.find('=') == term_in.npos)
+		///test for if statement
+		if (begin == "if")
 		{
-			std::string info = "Expression without '=' in line ";	///standart-syntax
-			info += line + 48;										///line number (+48 caused by ascii translation)
-			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-		}
-		std::istringstream term(term_in);
-		std::string lval;
-		std::string rval;
-		for (char c = term.get(); c != '='; c = term.get())
-		{
-			if (c != ' ')
+			std::string brace;
+			std::string op;
+			std::istringstream term(term_in);
+			///going foward to the brace after 'if'
+			for (char c = term.get(); c != 'i'; c = term.get());
+			char c = term.get();
+
+			c = term.get();
+			bool ended = false;
+			while (c != ')' && !ended)
 			{
-				lval += c;
+				if (term.eof())
+				{
+					std::string info = "Uncompleted if statement in line ";	///standart-syntax
+					info += line + 48;										///line number (+48 caused by ascii translation)
+					info += ":\n";
+					info += term_in;
+					info += "\n(missing comparison operator and end brace for test)";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+				}
+				brace += c;
+				///search for operator
+				if (std::any_of(compare.begin(), compare.end(),
+					[&brace, &op](const std::pair<const std::string, std::function<bool(float f1, float f2)>>& pair)
+						{
+							const size_t length = pair.first.size();
+							std::string end;
+							for (size_t i = 1; i <= length; i++)
+							{
+								end += brace.at(brace.size() - length + i);
+							}
+							if (end == pair.first)
+							{
+								op = pair.first;
+								return true;
+							}
+							return false;
+						}))
+				{
+					const size_t length = op.size();
+					///eliminate operator from string
+					for (size_t i = 0; i < length; i++)
+					{
+						brace.pop_back();
+					}
+					ended = true;
+				}
+				c = term.get();
+			}
+			if (!ended)
+			{
+				std::string info = "Uncompleted if statement in line ";	///standart-syntax
+				info += line + 48;										///line number (+48 caused by ascii translation)
+				info += ":\n";
+				info += term_in;
+				info += "\n(missing comparison operator for test)";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
+			std::string rightSide;
+			c = term.get();
+			while (c != ')')
+			{
+				if (term.eof())
+				{
+					std::string info = "Uncompleted if statement in line ";	///standart-syntax
+					info += line + 48;										///line number (+48 caused by ascii translation)
+					info += ":\n";
+					info += term_in;
+					info += "\n(missing end brace for test)";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+				}
+				rightSide += c;
+				c = term.get();
+			}
+			///brace:		holds lhs
+			///rightSide:	holds rhs
+			///op:			holds operator
+			if (compare.at(op)(CalculateRHS(brace, vars, line), CalculateRHS(rightSide, vars, line)))
+			{
+				std::string calculation;
+				c = term.get();
+				while (!term.eof())
+				{
+					calculation += c;
+					c = term.get();
+				}
+				Calculate(calculation, vars, line);
 			}
 		}
-		for (char c = term.get(); !term.eof(); c = term.get())
+		///no if statement
+		else
 		{
-			rval += c;
+			///every mathematical expression needs an assignment operator
+			if (term_in.find('=') == term_in.npos)
+			{
+				std::string info = "Expression without '=' in line ";	///standart-syntax
+				info += line + 48;										///line number (+48 caused by ascii translation)
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			}
+			std::istringstream term(term_in);
+			std::string lval;
+			std::string rval;
+			for (char c = term.get(); c != '='; c = term.get())
+			{
+				if (c != ' ')
+				{
+					lval += c;
+				}
+			}
+			for (char c = term.get(); !term.eof(); c = term.get())
+			{
+				rval += c;
+			}
+			vars[lval] = CalculateRHS(rval, vars, line);
 		}
-		vars[lval] = CalculateRHS(rval, vars, line);
 	}
 private:
 	std::unordered_map<std::string, std::function<float(float f1, float f2)>> operate;
