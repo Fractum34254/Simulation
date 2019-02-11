@@ -37,10 +37,10 @@ public:
 		std::string begin;
 		///test for blank spaces
 		int i = 0;
-		char c = term_in.at(i);
-		while (c == ' ')
+		char cOut = term_in.at(i);
+		while (cOut == ' ')
 		{
-			c = term_in.at(++i);
+			cOut = term_in.at(++i);
 		}
 		begin += term_in.at(i++);
 		begin += term_in.at(i);
@@ -60,6 +60,7 @@ public:
 			char c = term.get();
 
 			c = term.get();
+			c = term.get();
 			bool ended = false;
 			while (c != ')' && !ended)
 			{
@@ -73,13 +74,25 @@ public:
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
 				brace += c;
+				///test for wider comparator
+				if (IsComparator(c))
+				{
+					std::string posOp;
+					posOp += c;
+					posOp += term.get();
+					term.unget();
+					if (IsComparator(posOp))
+					{
+						brace += term.get();
+					}
+				}
 				///search for operator
 				if (std::any_of(compare.begin(), compare.end(),
 					[&brace, &op](const std::pair<const std::string, std::function<bool(float f1, float f2)>>& pair)
 						{
-							const size_t length = pair.first.size();
+							const size_t length = std::min(pair.first.size(), brace.size());
 							std::string end;
-							for (size_t i = 1; i <= length; i++)
+							for (size_t i = 0; i < length; i++)
 							{
 								end += brace.at(brace.size() - length + i);
 							}
@@ -299,6 +312,16 @@ private:
 			info += op;							
 			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 		}
+	}
+	bool IsComparator(const char c)
+	{
+		std::string s;
+		s += c;
+		return IsComparator(s);
+	}
+	bool IsComparator(const std::string s)
+	{
+		return compare.find(s) != compare.end();
 	}
 	bool IsOperator(char c) const
 	{

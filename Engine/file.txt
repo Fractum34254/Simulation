@@ -4,13 +4,10 @@ y Value: w
 Time variable: t
 Repeating per second: 10
 #Head
-abcdefg = 300
-sqrt = 3
-w = 4
-a = w
+w = 0
 t = 0
 delta_t = 1
 #Program
 t = t+delta_t
-w = sqrt(t)
-a = sqrt+(t)
+if(w >= 30) w = sqrt(w)
+if(w < 30) w = w+1
