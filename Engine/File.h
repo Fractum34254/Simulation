@@ -58,6 +58,7 @@ private:
 	bool calculating = true;
 	Graph graph;
 	Font font;
+	Parser parser;
 	//File values
 	std::string ownName;
 	std::string code;

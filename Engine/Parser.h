@@ -1,6 +1,8 @@
 #pragma once
 #include "PhilUtil.h"
 #include "ChiliException.h"
+#include <functional>
+#include <cmath>
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -17,7 +19,19 @@ public:
 		virtual std::wstring GetExceptionType() const override { return L"Parser Exception"; }
 	};
 public:
-	static void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
+	Parser()
+	{
+		operate["-"] = [](float f1, float f2) { return f1 - f2; };
+		operate["+"] = [](float f1, float f2) { return f1 + f2; };
+		operate["*"] = [](float f1, float f2) { return f1 * f2; };
+		operate["/"] = [](float f1, float f2) { return f1 / f2; };
+		compare[">"] = [](float f1, float f2) { return f1 > f2; };
+		compare[">="] = [](float f1, float f2) { return f1 >= f2; };
+		compare["<"] = [](float f1, float f2) { return f1 < f2; };
+		compare["<="] = [](float f1, float f2) { return f1 <= f2; };
+		compare["=="] = [](float f1, float f2) { return f1 == f2; };
+	}
+	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
 	{
 		///test for commentary
 		std::string begin;
@@ -51,10 +65,12 @@ public:
 		vars[lval] = CalculateRHS(rval, vars, line);
 	}
 private:
-	static float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, int line = 0)
+	std::unordered_map<std::string, std::function<float(float f1, float f2)>> operate;
+	std::unordered_map<std::string, std::function<bool(float f1, float f2)>> compare;
+	float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, int line = 0) const
 	{
 		std::vector<float> vars;
-		std::vector<char> ops;
+		std::vector<std::string> ops;
 		std::istringstream rhs(rhs_in);
 
 		//split up string in variable(value)s and operators
@@ -80,7 +96,27 @@ private:
 				{
 					brace += c;
 				}
-				vars.emplace_back(CalculateRHS(brace, var, line));
+				///test for root before brace
+				if (s == "sqrt")
+				{
+					vars.emplace_back(std::sqrtf(CalculateRHS(brace, var, line)));
+				}
+				else if (s == "sin")
+				{
+					vars.emplace_back(std::sin(CalculateRHS(brace, var, line)));
+				}
+				else if (s == "cos")
+				{
+					vars.emplace_back(std::cos(CalculateRHS(brace, var, line)));
+				}
+				else if (s == "tan")
+				{
+					vars.emplace_back(std::tan(CalculateRHS(brace, var, line)));
+				}
+				else
+				{
+					vars.emplace_back(CalculateRHS(brace, var, line));
+				}
 				///test if string ends after brace
 				c = rhs.get();
 				if (!rhs.eof())
@@ -112,14 +148,16 @@ private:
 					}
 				}
 				if (!rhs.eof()) {
-					ops.emplace_back(c);
+					std::string s;
+					s += c;
+					ops.emplace_back(s);
 				}
 			}
 		}
 		//return assembled vectors
 		return AssembleVars(vars, ops, line);
 	}
-	static float AssembleVars(std::vector<float> varVals, std::vector<char> ops, int line)
+	float AssembleVars(std::vector<float> varVals, std::vector<std::string> ops, int line) const
 	{
 		if (ops.size() + 1 != varVals.size())
 		{
@@ -130,7 +168,7 @@ private:
 		///first, calculating '*' and '/'
 		for (int i = 0; i < ops.size(); i++)
 		{
-			if (ops.at(i) == '*' || ops.at(i) == '/')
+			if (ops.at(i) == "*" || ops.at(i) == "/")
 			{
 				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i+1));
 				varVals.erase(varVals.begin() + i + 1);
@@ -146,42 +184,23 @@ private:
 		}
 		return result;
 	}
-	static float CalculateValue(char op, float f1, float f2)
+	float CalculateValue(std::string op, float f1, float f2) const
 	{
-		if (op == '+')
-		{
-			return f1 + f2;
+		try {
+			return operate.at(op)(f1, f2);
 		}
-		else if (op == '-')
+		catch (const std::exception&)
 		{
-			return f1 - f2;
-		}
-		else if (op == '*')
-		{
-			return f1 * f2;
-		}
-		else if (op == '/')
-		{
-			return f1 / f2;
-		}
-		else
-		{
-			throw std::exception("unregistered operator");
+			std::string info = "Unknown operator: ";	
+			info += op;							
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 		}
 	}
-	static bool IsOperator(std::string op)
-	{
-		return (op == "+") || (op == "-") || (op == "*") || (op == "/");
-	}
-	static bool IsOperator(char op)
+	bool IsOperator(char c) const
 	{
 		std::string s;
-		s += op;
-		return IsOperator(s);
-	}
-	static bool IsComparison(std::string comp)
-	{
-		return (comp == ">=") || (comp == "<=") || (comp == "<") || (comp == ">") || (comp == "==");
+		s += c;
+		return operate.find(s) != operate.end();
 	}
 	static bool isFloat(std::string myString) {
 		std::istringstream iss(myString);

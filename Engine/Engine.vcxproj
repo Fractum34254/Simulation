@@ -255,6 +255,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="file.txt" />
+    <Text Include="output - file.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

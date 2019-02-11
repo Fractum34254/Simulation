@@ -88,15 +88,6 @@ File::File(std::string name, float offset, RectI screenRegion)
 			try
 			{
 				repeatVal = std::stoi(repeatStr);
-				if (repeatVal > 10000)
-				{
-					std::string info = "Too much repeating per second in file \"";
-					info += ownName;
-					info += "\":\n";
-					info += toString(repeatVal);
-					info += " (more than 10000)\n";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-				}
 			}
 			catch (const std::exception&)
 			{
@@ -214,7 +205,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 			}
 			else {
 				///calculate and save line and advance line number
-				Parser::Calculate(line, vars, lineNmr++);
+				parser.Calculate(line, vars, lineNmr++);
 			}
 		} while (!endReached);
 	}
@@ -313,7 +304,7 @@ void File::Calculate(float dt)
 			}
 			if (!endReached) {
 				///calculate and save line and advance line number
-				Parser::Calculate(line, vars, lineNmr++);
+				parser.Calculate(line, vars, lineNmr++);
 			}
 		} while (!endReached);
 		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
@@ -333,7 +324,7 @@ void File::Draw(Graphics & gfx) const
 
 void File::SetRepeatValue(int rv)
 {
-	repeatVal = std::max(rv, 5);
+	repeatVal = std::min(std::max(rv, 5), 1200);
 }
 
 int File::GetRepeatVal() const
