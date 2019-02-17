@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cassert>
 #include "Vec2.h"
 
 template<typename T>
@@ -77,7 +77,63 @@ public:
 		top += v.y;
 		bottom += v.y;
 	}
-	Rect_<T> GetTranslated(Vec2_<T> v)
+	void TranslateClipped(Vec2_<T> v, Rect_<T> r)
+	{
+		assert(bottom - top < r.bottom - r.top);
+		assert(right - left < r.right - r.left);
+		if (v.x <= 0)
+		{
+			const T x = std::max(v.x, r.left - left);
+			left += x;
+			right += x;
+		}
+		else {
+			const T x = std::min(v.x, r.right - right);
+			left += x;
+			right += x;
+		}
+		if (v.y <= 0)
+		{
+			const T y = std::max(v.y, r.top - top);
+			top += y;
+			bottom += y;
+		}
+		else {
+			const T y = std::min(v.y, r.bottom - bottom);
+			top += y;
+			bottom += y;
+		}
+	}
+	Rect_<T> GetTranslatedClipped(Vec2_<T> v, Rect_<T> r) const
+	{
+		Rect_<T> out(*this);
+		assert(out.bottom - out.top < r.bottom - r.top);
+		assert(out.right - out.left < r.right - r.left);
+		if (v.x <= 0)
+		{
+			const T x = std::max(v.x, r.left - out.left);
+			out.left += x;
+			out.right += x;
+		}
+		else {
+			const T x = std::min(v.x, r.right - out.right);
+			out.left += x;
+			out.right += x;
+		}
+		if (v.y <= 0)
+		{
+			const T y = std::max(v.y, r.top - out.top);
+			out.top += y;
+			out.bottom += y;
+		}
+		else {
+			const T y = std::min(v.y, r.bottom - out.bottom);
+			out.left += y;
+			out.right += y;
+		}
+		return out;
+	}
+	Rect_<T> GetTranslated(Vec2_<T> v) const
 	{
 		Rect_<T> r = *this;
 		r.left += v.x;
