@@ -256,12 +256,7 @@ RectI Graph::CoordinateSystem::GetScreenRegion() const
 
 void Graph::CoordinateSystem::TranslateScreenRegion(const Vei2 & v)
 {
-	screenRegion.Translate(v);
-	for (auto& p : pixel)
-	{
-		p.second.first += v.x;
-		p.second.second += v.y;
-	}
+	screenRegion.TranslateClipped(v, Graphics::GetScreenRect());
 }
 
 void Graph::CoordinateSystem::ResizeScreenRegion(const Vei2 & v)
@@ -357,6 +352,7 @@ void Graph::Update(MouseController& mouseControl)
 				{
 					//translation
 					coords.TranslateScreenRegion(mouseControl.diff);
+					coords.Refresh(data);
 				}
 			}
 			else 
