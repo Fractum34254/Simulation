@@ -9,5 +9,5 @@ t = 0
 delta_t = 1
 #Program
 t = t+delta_t
-if(w >= 30) w = sqrt(w)
-if(w < 30) w = w+1
+if(w != 30) w = w+1
+if(w == 30) w = w-10

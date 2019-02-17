@@ -31,6 +31,7 @@ public:
 		compare["<"] = [](float f1, float f2) { return f1 < f2; };
 		compare["<="] = [](float f1, float f2) { return f1 <= f2; };
 		compare["=="] = [](float f1, float f2) { return f1 == f2; };
+		compare["!="] = [](float f1, float f2) { return f1 != f2; };
 	}
 	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
 	{
