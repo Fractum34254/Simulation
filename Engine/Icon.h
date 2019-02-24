@@ -16,7 +16,8 @@ public:
 		Forward,
 		Backward,
 		Play,
-		Pause
+		Pause,
+		Graph
 	};
 	Icon(Surface s, int x = 0, int y = 0)
 		:
@@ -86,20 +87,23 @@ protected:
 	Surface surf;
 };
 
+class GraphIcon : public Icon
+{
+	GraphIcon()
+		:
+		Icon(Surface("Bitmaps\\graph-icon.bmp"), 0, 0)
+	{}
+	Type GetType() const override
+	{
+		return Type::Graph;
+	}
+};
 class SaveIcon : public Icon
 {
 public:
 	SaveIcon()
 		:
 		Icon(Surface("Bitmaps\\save-icon.bmp"), 0, 0)
-	{}
-	SaveIcon(Surface s, int x = 0, int y = 0)
-		:
-		Icon(s, x, y)
-	{}
-	SaveIcon(Surface s, Vei2 v)
-		:
-		Icon(s, v)
 	{}
 	Type GetType() const override
 	{
@@ -114,14 +118,6 @@ public:
 		:
 		Icon(Surface("Bitmaps\\refresh-icon.bmp"), 0, 0)
 	{}
-	RefreshIcon(Surface s, int x = 0, int y = 0)
-		:
-		Icon(s, x, y)
-	{}
-	RefreshIcon(Surface s, Vei2 v)
-		:
-		Icon(s, v)
-	{}
 	Type GetType() const override
 	{
 		return Type::Refresh;
@@ -134,14 +130,6 @@ public:
 	PauseIcon()
 		:
 		Icon(Surface("Bitmaps\\pause-icon.bmp"), 0, 0)
-	{}
-	PauseIcon(Surface s, int x = 0, int y = 0)
-		:
-		Icon(s, x, y)
-	{}
-	PauseIcon(Surface s, Vei2 v)
-		:
-		Icon(s, v)
 	{}
 	Type GetType() const override
 	{
@@ -156,14 +144,6 @@ public:
 		:
 		Icon(Surface("Bitmaps\\play-icon.bmp"), 0, 0)
 	{}
-	PlayIcon(Surface s, int x = 0, int y = 0)
-		:
-		Icon(s, x, y)
-	{}
-	PlayIcon(Surface s, Vei2 v)
-		:
-		Icon(s, v)
-	{}
 	Type GetType() const override
 	{
 		return Type::Play;
@@ -177,14 +157,6 @@ public:
 		:
 		Icon(Surface("Bitmaps\\forward-icon.bmp"), 0, 0)
 	{}
-	ForwardIcon(Surface s, int x = 0, int y = 0)
-		:
-		Icon(s, x, y)
-	{}
-	ForwardIcon(Surface s, Vei2 v)
-		:
-		Icon(s, v)
-	{}
 	Type GetType() const override
 	{
 		return Type::Forward;
@@ -197,14 +169,6 @@ public:
 	BackwardIcon()
 		:
 		Icon(Surface("Bitmaps\\backward-icon.bmp"), 0, 0)
-	{}
-	BackwardIcon(Surface s, int x = 0, int y = 0)
-		:
-		Icon(s, x, y)
-	{}
-	BackwardIcon(Surface s, Vei2 v)
-		:
-		Icon(s, v)
 	{}
 	Type GetType() const override
 	{

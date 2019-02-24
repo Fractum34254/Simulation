@@ -93,6 +93,9 @@
     <ClInclude Include="Icon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Iconbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">
@@ -174,6 +177,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Bitmaps\save-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Bitmaps\graph-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

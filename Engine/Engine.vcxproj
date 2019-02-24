@@ -152,6 +152,7 @@
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Icon.h" />
+    <ClInclude Include="Iconbar.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Mouse.h" />
@@ -251,6 +252,7 @@
     <Image Include="Bitmaps\backward-icon.bmp" />
     <Image Include="Bitmaps\Font.bmp" />
     <Image Include="Bitmaps\forward-icon.bmp" />
+    <Image Include="Bitmaps\graph-icon.bmp" />
     <Image Include="Bitmaps\pause-icon.bmp" />
     <Image Include="Bitmaps\play-icon.bmp" />
     <Image Include="Bitmaps\refresh-icon.bmp" />
