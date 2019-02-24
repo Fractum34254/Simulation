@@ -26,6 +26,7 @@ public:
 		operate["+"] = [](float f1, float f2) { return f1 + f2; };
 		operate["*"] = [](float f1, float f2) { return f1 * f2; };
 		operate["/"] = [](float f1, float f2) { return f1 / f2; };
+		operate["^"] = [](float f1, float f2) { return std::powf(f1, f2); };
 		compare[">"] = [](float f1, float f2) { return f1 > f2; };
 		compare[">="] = [](float f1, float f2) { return f1 >= f2; };
 		compare["<"] = [](float f1, float f2) { return f1 < f2; };
@@ -36,6 +37,10 @@ public:
 	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
 	{
 		std::string begin;
+		if (term_in.empty())
+		{
+			return;
+		}
 		///test for blank spaces
 		int i = 0;
 		char cOut = term_in.at(i);
@@ -45,7 +50,7 @@ public:
 		}
 		begin += term_in.at(i++);
 		begin += term_in.at(i);
-		///test for commentary
+		///test for commentary -> immediate return
 		if (begin == "//")
 		{
 			return;
@@ -53,17 +58,15 @@ public:
 		///test for if statement
 		if (begin == "if")
 		{
+			int braces = 0;
 			std::string brace;
 			std::string op;
 			std::istringstream term(term_in);
-			///going foward to the brace after 'if'
-			for (char c = term.get(); c != 'i'; c = term.get());
+			///going forward to the brace after 'if'
+			for (char c = term.get(); c != '('; c = term.get());
 			char c = term.get();
-
-			c = term.get();
-			c = term.get();
 			bool ended = false;
-			while (c != ')' && !ended)
+			while (((c != ')') || (braces != 0)) && !ended)
 			{
 				if (term.eof())
 				{
@@ -75,6 +78,15 @@ public:
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
 				brace += c;
+				///test for another brace opening
+				if (c == '(')
+				{
+					braces++;
+				}
+				else if (c == ')')
+				{
+					braces--;
+				}
 				///test for wider comparator
 				if (IsComparator(c))
 				{
@@ -125,7 +137,6 @@ public:
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 			}
 			std::string rightSide;
-			c = term.get();
 			while (c != ')')
 			{
 				if (term.eof())
@@ -208,13 +219,23 @@ private:
 				c = rhs.get();
 			}
 			if(c == '(') ///c is a brace
-			{ 
+			{
+				int braces = 0;
 				std::string brace;
-				for (c = rhs.get(); c != ')'; c = rhs.get())
+				for (c = rhs.get(); c != ')' || braces != 0; c = rhs.get())
 				{
+					///test for another brace opening
+					if (c == '(')
+					{
+						braces++;
+					}
+					else if (c == ')')
+					{
+						braces--;
+					}
 					brace += c;
 				}
-				///test for root before brace
+				///test for special opearnts before brace
 				if (s == "sqrt")
 				{
 					vars.emplace_back(std::sqrtf(CalculateRHS(brace, var, line)));
@@ -283,7 +304,18 @@ private:
 			info += line + 48;															///line number (+48 caused by ascii translation)									///uninitialized variable name
 			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 		}
-		///first, calculating '*' and '/'
+		///first, calculating '^'
+		for (int i = 0; i < ops.size(); i++)
+		{
+			if (ops.at(i) == "^")
+			{
+				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i + 1));
+				varVals.erase(varVals.begin() + i + 1);
+				ops.erase(ops.begin() + i);
+				i--;
+			}
+		}
+		///second, calculating '*' and '/'
 		for (int i = 0; i < ops.size(); i++)
 		{
 			if (ops.at(i) == "*" || ops.at(i) == "/")

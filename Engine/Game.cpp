@@ -26,9 +26,37 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	file("file.txt", 10, RectI(100, 700, 100, 500)),
 	mouseControl(wnd.mouse)
 {
+	std::ifstream settings(settingsFileName);
+	if (!settings)
+	{
+		std::string info = "Can't open file \"";
+		info += settingsFileName;
+		info += "\": File not found";
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+	}
+	if (settings.eof())
+	{
+		std::string info = "Empty file \"";
+		info += settingsFileName;
+		info += "\"";
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+	}
+
+	std::vector<std::string> names;
+	while (!settings.eof())
+	{
+		std::string temp;
+		settings >> temp;
+		names.emplace_back(temp);
+	}
+	const int width = Graphics::GetScreenRect().GetWidth() - 4 * offset;
+	const int widthPerGraph = width / (int)names.size() - offset;
+	for (int i = 0; i < names.size(); i++)
+	{
+		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, RectI(3 * offset + i * widthPerGraph, offset + (i + 1) * widthPerGraph, 100, 400)));
+	}
 }
 
 void Game::Go()
@@ -42,11 +70,17 @@ void Game::Go()
 void Game::UpdateModel()
 {
 	float dt = ft.Mark();
-	file.Calculate(dt);
-	file.Update(mouseControl);
+	for (auto& file : files)
+	{
+		file->Calculate(dt);
+		file->Update(mouseControl);
+	}
 }
 
 void Game::ComposeFrame()
 {
-	file.Draw(gfx);
+	for (const auto& file : files)
+	{
+		file->Draw(gfx);
+	}
 }

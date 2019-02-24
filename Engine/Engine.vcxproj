@@ -259,7 +259,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="file.txt" />
+    <Text Include="files.txt" />
     <Text Include="output - file.txt" />
+    <Text Include="stahlkugel.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

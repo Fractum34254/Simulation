@@ -184,5 +184,11 @@
     <Text Include="output - file.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="files.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="stahlkugel.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

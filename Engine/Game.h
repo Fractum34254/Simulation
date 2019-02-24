@@ -22,6 +22,7 @@
 
 #include <vector>
 #include <memory>
+#include "ChiliException.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
@@ -35,6 +36,13 @@
 class Game
 {
 public:
+	class Exception : public ChiliException
+	{
+	public:
+		using ChiliException::ChiliException;
+		virtual std::wstring GetFullMessage() const override { return GetNote() + L"\nAt: " + GetLocation(); }
+		virtual std::wstring GetExceptionType() const override { return L"Game Exception"; }
+	};
 	Game( class MainWindow& wnd );
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
@@ -44,13 +52,25 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
+	static std::wstring towstring(std::string s)
+	{
+		const char* pc = s.c_str();
+		std::wstring ws;
+		for (int i = 0; i < s.size(); i++)
+		{
+			ws += pc[i];
+		}
+		return ws;
+	}
 	/********************************/
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
-	File file;
+	const std::string settingsFileName = "files.txt";
+	static constexpr int offset = 10;
+	std::vector<std::unique_ptr<File>> files;
 	FrameTimer ft;
 	MouseController mouseControl;
 	/********************************/

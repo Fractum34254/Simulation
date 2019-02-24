@@ -22,6 +22,7 @@ public:
 		virtual std::wstring GetExceptionType() const override { return L"File Exception"; }
 	};
 public:
+	File() = default;
 	File(std::string name, float offset, RectI screenRegion);
 	void Update(MouseController& mouseControl);
 	void Calculate(float dt);
