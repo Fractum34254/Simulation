@@ -69,6 +69,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	mouseControl.Update();
 	float dt = ft.Mark();
 	for (auto& file : files)
 	{

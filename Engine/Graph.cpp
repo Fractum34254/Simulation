@@ -274,6 +274,11 @@ float Graph::CoordinateSystem::GetYMax() const
 	return yMax;
 }
 
+Color Graph::CoordinateSystem::GetAxisColor() const
+{
+	return axisColor;
+}
+
 void Graph::CoordinateSystem::ConvertToNegative() 
 {
 	const int yPixMax = screenRegion.bottom - (int)offset;
@@ -326,7 +331,6 @@ Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string 
 
 void Graph::Update(MouseController& mouseControl)
 {
-	mouseControl.Update();
 	RectI rect = coords.GetScreenRegion();
 	rect.bottom += font.GetHeight() + (int)coords.GetOffset() + 15;
 	rect.right += 15;
@@ -372,13 +376,18 @@ void Graph::Update(MouseController& mouseControl)
 	}
 }
 
-void Graph::Draw(Graphics & gfx) const
+void Graph::Draw(std::string name, Graphics& gfx) const
 {
 	if (!initialized)
 	{
 		std::string info = "Unitialized graph!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 	}
+	const size_t s = name.length() * font.GetWidth() / 2;
+	const Vei2 pos = Vei2(
+		coords.GetScreenRegion().GetWidth() / 2 - (int)s + coords.GetScreenRegion().left,
+		coords.GetScreenRegion().top - font.GetHeight());
+	font.DrawText(name, pos, coords.GetAxisColor(), gfx);
 	coords.Draw(font, gfx, maxXNumber, maxYNumber);
 }
 
@@ -392,14 +401,14 @@ void Graph::PutData(float x, float y)
 	data[cur++] = { x,y };
 	maxXValue = std::max(maxXValue, std::abs(x));
 	maxYValue = std::max(maxYValue, std::abs(y));
-	if (maxXNumber < floor(maxXValue))
+	if (maxXNumber < top(maxXValue))
 	{
-		maxXNumber = floor(maxXValue);
+		maxXNumber = top(maxXValue);
 		coords.SetXMax(maxXNumber);
 	}
-	if (maxYNumber < floor(maxYValue))
+	if (maxYNumber < top(maxYValue))
 	{
-		maxYNumber = floor(maxYValue);
+		maxYNumber = top(maxYValue);
 		coords.SetYMax(maxYNumber);
 	}
 	coords.PutCoordinate(x, y);

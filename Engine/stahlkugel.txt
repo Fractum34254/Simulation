@@ -4,7 +4,7 @@ y Value: h
 Time variable: t
 Repeating per second: 10
 #Head
-m = 1
+m = 100
 rho_stahl = 7850
 pi = 3.1415
 v=0

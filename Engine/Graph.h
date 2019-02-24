@@ -54,6 +54,7 @@ private:
 		void ResizeScreenRegion(const Vei2& v);
 		float GetXMax() const;
 		float GetYMax() const;
+		Color GetAxisColor() const;
 	private:
 		void ConvertToNegative();
 	private:
@@ -78,7 +79,7 @@ public:
 	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName, Font f);
 	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
 	void Update(MouseController& mouseControl);
-	void Draw(Graphics& gfx) const;
+	void Draw(std::string name, Graphics& gfx) const;
 	void PutData(float x, float y);
 	void WriteToFile(std::string filename) const;
 	bool IsNegative() const;
@@ -119,7 +120,7 @@ private:
 		}
 		return ws;
 	}
-	static float floor(float in)
+	static float top(float in)
 	{
 		int f = 0;
 		if (in >= 1.0f)
@@ -131,10 +132,11 @@ private:
 		}
 		else
 		{
-			while (std::pow(10, f) > in)
+			while (std::pow(10, f) >= in)
 			{
 				f--;
 			}
+			f++;
 		}
 		return (float)std::pow(10, f);
 	}

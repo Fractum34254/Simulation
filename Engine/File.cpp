@@ -313,7 +313,7 @@ void File::Calculate(float dt)
 
 void File::Draw(Graphics & gfx) const
 {
-	graph.Draw(gfx);
+	graph.Draw(ownName, gfx);
 	font.DrawText(yAxisName, Vei2(graph.GetScreenRegion().left - (int)offset, graph.GetScreenRegion().top - font.GetHeight()), axisColor, gfx);
 	font.DrawText(timeVar, Vei2(graph.GetScreenRegion().right - 2 * (int)offset, graph.GetScreenRegion().bottom - (graph.IsNegative() ? graph.GetScreenRegion().GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
 	for (const auto& b : buttons)
