@@ -54,13 +54,33 @@ public:
 			}
 		}
 	}
+	int GetPixelWidth() const
+	{
+		return (iconWidth + offset) * GetWidth();
+	}
+	int GetWidth() const
+	{
+		return (int)icons.size();
+	}
 	void SetPos(Vei2 newPos)
 	{
-		pos = newPos;
+		const Vei2 diff = newPos - pos;
+		Translate(diff);
 	}
 	Vei2 GetPos() const
 	{
 		return pos;
+	}
+	void Translate(Vei2 diff)
+	{
+		pos += diff;
+		for (int i = 0; i < icons.size(); i++)
+		{
+			if (icons.at(i) != nullptr)
+			{
+				icons.at(i)->Translate(diff);
+			}
+		}
 	}
 private:
 	Vei2 pos = { 0,0 };

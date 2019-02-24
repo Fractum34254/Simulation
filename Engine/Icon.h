@@ -73,6 +73,14 @@ public:
 	{
 		pos = p;
 	}
+	Vei2 GetPos() const
+	{
+		return pos;
+	}
+	void Translate(Vei2 dp)
+	{
+		pos += dp;
+	}
 	int GetWidth() const
 	{
 		return surf.GetWidth();

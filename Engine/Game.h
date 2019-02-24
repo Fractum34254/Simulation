@@ -76,6 +76,7 @@ private:
 	std::vector<std::unique_ptr<File>> files;
 	FrameTimer ft;
 	MouseController mouseControl;
-	Iconbar iconbar;
+	Iconbar graphIconbar;
+	Iconbar settingsIconbar;
 	/********************************/
 };

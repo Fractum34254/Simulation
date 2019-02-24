@@ -59,13 +59,42 @@ Game::Game( MainWindow& wnd )
 		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect));
 	}
 
-	iconbar.SetPos({ 3,3 });
+	graphIconbar.SetPos({ 3,3 });
 	for (auto& file : files)
 	{
-		iconbar.AddIcon(std::make_unique<GraphIcon>(file->GetName()), [&file]() {
+		graphIconbar.AddIcon(std::make_unique<GraphIcon>(file->GetName()), [&file]() {
 			file->ToggleVisible();
 		});
 	}
+
+	settingsIconbar.AddIcon(std::make_unique<GraphIcon>("Toggle all"), [this]() {
+		for (const auto& file : files)
+		{
+			file->ToggleVisible();
+		}});
+	settingsIconbar.AddVoid();
+	settingsIconbar.AddIcon(std::make_unique<SaveIcon>("Save all"), [this]() {
+		for (const auto& file : files)
+		{
+			file->Save();
+		}});
+	settingsIconbar.AddIcon(std::make_unique<RefreshIcon>("Refresh all"), [this]() {
+		for (const auto& file : files)
+		{
+			file->RefreshGraph();
+		}});
+	settingsIconbar.AddVoid();
+	settingsIconbar.AddIcon(std::make_unique<PlayIcon>("Continue all"), [this]() {
+		for (const auto& file : files)
+		{
+			file->SetCalculating(true);
+		}});
+	settingsIconbar.AddIcon(std::make_unique<PauseIcon>("Pause all"), [this]() {
+		for (const auto& file : files)
+		{
+			file->SetCalculating(false);
+		}});
+	settingsIconbar.SetPos({ Graphics::ScreenWidth / 2 - settingsIconbar.GetPixelWidth() / 2, 3 });
 }
 
 void Game::Go()
@@ -80,7 +109,8 @@ void Game::UpdateModel()
 {
 	mouseControl.Update();
 	float dt = ft.Mark();
-	iconbar.Update(mouseControl);
+	graphIconbar.Update(mouseControl);
+	settingsIconbar.Update(mouseControl);
 	for (auto& file : files)
 	{
 		file->Calculate(dt);
@@ -90,7 +120,8 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	iconbar.Draw(gfx);
+	graphIconbar.Draw(gfx);
+	settingsIconbar.Draw(gfx);
 	for (const auto& file : files)
 	{
 		file->Draw(gfx);
