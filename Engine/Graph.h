@@ -78,6 +78,7 @@ public:
 	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
 	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName, Font f);
 	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
+	Graph(RectI screenRegion, float offset, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
 	void Update(MouseController& mouseControl);
 	void Draw(std::string name, Graphics& gfx) const;
 	void PutData(float x, float y);
@@ -122,6 +123,7 @@ private:
 	}
 	static float top(float in)
 	{
+		///calculating tens potency floor
 		int f = 0;
 		if (in >= 1.0f)
 		{
@@ -129,6 +131,7 @@ private:
 			{
 				f++;
 			}
+			f--;
 		}
 		else
 		{
@@ -136,8 +139,14 @@ private:
 			{
 				f--;
 			}
-			f++;
 		}
-		return (float)std::pow(10, f);
+		///calculating factor in front of tens potency
+		int n = 1;
+		const float floor = (float)std::pow(10, f);
+		while (floor * (float)n < in)
+		{
+			n++;
+		}
+		return (float)n * floor;
 	}
 };

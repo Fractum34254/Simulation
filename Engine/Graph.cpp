@@ -19,7 +19,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 	}
 	//drawing coordinate system
-	const Vec2 leftTop = { offset + (float)screenRegion.left, offset + (float)screenRegion.top };
+	const Vec2 leftTop = { offset + (float)screenRegion.left, (float)screenRegion.top - offset};
 	const Vec2 leftBottom = { offset + (float)screenRegion.left, (float)screenRegion.bottom - offset };
 	gfx.DrawLine(leftTop, leftBottom, axisColor);
 	///arrow drawing
@@ -93,7 +93,11 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	if (rectOn)
 	{
 		//draw rectangle
-		RectI rect = RectI(screenRegion.left - f.GetWidth() * (int)yNumberLength, screenRegion.right, screenRegion.top - f.GetHeight() - (int)offset, screenRegion.bottom + f.GetHeight() + (int)offset);
+		RectI rect = RectI(
+			screenRegion.left - f.GetWidth() * (int)yNumberLength,  ///left
+			screenRegion.right,										///right
+			screenRegion.top - f.GetHeight() - 2 * (int)offset,		///top
+			screenRegion.bottom + f.GetHeight());					///bottom
 		gfx.DrawRectLine(rect, 2, 0, axisColor.GetFaded(0.3f));
 		RectI zoomRect = RectI::FromCenter(Vei2(rect.right, rect.bottom), 10, 10);
 		gfx.DrawRectLine(zoomRect, 2, 0, axisColor.GetFaded(0.3f));
@@ -110,14 +114,6 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y)
 	if (!negative && y < 0.0f)
 	{
 		ConvertToNegative();
-	}
-	if (x >= xMax)
-	{
-		SetXMax(1.1f * x);
-	}
-	if (std::abs(y) >= yMax)
-	{
-		SetYMax(1.1f * std::abs(y));
 	}
 	const int xPixMax = screenRegion.right - (int)offset;
 	const int xPixMin = screenRegion.left + (int)offset;
@@ -329,11 +325,21 @@ Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string 
 	font(f)
 {}
 
+Graph::Graph(RectI screenRegion, float offset, Color axisColor, Color pixelColor, std::string yAxisName, Font f) 
+	:
+	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
+	yAxisName(yAxisName),
+	initialized(true),
+	font(f)
+{}
+
 void Graph::Update(MouseController& mouseControl)
 {
 	RectI rect = coords.GetScreenRegion();
-	rect.bottom += font.GetHeight() + (int)coords.GetOffset() + 15;
-	rect.right += 15;
+	rect.bottom += font.GetHeight() + 10;
+	rect.top -= font.GetHeight() + 2 * (int)coords.GetOffset();
+	rect.left -= 3 * font.GetWidth();
+	rect.right += 10;
 
 	if (rect.Contains(mouseControl.GetMousePos()))
 	{
@@ -386,7 +392,7 @@ void Graph::Draw(std::string name, Graphics& gfx) const
 	const size_t s = name.length() * font.GetWidth() / 2;
 	const Vei2 pos = Vei2(
 		coords.GetScreenRegion().GetWidth() / 2 - (int)s + coords.GetScreenRegion().left,
-		coords.GetScreenRegion().top - font.GetHeight());
+		coords.GetScreenRegion().top - font.GetHeight() - (int)coords.GetOffset());
 	font.DrawText(name, pos, coords.GetAxisColor(), gfx);
 	coords.Draw(font, gfx, maxXNumber, maxYNumber);
 }
