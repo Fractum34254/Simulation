@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "Rect.h"
 #include "Vec2.h"
 #include "SpriteEffect.h"
@@ -77,7 +78,16 @@ public:
 	{
 		return visible;
 	}
+	void Action() const
+	{
+		action();
+	}
+	void BindAction(std::function<void()> newAction)
+	{
+		action = newAction;
+	}
 protected:
+	std::function<void()> action;
 	bool visible = true;
 	static constexpr Color chroma = Colors::White;
 	static constexpr Color highlightedColor = Colors::White;

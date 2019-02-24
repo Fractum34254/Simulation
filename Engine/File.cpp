@@ -244,7 +244,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 	buttons.emplace_back(std::make_unique<PauseIcon>());
 	buttons.emplace_back(std::make_unique<ForwardIcon>());
 	buttons.emplace_back(std::make_unique<BackwardIcon>());
-
+	BindActions();
 	SetUpButtons();
 }
 
@@ -262,7 +262,7 @@ void File::Update(MouseController& mouseControl)
 				const auto e = mouseControl.mouse.Read();
 				if (e.GetType() == Mouse::Event::Type::LPress)
 				{
-					Action(icon->GetType());
+					icon->Action();
 				}
 			}
 		}
@@ -355,29 +355,20 @@ bool File::GetCalculating() const
 	return calculating;
 }
 
-void File::Action(Icon::Type t)
+void File::BindActions()
 {
-	switch (t)
-	{
-	case Icon::Type::Save:
-		Save();
-		break;
-	case Icon::Type::Refresh:
-		RefreshGraph();
-		break;
-	case Icon::Type::Play:
-	case Icon::Type::Pause:
+	buttons.at(0)->BindAction([this]() {Save(); });
+	buttons.at(1)->BindAction([this]() {RefreshGraph(); });
+	buttons.at(2)->BindAction([this]() {
 		SetCalculating(!calculating);
 		buttons.at(2)->SetVisible(!calculating);
-		buttons.at(3)->SetVisible(calculating);
-		break;
-	case Icon::Type::Forward:
-		SetRepeatValue((int)((float)GetRepeatVal() * 1.2f));
-		break;
-	case Icon::Type::Backward:
-		SetRepeatValue((int)((float)GetRepeatVal() * 0.8f));
-		break;
-	}
+		buttons.at(3)->SetVisible(calculating); });
+	buttons.at(3)->BindAction([this]() {
+		SetCalculating(!calculating);
+		buttons.at(2)->SetVisible(!calculating);
+		buttons.at(3)->SetVisible(calculating); });
+	buttons.at(4)->BindAction([this]() {SetRepeatValue((int)((float)GetRepeatVal() * 1.2f)); });
+	buttons.at(5)->BindAction([this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); });
 }
 
 void File::SetUpButtons()

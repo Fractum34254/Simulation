@@ -34,7 +34,7 @@ public:
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
 private:
-	void Action(Icon::Type t);
+	void BindActions();
 	void SetUpButtons();
 private:
 	//Standart expression string
