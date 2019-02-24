@@ -89,6 +89,10 @@ protected:
 class SaveIcon : public Icon
 {
 public:
+	SaveIcon()
+		:
+		Icon(Surface("Bitmaps\\save-icon.bmp"), 0, 0)
+	{}
 	SaveIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
@@ -106,6 +110,10 @@ public:
 class RefreshIcon : public Icon
 {
 public:
+	RefreshIcon()
+		:
+		Icon(Surface("Bitmaps\\refresh-icon.bmp"), 0, 0)
+	{}
 	RefreshIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
@@ -123,6 +131,10 @@ public:
 class PauseIcon : public Icon
 {
 public:
+	PauseIcon()
+		:
+		Icon(Surface("Bitmaps\\pause-icon.bmp"), 0, 0)
+	{}
 	PauseIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
@@ -140,6 +152,10 @@ public:
 class PlayIcon : public Icon
 {
 public:
+	PlayIcon()
+		:
+		Icon(Surface("Bitmaps\\play-icon.bmp"), 0, 0)
+	{}
 	PlayIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
@@ -157,6 +173,10 @@ public:
 class ForwardIcon : public Icon
 {
 public:
+	ForwardIcon()
+		:
+		Icon(Surface("Bitmaps\\forward-icon.bmp"), 0, 0)
+	{}
 	ForwardIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)
@@ -174,6 +194,10 @@ public:
 class BackwardIcon : public Icon
 {
 public:
+	BackwardIcon()
+		:
+		Icon(Surface("Bitmaps\\backward-icon.bmp"), 0, 0)
+	{}
 	BackwardIcon(Surface s, int x = 0, int y = 0)
 		:
 		Icon(s, x, y)

@@ -238,12 +238,12 @@ File::File(std::string name, float offset, RectI screenRegion)
 
 	/************************************** BUTTON SETUP *********************************************************/
 	///IMPORTANT: DO NOT CHANGE ORDER!!
-	buttons.emplace_back(std::make_unique<SaveIcon>(Surface("Bitmaps\\save-icon.bmp")));
-	buttons.emplace_back(std::make_unique<RefreshIcon>(Surface("Bitmaps\\refresh-icon.bmp")));
-	buttons.emplace_back(std::make_unique<PlayIcon>(Surface("Bitmaps\\play-icon.bmp")));
-	buttons.emplace_back(std::make_unique<PauseIcon>(Surface("Bitmaps\\pause-icon.bmp")));
-	buttons.emplace_back(std::make_unique<ForwardIcon>(Surface("Bitmaps\\forward-icon.bmp")));
-	buttons.emplace_back(std::make_unique<BackwardIcon>(Surface("Bitmaps\\backward-icon.bmp")));
+	buttons.emplace_back(std::make_unique<SaveIcon>());
+	buttons.emplace_back(std::make_unique<RefreshIcon>());
+	buttons.emplace_back(std::make_unique<PlayIcon>());
+	buttons.emplace_back(std::make_unique<PauseIcon>());
+	buttons.emplace_back(std::make_unique<ForwardIcon>());
+	buttons.emplace_back(std::make_unique<BackwardIcon>());
 
 	SetUpButtons();
 }
