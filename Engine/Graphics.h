@@ -152,8 +152,8 @@ private:
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Color*                                              pSysBuffer = nullptr;
 public:
-	static constexpr int ScreenWidth = 800;
-	static constexpr int ScreenHeight = 600;
+	static constexpr int ScreenWidth = 1200;
+	static constexpr int ScreenHeight = 800;
 	static RectI GetScreenRect()  {
 		return Rect_<int>(0, ScreenWidth, 0, ScreenHeight);
 	}

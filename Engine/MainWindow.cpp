@@ -41,12 +41,12 @@ MainWindow::MainWindow( HINSTANCE hInst,wchar_t * pArgs )
 
 	// create window & get hWnd
 	RECT wr;
-	wr.left = 350;
+	wr.left = 200;									///was 350
 	wr.right = Graphics::ScreenWidth + wr.left;
-	wr.top = 100;
+	wr.top = 35;									///was 100
 	wr.bottom = Graphics::ScreenHeight + wr.top;
 	AdjustWindowRect( &wr,WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,FALSE );
-	hWnd = CreateWindow( wndClassName,L"Chili DirectX Framework",
+	hWnd = CreateWindow( wndClassName,L"Physics Simulation Engine - created with the Chili DirectX Framework",
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
 		wr.left,wr.top,wr.right - wr.left,wr.bottom - wr.top,
 		nullptr,nullptr,hInst,this );
