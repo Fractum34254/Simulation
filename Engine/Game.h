@@ -32,6 +32,7 @@
 #include "Parser.h"
 #include "FrameTimer.h"
 #include "Icon.h"
+#include "Iconbar.h"
 
 class Game
 {
@@ -70,8 +71,11 @@ private:
 	/*  User Variables              */
 	const std::string settingsFileName = "files.txt";
 	static constexpr int offset = 10;
+	static constexpr int left = 100;
+	static constexpr int top = 100;
 	std::vector<std::unique_ptr<File>> files;
 	FrameTimer ft;
 	MouseController mouseControl;
+	Iconbar iconbar;
 	/********************************/
 };

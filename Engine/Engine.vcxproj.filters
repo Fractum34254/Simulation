@@ -187,9 +187,6 @@
     <Text Include="file.txt">
       <Filter>Resource Files</Filter>
     </Text>
-    <Text Include="output - file.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
     <Text Include="files.txt">
       <Filter>Resource Files</Filter>
     </Text>

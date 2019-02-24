@@ -51,11 +51,20 @@ Game::Game( MainWindow& wnd )
 		settings >> temp;
 		names.emplace_back(temp);
 	}
-	const int width = Graphics::GetScreenRect().GetWidth() - 4 * offset;
-	const int widthPerGraph = width / (int)names.size() - offset;
+	const int right = gfx.GetScreenRect().right - 100;
+	const int bottom = gfx.GetScreenRect().bottom - 100;
+	const RectI fileRect = {left, right, top, bottom};
 	for (int i = 0; i < names.size(); i++)
 	{
-		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, RectI(3 * offset + i * widthPerGraph, offset + (i + 1) * widthPerGraph, 100, 400)));
+		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect));
+	}
+
+	iconbar.SetPos({ 3,3 });
+	for (auto& file : files)
+	{
+		iconbar.AddIcon(std::make_unique<GraphIcon>(), [&file]() {
+			file->ToggleVisible();
+		});
 	}
 }
 
@@ -71,6 +80,7 @@ void Game::UpdateModel()
 {
 	mouseControl.Update();
 	float dt = ft.Mark();
+	iconbar.Update(mouseControl);
 	for (auto& file : files)
 	{
 		file->Calculate(dt);
@@ -80,6 +90,7 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	iconbar.Draw(gfx);
 	for (const auto& file : files)
 	{
 		file->Draw(gfx);
