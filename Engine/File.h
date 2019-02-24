@@ -33,6 +33,7 @@ public:
 	void RefreshGraph();
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
+	void ToggleVisible();
 private:
 	void BindActions();
 	void SetUpButtons();
@@ -61,6 +62,7 @@ private:
 	Font font;
 	Parser parser;
 	//File values
+	bool visible = false;
 	std::string ownName;
 	std::string code;
 	std::string startVars;

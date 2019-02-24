@@ -250,6 +250,10 @@ File::File(std::string name, float offset, RectI screenRegion)
 
 void File::Update(MouseController& mouseControl)
 {
+	if (!visible)
+	{
+		return;
+	}
 	graph.Update(mouseControl);
 	SetUpButtons();
 	for (auto& icon : buttons)
@@ -275,7 +279,7 @@ void File::Update(MouseController& mouseControl)
 
 void File::Calculate(float dt)
 {
-	if (!calculating)
+	if (!calculating || !visible)
 	{
 		return;
 	}
@@ -313,6 +317,10 @@ void File::Calculate(float dt)
 
 void File::Draw(Graphics & gfx) const
 {
+	if (!visible)
+	{
+		return;
+	}
 	graph.Draw(ownName, gfx);
 	font.DrawText(yAxisName, Vei2(graph.GetScreenRegion().left - (int)offset, graph.GetScreenRegion().top - font.GetHeight() - (int)offset), axisColor, gfx);
 	font.DrawText(timeVar, Vei2(graph.GetScreenRegion().right - 2 * (int)offset, graph.GetScreenRegion().bottom - (graph.IsNegative() ? graph.GetScreenRegion().GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
@@ -353,6 +361,11 @@ void File::SetCalculating(bool b)
 bool File::GetCalculating() const
 {
 	return calculating;
+}
+
+void File::ToggleVisible()
+{
+	visible = !visible;
 }
 
 void File::BindActions()
