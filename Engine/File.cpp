@@ -368,6 +368,11 @@ void File::ToggleVisible()
 	visible = !visible;
 }
 
+std::string File::GetName() const
+{
+	return ownName;
+}
+
 void File::BindActions()
 {
 	buttons.at(0)->BindAction([this]() {Save(); });

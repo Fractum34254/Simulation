@@ -34,6 +34,7 @@ public:
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
 	void ToggleVisible();
+	std::string GetName() const;
 private:
 	void BindActions();
 	void SetUpButtons();

@@ -62,7 +62,7 @@ Game::Game( MainWindow& wnd )
 	iconbar.SetPos({ 3,3 });
 	for (auto& file : files)
 	{
-		iconbar.AddIcon(std::make_unique<GraphIcon>(), [&file]() {
+		iconbar.AddIcon(std::make_unique<GraphIcon>(file->GetName()), [&file]() {
 			file->ToggleVisible();
 		});
 	}
