@@ -99,6 +99,7 @@ protected:
 
 class GraphIcon : public Icon
 {
+public:
 	GraphIcon()
 		:
 		Icon(Surface("Bitmaps\\graph-icon.bmp"), 0, 0)
