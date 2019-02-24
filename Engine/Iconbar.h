@@ -11,9 +11,9 @@ class Iconbar
 public:
 	void AddIcon(std::unique_ptr<Icon> i, std::function<void()> f)
 	{
-		i->SetPos(pos.x + icons.size() * (iconWidth + offset), pos.y);
+		i->SetPos(pos.x + (int)icons.size() * (iconWidth + offset), pos.y);
 		i->BindAction(f);
-		icons.emplace_back(i);
+		icons.emplace_back(std::move(i));
 	}
 	void AddVoid()
 	{
@@ -29,18 +29,22 @@ public:
 			}
 		}
 	}
-	void Update(const MouseController& mouse)
+	void Update(const MouseController& mouseControl)
 	{
 		for (int i = 0; i < icons.size(); i++)
 		{
 			if (icons.at(i) != nullptr)
 			{
-				if (icons.at(i)->IsInside(mouse.GetMousePos()))
+				if (icons.at(i)->IsInside(mouseControl.GetMousePos()))
 				{
 					icons.at(i)->SetHighlighted(true);
-					if (mouse.mouse.LeftIsPressed())
+					while (!mouseControl.mouse.IsEmpty())
 					{
-						icons.at(i)->Action();
+						const auto e = mouseControl.mouse.Read();
+						if (e.GetType() == Mouse::Event::Type::LPress)
+						{
+							icons.at(i)->Action();
+						}
 					}
 				}
 				else
@@ -49,6 +53,14 @@ public:
 				}
 			}
 		}
+	}
+	void SetPos(Vei2 newPos)
+	{
+		pos = newPos;
+	}
+	Vei2 GetPos() const
+	{
+		return pos;
 	}
 private:
 	Vei2 pos = { 0,0 };
