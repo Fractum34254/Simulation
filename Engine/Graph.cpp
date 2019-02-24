@@ -62,7 +62,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	///maximum number length for rect calculation later
 	size_t yNumberLength = 0;
 	///yAxis
-	for (int i = 1; i < 5; i++)
+	for (int i = 1; i <= 5; i++)
 	{
 		gfx.DrawLine(yAxis - lineLength / 2.0f, xAxis - i * deltaY, yAxis + lineLength / 2.0f, xAxis - i * deltaY, axisColor);
 		std::stringstream ss;
