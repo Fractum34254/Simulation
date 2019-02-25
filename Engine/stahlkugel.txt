@@ -1,6 +1,6 @@
 Axis Color: 255 255 255
 Graph Color: 255 0 0
-y Value: h
+y Values: h EVer v a
 Time variable: t
 Repeating per second: 10
 #Head

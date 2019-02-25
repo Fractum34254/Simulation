@@ -1,6 +1,6 @@
 Axis Color: 255 255 255
 Graph Color: 255 0 0
-y Value: w
+y Values: w
 Time variable: t
 Repeating per second: 10
 #Head

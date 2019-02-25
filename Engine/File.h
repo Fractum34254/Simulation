@@ -10,6 +10,7 @@
 #include "Parser.h"
 #include "Graph.h"
 #include "Font.h"
+#include "Iconbar.h"
 
 class File
 {
@@ -30,20 +31,21 @@ public:
 	void SetRepeatValue(int rv);
 	int GetRepeatVal() const;
 	void Save() const;
-	void RefreshGraph();
+	void RefreshAll();
+	void RefreshGraph(int i);
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
 	void ToggleVisible();
 	std::string GetName() const;
 private:
-	void BindActions();
 	void SetUpButtons();
+	void CalculateOnce();
 private:
 	//Standart expression string
 	///IMPORTANT: if adding new ones: also add them to the constructor!
 	const std::string axisColorSet = "Axis Color:";							
 	const std::string graphColorSet = "Graph Color:";						
-	const std::string yNameSet = "y Value:";								
+	const std::string yNameSet = "y Values:";								
 	const std::string timeName = "Time variable:";							
 	const std::string repeatingName = "Repeating per second:";				
 	///breaking strings
@@ -55,11 +57,12 @@ private:
 	float offset;
 	Color axisColor;
 	Color pixelColor;
-	std::string yAxisName;
+	std::vector<std::string> yAxisNames;
 	std::string timeVar;
 	int repeatVal;
 	bool calculating = true;
-	Graph graph;
+	std::vector<std::unique_ptr<Graph>> graphs;
+	std::vector<Iconbar> iconbars;
 	Font font;
 	Parser parser;
 	//File values
@@ -70,11 +73,11 @@ private:
 	float time = 0.0f;
 	//Data values
 	std::unordered_map<std::string, float> vars;
-	std::vector<std::unique_ptr<Icon>> buttons;
 
 //utility functions
 private:
 	static char toColorChar(std::ifstream& file, const std::string colorName, const std::string& fileName);
+	static std::pair<int, int> squareFactor(int number);
 	static std::wstring towstring(std::string s)
 	{
 		const char* pc = s.c_str();

@@ -44,17 +44,30 @@ File::File(std::string name, float offset, RectI screenRegion)
 		};
 		settingNames[yNameSet].first = [this](std::ifstream& file) {
 			file.unget();
-			///test for blank space
-			char c = file.get();
-			while (c == ' ')
-			{
-				c = file.get();
-			}
-			file.unget();
-			for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
-			{
-				yAxisName += c;
-			}
+			bool repeat = false;
+			do {
+				///test for blank space
+				std::string yName;
+				char c = file.get();
+				while (c == ' ')
+				{
+					c = file.get();
+				}
+				file.unget();
+				for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+				{
+					yName += c;
+				}
+				yAxisNames.emplace_back(yName);
+				if (c == ' ')
+				{
+					repeat = true;
+				}
+				else
+				{
+					repeat = false;
+				}
+			} while (repeat);
 		};
 		settingNames[timeName].first = [this](std::ifstream& file) {
 			file.unget();
@@ -130,7 +143,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 				{
 					std::string info = "Wrong spelling of setting name in file \"";
 					info += ownName;													
-					info += "\": ";
+					info += "\":\n";
 					info += setting;
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 				}
@@ -172,8 +185,18 @@ File::File(std::string name, float offset, RectI screenRegion)
 				}
 			}
 		} while (!endReached);
-		///initialize graph
-		graph = Graph(screenRegion, offset, axisColor, pixelColor, yAxisName, font);
+		///calculate screen regions for graphs
+		const int off = 90;
+		const auto pair = squareFactor((int)yAxisNames.size());
+		const int yDir = pair.first;
+		const int xDir = pair.second;
+		const int deltaY = screenRegion.GetHeight() / yDir - off;
+		const int deltaX = screenRegion.GetWidth() / xDir - off;
+		for (int i = 0; i < yAxisNames.size(); i++)
+		{
+			const RectI rect = RectI({ screenRegion.left + (i % xDir) * (deltaX + off), screenRegion.top + (i / xDir) * (deltaY+off) }, deltaX, deltaY);
+			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, offset, axisColor, pixelColor, yAxisNames.at(i), font)));
+		}
 	}
 
 	/************************************** LOADING  + EXECUTING START VARS ************************************************/
@@ -231,20 +254,30 @@ File::File(std::string name, float offset, RectI screenRegion)
 			code += "\n";
 		} while (!endReached);
 	}
+	/************************************** CALCULATING CODE ONCE *********************************************************/
+	{
+		CalculateOnce();
+	}
 	/************************************** ASSIGNING VARIABLES TO GRAPH *********************************************************/
 	{
-		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
+		for (int i = 0; i < yAxisNames.size(); i++)
+		{
+			graphs.at(i)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(i)));
+		}
 	}
 
 	/************************************** BUTTON SETUP *********************************************************/
-	///IMPORTANT: DO NOT CHANGE ORDER!!
-	buttons.emplace_back(std::make_unique<SaveIcon>());
-	buttons.emplace_back(std::make_unique<RefreshIcon>());
-	buttons.emplace_back(std::make_unique<PlayIcon>());
-	buttons.emplace_back(std::make_unique<PauseIcon>());
-	buttons.emplace_back(std::make_unique<ForwardIcon>());
-	buttons.emplace_back(std::make_unique<BackwardIcon>());
-	BindActions();
+
+	for (int i = 0; i < graphs.size(); i++)
+	{
+		iconbars.emplace_back();
+		iconbars.at(i).AddIcon(std::make_unique<SaveIcon>(), [this]() {Save(); }, 0);
+		iconbars.at(i).AddIcon(std::make_unique<RefreshIcon>(), [&i, this]() {RefreshGraph(i); }, 1);
+		iconbars.at(i).AddIcon(std::make_unique<PauseIcon>(), [this]() {SetCalculating(false); }, 3);
+		iconbars.at(i).AddIcon(std::make_unique<PlayIcon>(), [this]() {SetCalculating(true); }, 3);
+		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); }, 5);
+		iconbars.at(i).AddIcon(std::make_unique<ForwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 1.2f)); }, 6);
+	}
 	SetUpButtons();
 }
 
@@ -254,26 +287,14 @@ void File::Update(MouseController& mouseControl)
 	{
 		return;
 	}
-	graph.Update(mouseControl);
-	SetUpButtons();
-	for (auto& icon : buttons)
+	for (auto& graph : graphs)
 	{
-		if (icon->IsInside(mouseControl.GetMousePos()))
-		{
-			icon->SetHighlighted(true);
-			while (!mouseControl.mouse.IsEmpty())
-			{
-				const auto e = mouseControl.mouse.Read();
-				if (e.GetType() == Mouse::Event::Type::LPress)
-				{
-					icon->Action();
-				}
-			}
-		}
-		else
-		{
-			icon->SetHighlighted(false);
-		}
+		graph->Update(mouseControl);
+	}
+	SetUpButtons();
+	for (auto& bar : iconbars)
+	{
+		bar.Update(mouseControl);
 	}
 }
 
@@ -287,31 +308,7 @@ void File::Calculate(float dt)
 	const float delta_t = 1.0f / (float)repeatVal;
 	for (; delta_t < time; time -= delta_t)
 	{
-		bool endReached = false;
-		int lineNmr = 1;
-		std::stringstream codeFile(code);
-		do
-		{
-			///reading a line
-			std::string line;
-			for (char c = codeFile.get(); !endReached && (c != '\n'); c = codeFile.get())
-			{
-
-				///test, if start vars are finished
-				if (codeFile.eof())
-				{
-					endReached = true;
-				}
-				else {
-					line += c;
-				}
-			}
-			if (!endReached) {
-				///calculate and save line and advance line number
-				parser.Calculate(line, vars, lineNmr++);
-			}
-		} while (!endReached);
-		graph.PutData(vars.at(timeVar), vars.at(yAxisName));
+		CalculateOnce();
 	}
 }
 
@@ -321,12 +318,15 @@ void File::Draw(Graphics & gfx) const
 	{
 		return;
 	}
-	graph.Draw(ownName, gfx);
-	font.DrawText(yAxisName, Vei2(graph.GetScreenRegion().left - (int)offset, graph.GetScreenRegion().top - font.GetHeight() - (int)offset), axisColor, gfx);
-	font.DrawText(timeVar, Vei2(graph.GetScreenRegion().right - 2 * (int)offset, graph.GetScreenRegion().bottom - (graph.IsNegative() ? graph.GetScreenRegion().GetHeight() / 2  - (int) offset : 0)), axisColor, gfx);
-	for (const auto& b : buttons)
+	for (int i = 0; i < yAxisNames.size(); i++)
 	{
-		b->Draw(gfx);
+		graphs.at(i)->Draw(ownName, gfx);
+		font.DrawText(yAxisNames.at(i), Vei2(graphs.at(i)->GetScreenRegion().left - (int)offset, graphs.at(i)->GetScreenRegion().top - font.GetHeight() - (int)offset), axisColor, gfx);
+		font.DrawText(timeVar, Vei2(graphs.at(i)->GetScreenRegion().right - 2 * (int)offset, graphs.at(i)->GetScreenRegion().bottom - (graphs.at(i)->IsNegative() ? graphs.at(i)->GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
+	}
+	for (const auto& bar : iconbars)
+	{
+		bar.Draw(gfx);
 	}
 }
 
@@ -344,12 +344,21 @@ void File::Save() const
 {
 	std::string fname = "output - ";
 	fname += ownName;
-	graph.WriteToFile(fname);
+	//********************************************* SAVE *******************************************************//
 }
 
-void File::RefreshGraph()
+void File::RefreshAll()
 {
-	graph.Refresh();
+	for (auto& graph : graphs)
+	{
+		graph->Refresh();
+	}
+	SetUpButtons();
+}
+
+void File::RefreshGraph(int i)
+{
+	graphs.at(i)->Refresh();
 	SetUpButtons();
 }
 
@@ -373,46 +382,44 @@ std::string File::GetName() const
 	return ownName;
 }
 
-void File::BindActions()
-{
-	buttons.at(0)->BindAction([this]() {Save(); });
-	buttons.at(1)->BindAction([this]() {RefreshGraph(); });
-	buttons.at(2)->BindAction([this]() {
-		SetCalculating(!calculating);
-		buttons.at(2)->SetVisible(!calculating);
-		buttons.at(3)->SetVisible(calculating); });
-	buttons.at(3)->BindAction([this]() {
-		SetCalculating(!calculating);
-		buttons.at(2)->SetVisible(!calculating);
-		buttons.at(3)->SetVisible(calculating); });
-	buttons.at(4)->BindAction([this]() {SetRepeatValue((int)((float)GetRepeatVal() * 1.2f)); });
-	buttons.at(5)->BindAction([this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); });
-}
-
 void File::SetUpButtons()
 {
-	RectI rect = graph.GetScreenRegion();
-	rect.bottom += font.GetHeight() + (int)offset;
-	Vei2 startPos = Vei2((rect.right - rect.left) / 2 + rect.left, rect.bottom);
-	startPos.x -= buttons.at(2)->GetWidth() / 2;
-	Vei2 oldStart = startPos;
-	///play && pause button
-	buttons.at(2)->SetPos(startPos);
-	buttons.at(2)->SetVisible(!calculating);
-	buttons.at(3)->SetPos(startPos);
-	buttons.at(3)->SetVisible(calculating);
-	///Refresh button
-	startPos.x -= 2 * buttons.at(1)->GetWidth();
-	buttons.at(1)->SetPos(startPos);
-	///Save button
-	startPos.x -= buttons.at(1)->GetWidth() + 3;
-	buttons.at(0)->SetPos(startPos);
-	///Backward button
-	oldStart.x += 2 * buttons.at(5)->GetWidth();
-	buttons.at(5)->SetPos(oldStart);
-	///Forward button
-	oldStart.x += buttons.at(4)->GetWidth() + 3;
-	buttons.at(4)->SetPos(oldStart);
+	for (int i = 0; i < graphs.size(); i++)
+	{
+		iconbars.at(i).SetPos({graphs.at(i)->GetScreenRegion().left + graphs.at(i)->GetScreenRegion().GetWidth() / 2 - iconbars.at(i).GetPixelWidth() / 2, graphs.at(i)->GetScreenRegion().bottom + font.GetHeight() + (int)offset });
+	}
+}
+
+void File::CalculateOnce()
+{
+	bool endReached = false;
+	int lineNmr = 1;
+	std::stringstream codeFile(code);
+	do
+	{
+		///reading a line
+		std::string line;
+		for (char c = codeFile.get(); !endReached && (c != '\n'); c = codeFile.get())
+		{
+
+			///test, if start vars are finished
+			if (codeFile.eof())
+			{
+				endReached = true;
+			}
+			else {
+				line += c;
+			}
+		}
+		if (!endReached) {
+			///calculate and save line and advance line number
+			parser.Calculate(line, vars, lineNmr++);
+		}
+	} while (!endReached);
+	for (int i = 0; i < yAxisNames.size(); i++)
+	{
+		graphs.at(i)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(i)));
+	}
 }
 
 char File::toColorChar(std::ifstream & file, const std::string colorName, const std::string& fileName)
@@ -460,4 +467,12 @@ char File::toColorChar(std::ifstream & file, const std::string colorName, const 
 		}
 	}
 	return colorInt;
+}
+
+std::pair<int, int> File::squareFactor(int number)
+{
+	const float root = std::sqrtf((float)number);
+	int rootFloor = (int)root;
+	for (; number % rootFloor != 0; rootFloor--);
+	return std::make_pair(rootFloor, number / rootFloor);
 }
