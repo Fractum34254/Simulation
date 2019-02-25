@@ -66,6 +66,7 @@ private:
 	Font font;
 	Parser parser;
 	//File values
+	static constexpr int cropVal = 8;
 	bool visible = false;
 	std::string ownName;
 	std::string code;

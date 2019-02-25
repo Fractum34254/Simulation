@@ -344,7 +344,28 @@ void File::Save() const
 {
 	std::string fname = "output - ";
 	fname += ownName;
-	//********************************************* SAVE *******************************************************//
+	std::ofstream file(fname);
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> data;
+	for (int i = 0; i < graphs.size(); i++)
+	{
+		data.emplace_back(std::move(graphs.at(i)->GetData()));
+	}
+	const int cur = (const int)data.at(0)->size();
+	for (int i = 0; i < cur; i++)
+	{
+		const float t = data.at(0)->at(i).first;
+		std::vector<float> y;
+		for (int k = 0; k < graphs.size(); k++)
+		{
+			y.emplace_back(data.at(k)->at(i).second);
+		}
+		file << "t: " << Crop(t, cropVal) << " ";
+		for (int k = 0; k < graphs.size(); k++)
+		{
+			file << graphs.at(k)->GetYAxisName() << ": " << Crop(y.at(k), cropVal) << " ";
+		}
+		file << "\n";
+	}
 }
 
 void File::RefreshAll()
