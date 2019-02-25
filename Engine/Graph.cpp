@@ -420,23 +420,6 @@ void Graph::PutData(float x, float y)
 	coords.PutCoordinate(x, y);
 }
 
-void Graph::WriteToFile(std::string filename) const
-{
-	if (!initialized)
-	{
-		std::string info = "Unitialized graph!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
-	}
-	std::ofstream file(filename);
-	for (int i = 0; i < cur; i++)
-	{
-		const float x = data.at(i).first;
-		const float y = data.at(i).second;
-		file << "t: " << Crop(x, cropVal) << " "
-			<< yAxisName << ": " << Crop(y, cropVal) << "\n";
-	}
-}
-
 bool Graph::IsNegative() const
 {
 	return coords.IsNegative();
@@ -447,7 +430,17 @@ RectI Graph::GetScreenRegion() const
 	return coords.GetScreenRegion();
 }
 
+std::string Graph::GetYAxisName() const
+{
+	return yAxisName;
+}
+
 void Graph::Refresh()
 {
 	coords.Refresh(data);
+}
+
+std::unique_ptr<std::unordered_map<int, std::pair<float, float>>> Graph::GetData() const
+{
+	return std::make_unique< std::unordered_map<int, std::pair<float, float>>>(data);
 }

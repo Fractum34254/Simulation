@@ -82,10 +82,11 @@ public:
 	void Update(MouseController& mouseControl);
 	void Draw(std::string name, Graphics& gfx) const;
 	void PutData(float x, float y);
-	void WriteToFile(std::string filename) const;
 	bool IsNegative() const;
 	RectI GetScreenRegion() const;
+	std::string GetYAxisName() const;
 	void Refresh();
+	std::unique_ptr<std::unordered_map<int, std::pair<float, float>>> GetData() const;
 private:
 	//config values
 	static constexpr int cropVal = 8;
