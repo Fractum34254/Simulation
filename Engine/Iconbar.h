@@ -13,19 +13,39 @@ public:
 	{
 		i->SetPos(pos.x + (int)icons.size() * (iconWidth + offset), pos.y);
 		i->BindAction(f);
-		icons.emplace_back(std::move(i));
+		std::vector<std::unique_ptr<Icon>> next;
+		next.emplace_back(std::move(i));
+		icons.emplace_back(std::make_pair(std::move(next), 0));
+	}
+	void AddIcon(std::unique_ptr<Icon> i, std::function<void()> f, int place)
+	{
+		if (place >= icons.size())
+		{
+			while (place > icons.size())
+			{
+				AddVoid();
+			}
+			AddIcon(std::move(i), f);
+		}
+		else
+		{
+			i->SetPos(pos.x + place * (iconWidth + offset), pos.y);
+			i->BindAction(f);
+			icons.at(place).first.emplace_back(std::move(i));
+		}
 	}
 	void AddVoid()
 	{
-		icons.emplace_back(nullptr);
+		std::vector<std::unique_ptr<Icon>> next;
+		icons.emplace_back(std::make_pair(std::move(next),0));
 	}
 	void Draw(Graphics& gfx) const
 	{
 		for (int i = 0; i < icons.size(); i++)
 		{
-			if (icons.at(i) != nullptr)
+			if (icons.at(i).first.size() != 0)
 			{
-				icons.at(i)->Draw(gfx);
+				icons.at(i).first.at(icons.at(i).second)->Draw(gfx);
 			}
 		}
 	}
@@ -33,30 +53,38 @@ public:
 	{
 		for (int i = 0; i < icons.size(); i++)
 		{
-			if (icons.at(i) != nullptr)
+			if (icons.at(i).first.size() != 0)
 			{
-				if (icons.at(i)->IsInside(mouseControl.GetMousePos()))
+				if (icons.at(i).first.at(icons.at(i).second)->IsInside(mouseControl.GetMousePos()))
 				{
-					icons.at(i)->SetHighlighted(true);
+					icons.at(i).first.at(icons.at(i).second)->SetHighlighted(true);
 					while (!mouseControl.mouse.IsEmpty())
 					{
 						const auto e = mouseControl.mouse.Read();
 						if (e.GetType() == Mouse::Event::Type::LPress)
 						{
-							icons.at(i)->Action();
+							icons.at(i).first.at(icons.at(i).second)->Action();
+							if (icons.at(i).second + 1 == icons.at(i).first.size())
+							{
+								icons.at(i).second = 0;
+							}
+							else
+							{
+								icons.at(i).second++;
+							}
 						}
 					}
 				}
 				else
 				{
-					icons.at(i)->SetHighlighted(false);
+					icons.at(i).first.at(icons.at(i).second)->SetHighlighted(false);
 				}
 			}
 		}
 	}
 	int GetPixelWidth() const
 	{
-		return (iconWidth + offset) * GetWidth();
+		return (iconWidth + offset) * GetWidth() - offset;
 	}
 	int GetWidth() const
 	{
@@ -76,9 +104,12 @@ public:
 		pos += diff;
 		for (int i = 0; i < icons.size(); i++)
 		{
-			if (icons.at(i) != nullptr)
+			for (int k = 0; k < icons.at(i).first.size(); k++)
 			{
-				icons.at(i)->Translate(diff);
+				if (icons.at(i).first.at(k) != nullptr)
+				{
+					icons.at(i).first.at(k)->Translate(diff);
+				}
 			}
 		}
 	}
@@ -87,5 +118,5 @@ private:
 	static constexpr int iconHeight = 20;
 	static constexpr int iconWidth = 20;
 	static constexpr int offset = 3;
-	std::vector<std::unique_ptr<Icon>> icons;
+	std::vector<std::pair<std::vector<std::unique_ptr<Icon>>, int>> icons;
 };
