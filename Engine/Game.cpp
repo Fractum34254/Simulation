@@ -51,8 +51,8 @@ Game::Game( MainWindow& wnd )
 		settings >> temp;
 		names.emplace_back(temp);
 	}
-	const int right = gfx.GetScreenRect().right - 100;
-	const int bottom = gfx.GetScreenRect().bottom - 100;
+	const int right = gfx.GetScreenRect().right + 50;
+	const int bottom = gfx.GetScreenRect().bottom + 30;
 	const RectI fileRect = {left, right, top, bottom};
 	for (int i = 0; i < names.size(); i++)
 	{
@@ -81,7 +81,7 @@ Game::Game( MainWindow& wnd )
 	settingsIconbar.AddIcon(std::make_unique<RefreshIcon>("Refresh all"), [this]() {
 		for (const auto& file : files)
 		{
-			file->RefreshGraph();
+			file->RefreshAll();
 		}});
 	settingsIconbar.AddVoid();
 	settingsIconbar.AddIcon(std::make_unique<PlayIcon>("Continue all"), [this]() {

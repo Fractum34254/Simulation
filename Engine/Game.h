@@ -71,8 +71,8 @@ private:
 	/*  User Variables              */
 	const std::string settingsFileName = "files.txt";
 	static constexpr int offset = 10;
-	static constexpr int left = 100;
-	static constexpr int top = 100;
+	static constexpr int left = 50;
+	static constexpr int top = 70;
 	std::vector<std::unique_ptr<File>> files;
 	FrameTimer ft;
 	MouseController mouseControl;
