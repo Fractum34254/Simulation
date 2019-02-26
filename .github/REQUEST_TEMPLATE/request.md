@@ -9,6 +9,9 @@ assignees: Fractum34254
 
 **Please describe your feature:**
 
+**Is it a solution to an open issue?**
+[yes, this one here: #...]
+
 **Please describe the progress of your code:**
 [Is this a complete block of code ready to implement or just the beginning of an implementation?]
 
