@@ -266,6 +266,13 @@ private:
 			}
 			else ///c is not a brace
 			{
+				///if c is a '-', then it's possible that there was no variable or number in front
+				if (c == '-' && s == "")
+				{
+					///now setting s to '-1' and c to '*' -> correct further calculation
+					c = '*';
+					s = "-1";
+				}
 				///if c is an operator, s is a full variable name
 				if (isFloat(s))
 				{
