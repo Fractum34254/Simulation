@@ -8,7 +8,13 @@ Surface::Surface(const std::string & filename)
 	OutputDebugStringA("Opened file.\n");
 
 	std::ifstream file(filename, std::ios::binary);
-	assert(file);
+	if (!file)
+	{
+		std::string info = "Could not open the bitmap named \"";
+		info += filename;
+		info += "\"!";
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+	}
 
 	BITMAPFILEHEADER bmFileHeader;
 	file.read(reinterpret_cast<char*>(&bmFileHeader), sizeof(bmFileHeader));
