@@ -2,10 +2,10 @@
 #include "Rect.h"
 #include "Graphics.h"
 #include "Colors.h"
-#include "PhilUtil.h"
 #include "ChiliException.h"
 #include "Font.h"
 #include "MouseController.h"
+#include "PhilUtil.h"
 #include <string>
 #include <algorithm>
 #include <sstream>
@@ -110,44 +110,4 @@ private:
 	float maxXValue = xMaxStart;
 	float maxXNumber = maxXValue * 10.0f;		//floor value
 	float maxYNumber = maxYValue * 10.0f;		//floor value
-//utility functions
-private:
-	static std::wstring towstring(std::string s)
-	{
-		const char* pc = s.c_str();
-		std::wstring ws;
-		for (int i = 0; i < s.size(); i++)
-		{
-			ws += pc[i];
-		}
-		return ws;
-	}
-	static float top(float in)
-	{
-		///calculating tens potency floor
-		int f = 0;
-		if (in >= 1.0f)
-		{
-			while (std::pow(10, f) < in)
-			{
-				f++;
-			}
-			f--;
-		}
-		else
-		{
-			while (std::pow(10, f) >= in)
-			{
-				f--;
-			}
-		}
-		///calculating factor in front of tens potency
-		int n = 1;
-		const float floor = (float)std::pow(10, f);
-		while (floor * (float)n < in)
-		{
-			n++;
-		}
-		return (float)n * floor;
-	}
 };

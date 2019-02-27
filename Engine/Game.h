@@ -33,6 +33,7 @@
 #include "FrameTimer.h"
 #include "Icon.h"
 #include "Iconbar.h"
+#include "PhilUtil.h"
 
 class Game
 {
@@ -53,16 +54,6 @@ private:
 	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
-	static std::wstring towstring(std::string s)
-	{
-		const char* pc = s.c_str();
-		std::wstring ws;
-		for (int i = 0; i < s.size(); i++)
-		{
-			ws += pc[i];
-		}
-		return ws;
-	}
 	/********************************/
 private:
 	MainWindow& wnd;

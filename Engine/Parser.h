@@ -1,6 +1,6 @@
 #pragma once
-#include "PhilUtil.h"
 #include "ChiliException.h"
+#include "PhilUtil.h"
 #include <algorithm>
 #include <functional>
 #include <cmath>
@@ -75,7 +75,7 @@ public:
 					info += ":\n";
 					info += term_in;
 					info += "\n(missing comparison operator and end brace for test)";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				brace += c;
 				///test for another brace opening
@@ -134,7 +134,7 @@ public:
 				info += ":\n";
 				info += term_in;
 				info += "\n(missing comparison operator for test)";
-				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 			std::string rightSide;
 			while (c != ')')
@@ -146,7 +146,7 @@ public:
 					info += ":\n";
 					info += term_in;
 					info += "\n(missing end brace for test)";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				rightSide += c;
 				c = term.get();
@@ -174,7 +174,7 @@ public:
 			{
 				std::string info = "Expression without '=' in line ";	///standart-syntax
 				info += line + 48;										///line number (+48 caused by ascii translation)
-				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 			std::istringstream term(term_in);
 			std::string lval;
@@ -274,7 +274,7 @@ private:
 					s = "-1";
 				}
 				///if c is an operator, s is a full variable name
-				if (isFloat(s))
+				if (PhilUtil::isFloat(s))
 				{
 					vars.emplace_back(std::stof(s));
 				}
@@ -290,7 +290,7 @@ private:
 						info += line + 48;										///line number (+48 caused by ascii translation)
 						info += ": ";
 						info += s;												///uninitialized variable name
-						throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 					}
 				}
 				if (!rhs.eof()) {
@@ -309,7 +309,7 @@ private:
 		{
 			std::string info = "Unmatching operators, variables and numbers in line ";	///standart-syntax
 			info += line + 48;															///line number (+48 caused by ascii translation)									///uninitialized variable name
-			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 		}
 		///first, calculating '^'
 		for (int i = 0; i < ops.size(); i++)
@@ -350,7 +350,7 @@ private:
 		{
 			std::string info = "Unknown operator: ";	
 			info += op;							
-			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 		}
 	}
 	bool IsComparator(const char c)
@@ -368,23 +368,5 @@ private:
 		std::string s;
 		s += c;
 		return operate.find(s) != operate.end();
-	}
-	static bool isFloat(std::string myString) {
-		std::istringstream iss(myString);
-		float f;
-		iss >> std::noskipws >> f;	// noskipws considers leading whitespace invalid
-									// Check the entire string was consumed and if either failbit or badbit is set
-									// thx to: Bill the Lizard from stackoverflow.com
-		return iss.eof() && !iss.fail();
-	}
-	static std::wstring towstring(std::string s)
-	{
-		const char* pc = s.c_str();
-		std::wstring ws;
-		for (int i = 0; i < s.size(); i++)
-		{
-			ws += pc[i];
-		}
-		return ws;
 	}
 };

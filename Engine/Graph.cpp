@@ -16,7 +16,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	if (!initialized)
 	{
 		std::string info = "Unitialized coordinate system!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	//drawing coordinate system
 	const Vec2 leftTop = { offset + (float)screenRegion.left, (float)screenRegion.top - offset};
@@ -109,7 +109,7 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y)
 	if (!initialized)
 	{
 		std::string info = "Unitialized coordinate system!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	if (!negative && y < 0.0f)
 	{
@@ -142,7 +142,7 @@ void Graph::CoordinateSystem::SetYMax(float newYMax)
 	if (!initialized)
 	{
 		std::string info = "Unitialized coordinate system!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	const float scale = yMax / newYMax;
 
@@ -172,7 +172,7 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 	if (!initialized)
 	{
 		std::string info = "Unitialized coordinate system!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	const float scale = xMax / newXMax;
 
@@ -387,7 +387,7 @@ void Graph::Draw(std::string name, Graphics& gfx) const
 	if (!initialized)
 	{
 		std::string info = "Unitialized graph!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	const size_t s = name.length() * font.GetWidth() / 2;
 	const Vei2 pos = Vei2(
@@ -402,19 +402,19 @@ void Graph::PutData(float x, float y)
 	if (!initialized)
 	{
 		std::string info = "Unitialized graph!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	data[cur++] = { x,y };
 	maxXValue = std::max(maxXValue, std::abs(x));
 	maxYValue = std::max(maxYValue, std::abs(y));
-	if (maxXNumber < top(maxXValue))
+	if (maxXNumber < PhilUtil::top(maxXValue))
 	{
-		maxXNumber = top(maxXValue);
+		maxXNumber = PhilUtil::top(maxXValue);
 		coords.SetXMax(maxXNumber);
 	}
-	if (maxYNumber < top(maxYValue))
+	if (maxYNumber < PhilUtil::top(maxYValue))
 	{
-		maxYNumber = top(maxYValue);
+		maxYNumber = PhilUtil::top(maxYValue);
 		coords.SetYMax(maxYNumber);
 	}
 	coords.PutCoordinate(x, y);

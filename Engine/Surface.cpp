@@ -13,7 +13,7 @@ Surface::Surface(const std::string & filename)
 		std::string info = "Could not open the bitmap named \"";
 		info += filename;
 		info += "\"!";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 
 	BITMAPFILEHEADER bmFileHeader;

@@ -3,6 +3,7 @@
 #include "ChiliException.h"
 #include "Colors.h"
 #include "Rect.h"
+#include "PhilUtil.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -35,15 +36,4 @@ private:
 	int width = 0;
 	int height = 0;
 	std::vector<Color> pixels;
-private:
-	static std::wstring towstring(std::string s)
-	{
-		const char* pc = s.c_str();
-		std::wstring ws;
-		for (int i = 0; i < s.size(); i++)
-		{
-			ws += pc[i];
-		}
-		return ws;
-	}
 };

@@ -74,25 +74,4 @@ private:
 	float time = 0.0f;
 	//Data values
 	std::unordered_map<std::string, float> vars;
-
-//utility functions
-private:
-	static char toColorChar(std::ifstream& file, const std::string colorName, const std::string& fileName);
-	static std::pair<int, int> squareFactor(int number);
-	static std::wstring towstring(std::string s)
-	{
-		const char* pc = s.c_str();
-		std::wstring ws;
-		for (int i = 0; i < s.size(); i++)
-		{
-			ws += pc[i];
-		}
-		return ws;
-	}
-	static std::string toString(int i)
-	{
-		std::stringstream ss;
-		ss << i;
-		return ss.str();
-	}
 };

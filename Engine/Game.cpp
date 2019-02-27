@@ -34,14 +34,14 @@ Game::Game( MainWindow& wnd )
 		std::string info = "Can't open file \"";
 		info += settingsFileName;
 		info += "\": File not found";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	if (settings.eof())
 	{
 		std::string info = "Empty file \"";
 		info += settingsFileName;
 		info += "\"";
-		throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 
 	std::vector<std::string> names;
