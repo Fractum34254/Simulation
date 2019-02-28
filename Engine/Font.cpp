@@ -26,6 +26,30 @@ void Font::DrawText(const std::string & text, const Vei2 & pos, Color color, Gra
 		else if (c >= firstChar + 1 && c <= lastChar) {
 			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect(c), surface, e);
 		}
+		else if (c == 'ä')
+		{
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('a'), surface, e);
+			curPos.x += glyphWidth;
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('e'), surface, e);
+		}
+		else if (c == 'ö')
+		{
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('o'), surface, e);
+			curPos.x += glyphWidth;
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('e'), surface, e);
+		}
+		else if (c == 'ü')
+		{
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('u'), surface, e);
+			curPos.x += glyphWidth;
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('e'), surface, e);
+		}
+		else if (c == 'ß')
+		{
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('s'), surface, e);
+			curPos.x += glyphWidth;
+			gfx.DrawSprite(curPos.x, curPos.y, MapGlyphRect('s'), surface, e);
+		}
 		curPos.x += glyphWidth;
 	}
 }
