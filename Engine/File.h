@@ -37,6 +37,7 @@ public:
 	bool GetCalculating() const;
 	void ToggleVisible();
 	void SetVisible(int graph, bool b);
+	void CloseAll();
 	bool AllVisible() const;
 	bool AnyVisible() const;
 	std::string GetName() const;

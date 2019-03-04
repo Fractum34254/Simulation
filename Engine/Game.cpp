@@ -68,7 +68,7 @@ Game::Game( MainWindow& wnd )
 	}
 
 	settingsIconbar.AddIcon(std::make_unique<GraphIcon>("Toggle all"), [this]() {
-		for (const auto& file : files)
+		for (auto& file : files)
 		{
 			file->ToggleVisible();
 		}});
@@ -79,20 +79,26 @@ Game::Game( MainWindow& wnd )
 			file->Save();
 		}});
 	settingsIconbar.AddIcon(std::make_unique<RefreshIcon>("Refresh all"), [this]() {
-		for (const auto& file : files)
+		for (auto& file : files)
 		{
 			file->RefreshAll();
 		}});
 	settingsIconbar.AddVoid();
 	settingsIconbar.AddIcon(std::make_unique<PlayIcon>("Continue all"), [this]() {
-		for (const auto& file : files)
+		for (auto& file : files)
 		{
 			file->SetCalculating(true);
 		}});
 	settingsIconbar.AddIcon(std::make_unique<PauseIcon>("Pause all"), [this]() {
-		for (const auto& file : files)
+		for (auto& file : files)
 		{
 			file->SetCalculating(false);
+		}});
+	settingsIconbar.AddVoid();
+	settingsIconbar.AddIcon(std::make_unique<CloseIcon>("Close all"), [this]() {
+		for (auto& file : files)
+		{
+			file->CloseAll();
 		}});
 	settingsIconbar.SetPos({ Graphics::ScreenWidth / 2 - settingsIconbar.GetPixelWidth() / 2, 3 });
 }

@@ -409,6 +409,14 @@ void File::SetVisible(int graph, bool b)
 	graphs.at(graph)->SetVisible(b);
 }
 
+void File::CloseAll()
+{
+	for (auto& pGraph : graphs)
+	{
+		pGraph->SetVisible(false);
+	}
+}
+
 bool File::AllVisible() const
 {
 	for (auto& pGraph : graphs)
