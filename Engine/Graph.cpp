@@ -134,7 +134,7 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y)
 	x += xPixMin;
 	y += xAxis;
 
-	pixel[cur++] = { x,y };
+	pixel[cur++] = { std::min((float)xPixMax,std::max(x, (float)xPixMin)),std::min((float)yPixMax,std::max(y, (float)yPixMin)) };
 }
 
 void Graph::CoordinateSystem::SetYMax(float newYMax)
