@@ -36,6 +36,9 @@ public:
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
 	void ToggleVisible();
+	void SetVisible(int graph, bool b);
+	bool AllVisible() const;
+	bool AnyVisible() const;
 	std::string GetName() const;
 private:
 	void SetUpButtons();
@@ -67,7 +70,6 @@ private:
 	Parser parser;
 	//File values
 	static constexpr int cropVal = 8;
-	bool visible = false;
 	std::string ownName;
 	std::string code;
 	std::string startVars;

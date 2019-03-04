@@ -272,35 +272,32 @@ File::File(std::string name, float offset, RectI screenRegion)
 	{
 		iconbars.emplace_back();
 		iconbars.at(i).AddIcon(std::make_unique<SaveIcon>(), [this]() {Save(); }, 0);
-		iconbars.at(i).AddIcon(std::make_unique<RefreshIcon>(), [&i, this]() {RefreshGraph(i); }, 1);
+		iconbars.at(i).AddIcon(std::make_unique<RefreshIcon>(), [i, this]() {RefreshGraph(i); }, 1);
 		iconbars.at(i).AddIcon(std::make_unique<PauseIcon>(), [this]() {SetCalculating(false); }, 3);
 		iconbars.at(i).AddIcon(std::make_unique<PlayIcon>(), [this]() {SetCalculating(true); }, 3);
 		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); }, 5);
 		iconbars.at(i).AddIcon(std::make_unique<ForwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 1.2f)); }, 6);
+		iconbars.at(i).AddIcon(std::make_unique<CloseIcon>(), [i, this]() {SetVisible(i, false); }, 8);
 	}
 	SetUpButtons();
 }
 
 void File::Update(MouseController& mouseControl)
 {
-	if (!visible)
+	for (int i = 0; i < graphs.size(); i++)
 	{
-		return;
-	}
-	for (auto& graph : graphs)
-	{
-		graph->Update(mouseControl);
+		if (graphs.at(i)->IsVisible())
+		{
+			graphs.at(i)->Update(mouseControl);
+			iconbars.at(i).Update(mouseControl);
+		}
 	}
 	SetUpButtons();
-	for (auto& bar : iconbars)
-	{
-		bar.Update(mouseControl);
-	}
 }
 
 void File::Calculate(float dt)
 {
-	if (!calculating || !visible)
+	if (!calculating || !AnyVisible())
 	{
 		return;
 	}
@@ -314,19 +311,15 @@ void File::Calculate(float dt)
 
 void File::Draw(Graphics & gfx) const
 {
-	if (!visible)
-	{
-		return;
-	}
 	for (int i = 0; i < yAxisNames.size(); i++)
 	{
-		graphs.at(i)->Draw(ownName, gfx);
-		font.DrawText(yAxisNames.at(i), Vei2(graphs.at(i)->GetScreenRegion().left - (int)offset, graphs.at(i)->GetScreenRegion().top - font.GetHeight() - (int)offset), axisColor, gfx);
-		font.DrawText(timeVar, Vei2(graphs.at(i)->GetScreenRegion().right - 2 * (int)offset, graphs.at(i)->GetScreenRegion().bottom - (graphs.at(i)->IsNegative() ? graphs.at(i)->GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
-	}
-	for (const auto& bar : iconbars)
-	{
-		bar.Draw(gfx);
+		if (graphs.at(i)->IsVisible())
+		{
+			graphs.at(i)->Draw(ownName, gfx);
+			font.DrawText(yAxisNames.at(i), Vei2(graphs.at(i)->GetScreenRegion().left - (int)offset, graphs.at(i)->GetScreenRegion().top - font.GetHeight() - (int)offset), axisColor, gfx);
+			font.DrawText(timeVar, Vei2(graphs.at(i)->GetScreenRegion().right - 2 * (int)offset, graphs.at(i)->GetScreenRegion().bottom - (graphs.at(i)->IsNegative() ? graphs.at(i)->GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
+			iconbars.at(i).Draw(gfx);
+		}
 	}
 }
 
@@ -395,7 +388,49 @@ bool File::GetCalculating() const
 
 void File::ToggleVisible()
 {
-	visible = !visible;
+	if (AllVisible())
+	{
+		for (auto& pGraph : graphs)
+		{
+			pGraph->SetVisible(false);
+		}
+	}
+	else
+	{
+		for (auto& pGraph : graphs)
+		{
+			pGraph->SetVisible(true);
+		}
+	}
+}
+
+void File::SetVisible(int graph, bool b)
+{
+	graphs.at(graph)->SetVisible(b);
+}
+
+bool File::AllVisible() const
+{
+	for (auto& pGraph : graphs)
+	{
+		if (!pGraph->IsVisible())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool File::AnyVisible() const
+{
+	for (auto& pGraph : graphs)
+	{
+		if (pGraph->IsVisible())
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 std::string File::GetName() const

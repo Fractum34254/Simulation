@@ -335,6 +335,10 @@ Graph::Graph(RectI screenRegion, float offset, Color axisColor, Color pixelColor
 
 void Graph::Update(MouseController& mouseControl)
 {
+	if (!visible)
+	{
+		return;
+	}
 	RectI rect = coords.GetScreenRegion();
 	rect.bottom += font.GetHeight() + 10;
 	rect.top -= font.GetHeight() + 2 * (int)coords.GetOffset();
@@ -389,6 +393,10 @@ void Graph::Draw(std::string name, Graphics& gfx) const
 		std::string info = "Unitialized graph!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
+	if (!visible)
+	{
+		return;
+	}
 	const size_t s = name.length() * font.GetWidth() / 2;
 	const Vei2 pos = Vei2(
 		coords.GetScreenRegion().GetWidth() / 2 - (int)s + coords.GetScreenRegion().left,
@@ -423,6 +431,21 @@ void Graph::PutData(float x, float y)
 bool Graph::IsNegative() const
 {
 	return coords.IsNegative();
+}
+
+bool Graph::IsVisible() const
+{
+	return visible;
+}
+
+void Graph::ToggleVisible()
+{
+	visible = !visible;
+}
+
+void Graph::SetVisible(bool b)
+{
+	visible = b;
 }
 
 RectI Graph::GetScreenRegion() const

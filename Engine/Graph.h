@@ -79,10 +79,13 @@ public:
 	Graph(RectI screenRegion, Color pixelColor, std::string yAxisName, Font f);
 	Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
 	Graph(RectI screenRegion, float offset, Color axisColor, Color pixelColor, std::string yAxisName, Font f);
-	void Update(MouseController& mouseControl);
-	void Draw(std::string name, Graphics& gfx) const;
+	void Update(MouseController& mouseControl);				//uses visible
+	void Draw(std::string name, Graphics& gfx) const;		//uses visible
 	void PutData(float x, float y);
 	bool IsNegative() const;
+	bool IsVisible() const;
+	void ToggleVisible();
+	void SetVisible(bool b);
 	RectI GetScreenRegion() const;
 	std::string GetYAxisName() const;
 	void Refresh();
@@ -93,6 +96,7 @@ private:
 	bool initialized = false;
 	bool mouseInside = false;
 	bool mouseZooming = false;
+	bool visible = false;
 	Font font;
 	//coordinate system start values
 	static constexpr float xMaxStart = 0.0001f;		//minimal start x
