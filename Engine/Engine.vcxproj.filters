@@ -182,6 +182,9 @@
     <Image Include="Bitmaps\graph-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Bitmaps\close-icon.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="file.txt">

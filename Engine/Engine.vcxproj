@@ -250,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Bitmaps\backward-icon.bmp" />
+    <Image Include="Bitmaps\close-icon.bmp" />
     <Image Include="Bitmaps\Font.bmp" />
     <Image Include="Bitmaps\forward-icon.bmp" />
     <Image Include="Bitmaps\graph-icon.bmp" />

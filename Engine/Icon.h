@@ -20,6 +20,7 @@ public:
 		Backward,
 		Play,
 		Pause,
+		Close,
 		Graph
 	};
 	Icon(Surface s, int x = 0, int y = 0, std::string description = "")
@@ -114,6 +115,18 @@ protected:
 	Surface surf;
 };
 
+class CloseIcon : public Icon
+{
+public:
+	CloseIcon(std::string description = "Close")
+		:
+		Icon(Surface("Bitmaps\\close-icon.bmp"), 0, 0, description)
+	{}
+	Type GetType() const override
+	{
+		return Type::Close;
+	}
+};
 class GraphIcon : public Icon
 {
 public:
