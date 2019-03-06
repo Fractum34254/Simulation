@@ -82,6 +82,10 @@ public:
 			}
 		}
 	}
+	void SetActive(int place, int current)
+	{
+		icons.at(place).second = current % (int)icons.at(place).first.size();
+	}
 	int GetPixelWidth() const
 	{
 		return (iconWidth + offset) * GetWidth() - offset;

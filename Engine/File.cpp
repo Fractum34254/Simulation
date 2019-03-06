@@ -273,6 +273,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 		iconbars.emplace_back();
 		iconbars.at(i).AddIcon(std::make_unique<SaveIcon>(), [this]() {Save(); }, 0);
 		iconbars.at(i).AddIcon(std::make_unique<RefreshIcon>(), [i, this]() {RefreshGraph(i); }, 1);
+		///DO NOT MODIFY THE PLACE OF THE PLAY && PAUSE BUTTON (else set it up new in the Update() function)
 		iconbars.at(i).AddIcon(std::make_unique<PauseIcon>(), [this]() {SetCalculating(false); }, 3);
 		iconbars.at(i).AddIcon(std::make_unique<PlayIcon>(), [this]() {SetCalculating(true); }, 3);
 		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); }, 5);
@@ -293,6 +294,17 @@ void File::Update(MouseController& mouseControl)
 		}
 	}
 	SetUpButtons();
+	for (auto& bar : iconbars)
+	{
+		if (calculating)
+		{
+			bar.SetActive(3, 0);
+		}
+		else
+		{
+			bar.SetActive(3, 1);
+		}
+	}
 }
 
 void File::Calculate(float dt)
