@@ -278,7 +278,7 @@ File::File(std::string name, float offset, RectI screenRegion)
 		iconbars.at(i).AddIcon(std::make_unique<PlayIcon>(), [this]() {SetCalculating(true); }, 3);
 		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); }, 5);
 		iconbars.at(i).AddIcon(std::make_unique<ForwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 1.2f)); }, 6);
-		iconbars.at(i).AddIcon(std::make_unique<CloseIcon>(), [i, this]() {SetVisible(i, false); }, 8);
+		iconbars.at(i).AddIcon(std::make_unique<CloseIcon>("Close " + ownName + ": " + graphs.at(i)->GetYAxisName()), [i, this]() {SetVisible(i, false); }, 8);
 	}
 	SetUpButtons();
 }
