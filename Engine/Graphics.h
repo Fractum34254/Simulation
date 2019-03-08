@@ -73,6 +73,20 @@ public:
 	{
 		DrawLine((float)x0, (float)y0, (float)x1, (float)y1, c);
 	}
+	void DrawCircleFilled(Vec2 pos, float radius, Color c)
+	{
+		RectF rect = RectF::FromCenter(pos, radius, radius);
+		for (float x = rect.left; x <= rect.right; x++)
+		{
+			for (float y = rect.top; y <= rect.bottom; y++)
+			{
+				if ((Vec2(x, y) - pos).GetLengthSq() < radius * radius)
+				{
+					PutPixel((int)x, (int)y, c);
+				}
+			}
+		}
+	}
 	void DrawRectLine(RectI rect, int thickness, int borderExtension, Color c)
 	{
 		for (int i = 0; i < thickness; i++)
@@ -96,6 +110,19 @@ public:
 				PutPixel(x, y, c);
 			}
 		}
+	}
+	void DrawRectAreaRound(RectI rect, Color c, int cornerSize)
+	{
+		RectI topRect = RectI(rect.left + cornerSize, rect.right - cornerSize, rect.top, rect.top + cornerSize);
+		RectI midRect = RectI(rect.left, rect.right, rect.top + cornerSize, rect.bottom - cornerSize);
+		RectI bottomRect = RectI(rect.left + cornerSize, rect.right - cornerSize, rect.bottom - cornerSize, rect.bottom);
+		DrawRectArea(topRect, c);
+		DrawRectArea(midRect, c);
+		DrawRectArea(bottomRect, c);
+		DrawCircleFilled({ (float)(rect.left + cornerSize), (float)(rect.top + cornerSize) }, (float) cornerSize, c);
+		DrawCircleFilled({ (float)(rect.left + cornerSize), (float)(rect.bottom - cornerSize) }, (float)cornerSize, c);
+		DrawCircleFilled({ (float)(rect.right - cornerSize), (float)(rect.top + cornerSize) }, (float)cornerSize, c);
+		DrawCircleFilled({ (float)(rect.right - cornerSize), (float)(rect.bottom - cornerSize) }, (float)cornerSize, c);
 	}
 	template<typename E> void DrawSprite(int x, int y, const Surface & s, E effect)
 	{
