@@ -37,7 +37,7 @@ public:
 			gfx.DrawRectArea(rect, rectColor.GetFaded((delay - timePassed) / delay));
 			font.DrawText(text, Vei2(pos) + Vei2(offset, offset), textColor.GetFaded((delay - timePassed) / delay), gfx);
 		}
-		void Update(float dt)
+		void Fade(float dt)
 		{
 			timePassed += dt;
 			timePassed = std::min(timePassed, delay);
@@ -57,7 +57,25 @@ public:
 	private:
 		int GetTextWidth() const
 		{
-			return (int)GetInfo().size();
+			std::vector<int> max;
+			max.emplace_back(0);
+			for (const char& c : text)
+			{
+				if (c == '\n')
+				{
+					max.emplace_back(0);
+				}
+				else
+				{
+					max.back() += 1;
+				}
+			}
+			int Max = 0;
+			for (const auto& i : max)
+			{
+				Max = std::max(Max, i);
+			}
+			return Max * font.GetWidth();
 		}
 		int GetTextHeight() const
 		{
@@ -76,7 +94,7 @@ public:
 		static constexpr int offset = 7;
 		static constexpr Color rectColor = Colors::Blue;
 		static constexpr Color textColor = Colors::White;
-		static constexpr float delay = 3.0f;
+		static constexpr float delay = 1.5f;
 		float timePassed = 0.0f;
 		Font font;
 		Vec2 pos;
@@ -84,16 +102,19 @@ public:
 public:
 	void Update(float dt)
 	{
+		if (!events.empty() && !(events.at(0).GetPos().y > (float)minY))
+		{
+			events.at(0).Fade(dt);
+		}
 		for (int i = 0; i < events.size(); i++)
 		{
-			events.at(i).Update(dt);
 			if (events.at(i).IsFadedOut())
 			{
 				events.erase(events.begin() + i);
 				i--;
 			}
 		}
-		if (!events.empty() && (events.at(0).GetPos().y > (float)offset))
+		if (!events.empty() && (events.at(0).GetPos().y > (float)minY))
 		{
 			for (auto& e : events)
 			{
@@ -112,17 +133,19 @@ public:
 	{
 		if (events.empty())
 		{
-			events.emplace_back(Event(text, { (float)offset, (float)offset }));
+			events.emplace_back(Event(text, { (float)offset, (float)minY }));
 		}
 		else
 		{
 			Vec2 nextPos = events.back().GetPos();
 			nextPos.y += (float)events.back().GetHeight();
+			nextPos.y += offset;
 			events.emplace_back(Event(text, nextPos));
 		}
 	}
 private:
 	std::vector<Event> events;
 	static constexpr int offset = 3;
-	static constexpr float vel = 30.0f;
+	static constexpr int minY = 20 + 2 * offset;
+	static constexpr float vel = 50.0f;
 };

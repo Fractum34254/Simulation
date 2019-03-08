@@ -33,6 +33,7 @@
 #include "FrameTimer.h"
 #include "Icon.h"
 #include "Iconbar.h"
+#include "Eventmanager.h"
 #include "PhilUtil.h"
 
 class Game
@@ -69,5 +70,6 @@ private:
 	MouseController mouseControl;
 	Iconbar graphIconbar;
 	Iconbar settingsIconbar;
+	Eventmanager events;
 	/********************************/
 };
