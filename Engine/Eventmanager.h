@@ -34,7 +34,7 @@ public:
 		void Draw(Graphics& gfx) const
 		{
 			RectI rect = RectI(Vei2(pos), GetWidth(), GetHeight());
-			gfx.DrawRectArea(rect, rectColor.GetFaded((delay - timePassed) / delay));
+			gfx.DrawRectAreaRound(rect, rectColor.GetFaded((delay - timePassed) / delay), cornerRadius);
 			font.DrawText(text, Vei2(pos) + Vei2(offset, offset), textColor.GetFaded((delay - timePassed) / delay), gfx);
 		}
 		void Fade(float dt)
@@ -50,9 +50,10 @@ public:
 		{
 			return pos;
 		}
-		void TranslatePos(Vec2 t)
+		void TranslatePos(Vec2 t, float minX, float minY)
 		{
-			pos += t;
+			pos.x = std::max(minX, pos.x + t.x);
+			pos.y = std::max(minY, pos.y + t.y);
 		}
 	private:
 		int GetTextWidth() const
@@ -91,6 +92,7 @@ public:
 		}
 	private:
 		std::string text;
+		static constexpr int cornerRadius = 4;
 		static constexpr int offset = 7;
 		static constexpr Color rectColor = Colors::Blue;
 		static constexpr Color textColor = Colors::White;
@@ -118,7 +120,7 @@ public:
 		{
 			for (auto& e : events)
 			{
-				e.TranslatePos({ 0.0f, -vel * dt});
+				e.TranslatePos({ 0.0f, -vel * dt}, (float) offset, (float) minY);
 			}
 		}
 	}
