@@ -96,6 +96,9 @@
     <ClInclude Include="Iconbar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Eventmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DXErr.cpp">
