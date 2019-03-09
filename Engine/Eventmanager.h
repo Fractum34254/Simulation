@@ -171,6 +171,15 @@ public:
 			nextPos.y += (float)events.back().GetHeight();
 			nextPos.y += offset;
 			events.emplace_back(Event(text, nextPos));
+
+			if (events.back().GetPos().y + events.back().GetHeight() + offset >= Graphics::ScreenHeight)
+			{
+				for (auto& e : events)
+				{
+					e.TranslatePos({ 0.0f, -(float)events.at(0).GetHeight() }, (float)offset, (float)minY);
+				}
+				events.erase(events.begin());
+			}
 		}
 	}
 private:
