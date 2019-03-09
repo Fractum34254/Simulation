@@ -6,6 +6,7 @@
 #include "Font.h"
 #include "Vec2.h"
 #include "Rect.h"
+#include "MouseController.h"
 
 class Eventmanager
 {
@@ -41,6 +42,23 @@ public:
 		{
 			timePassed += dt;
 			timePassed = std::min(timePassed, delay);
+		}
+		bool Update(const MouseController& mouseControl)
+		{
+			bool ret = false;
+			if (RectI(Vei2(pos), GetWidth(), GetHeight()).Contains(mouseControl.GetMousePos()))
+			{
+				while (!mouseControl.mouse.IsEmpty())
+				{
+					const Mouse::Event e = mouseControl.mouse.Read();
+					if (e.GetType() == Mouse::Event::Type::RPress)
+					{
+						timePassed = delay;
+						ret = true;
+					}
+				}
+			}
+			return ret;
 		}
 		bool IsFadedOut() const
 		{
@@ -96,17 +114,27 @@ public:
 		static constexpr int offset = 7;
 		static constexpr Color rectColor = Colors::Blue;
 		static constexpr Color textColor = Colors::White;
-		static constexpr float delay = 1.5f;
+		static constexpr float delay = 2.5f;
 		float timePassed = 0.0f;
 		Font font;
 		Vec2 pos;
 	};
 public:
-	void Update(float dt)
+	void Update(float dt, const MouseController& mouseControl)
 	{
 		if (!events.empty() && !(events.at(0).GetPos().y > (float)minY))
 		{
-			events.at(0).Fade(dt);
+			if (events.at(0).Update(mouseControl))
+			{
+				for (auto& e : events)
+				{
+					e.TranslatePos({ 0.0f, -(float)events.at(0).GetHeight() }, (float)offset, (float)minY);
+				}
+				events.erase(events.begin());
+			}
+			else {
+				events.at(0).Fade(dt);
+			}
 		}
 		for (int i = 0; i < events.size(); i++)
 		{
