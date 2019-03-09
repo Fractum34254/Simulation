@@ -11,6 +11,7 @@
 #include "Graph.h"
 #include "Font.h"
 #include "Iconbar.h"
+#include "Eventmanager.h"
 
 class File
 {
@@ -24,20 +25,20 @@ public:
 	};
 public:
 	File() = default;
-	File(std::string name, float offset, RectI screenRegion);
+	File(std::string name, float offset, RectI screenRegion, Eventmanager& e);
 	void Update(MouseController& mouseControl);
 	void Calculate(float dt);
 	void Draw(Graphics& gfx) const;
-	void SetRepeatValue(int rv);
+	void SetRepeatValue(int rv);												//Event
 	int GetRepeatVal() const;
-	void Save() const;
-	void RefreshAll();
-	void RefreshGraph(int i);
+	void Save() const;															//Event
+	void RefreshAll();															//Event
+	void RefreshGraph(int i);													//Event
 	void SetCalculating(bool b);
 	bool GetCalculating() const;
 	void ToggleVisible();
 	void SetVisible(int graph, bool b);
-	void CloseAll();
+	void CloseAll();															//Event
 	bool AllVisible() const;
 	bool AnyVisible() const;
 	std::string GetName() const;
@@ -65,10 +66,12 @@ private:
 	std::string timeVar;
 	int repeatVal;
 	bool calculating = true;
+	//Objects
 	std::vector<std::unique_ptr<Graph>> graphs;
 	std::vector<Iconbar> iconbars;
 	Font font;
 	Parser parser;
+	Eventmanager& events;
 	//File values
 	static constexpr int cropVal = 8;
 	std::string ownName;

@@ -56,7 +56,7 @@ Game::Game( MainWindow& wnd )
 	const RectI fileRect = {left, right, top, bottom};
 	for (int i = 0; i < names.size(); i++)
 	{
-		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect));
+		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect, events));
 	}
 
 	graphIconbar.SetPos({ 3,3 });
@@ -101,9 +101,6 @@ Game::Game( MainWindow& wnd )
 			file->CloseAll();
 		}});
 	settingsIconbar.SetPos({ Graphics::ScreenWidth / 2 - settingsIconbar.GetPixelWidth() / 2, 3 });
-	events.Add("Test");
-	events.Add("Test2\nTest4");
-	events.Add("Test45");
 }
 
 void Game::Go()
@@ -118,9 +115,9 @@ void Game::UpdateModel()
 {
 	mouseControl.Update();
 	float dt = ft.Mark();
-	events.Update(dt);
 	graphIconbar.Update(mouseControl);
 	settingsIconbar.Update(mouseControl);
+	events.Update(dt, mouseControl);
 	for (auto& file : files)
 	{
 		file->Calculate(dt);

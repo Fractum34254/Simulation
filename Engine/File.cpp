@@ -1,10 +1,11 @@
 #include "File.h"
 
-File::File(std::string name, float offset, RectI screenRegion)
+File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 	:
 	ownName(name),
 	offset(offset),
-	font("Bitmaps\\Font.bmp")
+	font("Bitmaps\\Font.bmp"),
+	events(e)
 {
 	std::ifstream file(ownName);
 	//test, if file exists																							|-> can lead to EXCEPTION
@@ -338,6 +339,9 @@ void File::Draw(Graphics & gfx) const
 void File::SetRepeatValue(int rv)
 {
 	repeatVal = std::min(std::max(rv, 5), 1200);
+	std::stringstream tempSS;
+	tempSS << ownName << ":\nNow calculating " << repeatVal << "/s";
+	events.Add(tempSS.str());
 }
 
 int File::GetRepeatVal() const
@@ -371,6 +375,9 @@ void File::Save() const
 		}
 		file << "\n";
 	}
+	std::stringstream tempSS;
+	tempSS << "Successfully saved " << ownName << "!";
+	events.Add(tempSS.str());
 }
 
 void File::RefreshAll()
@@ -380,12 +387,18 @@ void File::RefreshAll()
 		graph->Refresh();
 	}
 	SetUpButtons();
+	std::stringstream tempSS;
+	tempSS << ownName << ":\nRefreshed all graphs.";
+	events.Add(tempSS.str());
 }
 
 void File::RefreshGraph(int i)
 {
 	graphs.at(i)->Refresh();
 	SetUpButtons();
+	std::stringstream tempSS;
+	tempSS << ownName << ":\nRefreshed graph " << graphs.at(i)->GetYAxisName();
+	events.Add(tempSS.str());
 }
 
 void File::SetCalculating(bool b)
@@ -427,6 +440,9 @@ void File::CloseAll()
 	{
 		pGraph->SetVisible(false);
 	}
+	std::stringstream tempSS;
+	tempSS << "Closed " << ownName;
+	events.Add(tempSS.str());
 }
 
 bool File::AllVisible() const
