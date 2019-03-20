@@ -1,15 +1,17 @@
 #include "Graph.h"
 
-Graph::CoordinateSystem::CoordinateSystem(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor)
+Graph::CoordinateSystem::CoordinateSystem(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors)
 	:
 	xMax(xMax),
 	yMax(yMax),
 	offset(offset),
 	screenRegion(screenRegion),
 	axisColor(axisColor),
-	pixelColor(pixelColor),
+	pixelColors(pixelColors),
 	initialized(true)
-{}
+{
+	pixel.reserve(pixelColors.size());
+}
 
 void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxis, float yMaxAxis) const
 {
@@ -44,9 +46,12 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	}
 
 	//drawing the pixels
-	for (const std::pair<const int, std::pair<float, float>>& c : pixel)
+	for (int i = 0; i < pixel.size(); i++)
 	{
-		gfx.PutPixel((int)c.second.first, (int)c.second.second, pixelColor);
+		for (const std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		{
+			gfx.PutPixel((int)c.second.first, (int)c.second.second, pixelColors.at(i));
+		}
 	}
 
 	//drawing the axis division
@@ -104,7 +109,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	}
 }
 
-void Graph::CoordinateSystem::PutCoordinate(float x, float y)
+void Graph::CoordinateSystem::PutCoordinate(float x, float y, int graph)
 {
 	if (!initialized)
 	{
@@ -134,7 +139,7 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y)
 	x += xPixMin;
 	y += xAxis;
 
-	pixel[cur++] = { std::min((float)xPixMax,std::max(x, (float)xPixMin)),std::min((float)yPixMax,std::max(y, (float)yPixMin)) };
+	pixel[graph][cur++] = { std::min((float)xPixMax,std::max(x, (float)xPixMin)),std::min((float)yPixMax,std::max(y, (float)yPixMin)) };
 }
 
 void Graph::CoordinateSystem::SetYMax(float newYMax)
@@ -156,13 +161,16 @@ void Graph::CoordinateSystem::SetYMax(float newYMax)
 	const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
 
 
-	for (std::pair<const int, std::pair<float, float>>& c : pixel)
+	for (int i = 0; i < pixel.size(); i++)
 	{
-		c.second.second -= xAxis;
-		c.second.second /= yScale;
-		c.second.second *= scale;
-		c.second.second *= yScale;
-		c.second.second += xAxis;
+		for (std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		{
+			c.second.second -= xAxis;
+			c.second.second /= yScale;
+			c.second.second *= scale;
+			c.second.second *= yScale;
+			c.second.second += xAxis;
+		}
 	}
 	yMax = newYMax;
 }
@@ -183,23 +191,29 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 
 	const float xScale = (float)deltaX / (float)xMax;
 
-	for (std::pair<const int, std::pair<float, float>>& c : pixel)
+	for (int i = 0; i < pixel.size(); i++)
 	{
-		c.second.first -= xPixMin;
-		c.second.first /= xScale;
-		c.second.first *= scale;
-		c.second.first *= xScale;
-		c.second.first += xPixMin;
+		for (std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		{
+			c.second.first -= xPixMin;
+			c.second.first /= xScale;
+			c.second.first *= scale;
+			c.second.first *= xScale;
+			c.second.first += xPixMin;
+		}
 	}
 	xMax = newXMax;
 }
 
-void Graph::CoordinateSystem::Refresh(const std::unordered_map<int, std::pair<float, float>>& data)
+void Graph::CoordinateSystem::Refresh(const std::vector<std::unordered_map<int, std::pair<float, float>>>& data)
 {
 	pixel.clear();
 	for (int i = 0; i < data.size(); i++)
 	{
-		PutCoordinate(data.at(i).first, data.at(i).second);
+		for (int j = 0; j < data.at(i).size(); j++)
+		{
+			PutCoordinate(data.at(i).at(j).first, data.at(i).at(j).second, i);
+		}
 	}
 }
 
@@ -292,43 +306,50 @@ void Graph::CoordinateSystem::ConvertToNegative()
 
 	const float xAxisNew = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
 
-	for (std::pair<const int, std::pair<float, float>>& c : pixel)
+	for (int i = 0; i < pixel.size(); i++)
 	{
-		c.second.second -= xAxis;
-		c.second.second /= yScale;
-		c.second.second *= yScaleNew;
-		c.second.second += xAxisNew;
+		for (std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		{
+			c.second.second -= xAxis;
+			c.second.second /= yScale;
+			c.second.second *= yScaleNew;
+			c.second.second += xAxisNew;
+		}
 	}
 }
 
-Graph::Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f)
+Graph::Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
-	coords(xMax, yMax, offset, screenRegion, axisColor, pixelColor),
-	yAxisName(yAxisName),
+	coords(xMax, yMax, offset, screenRegion, axisColor, pixelColors),
+	yAxisNames(yAxisNames),
+	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
 {}
 
-Graph::Graph(RectI screenRegion, Color pixelColor, std::string yAxisName, Font f)
+Graph::Graph(RectI screenRegion, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
-	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
-	yAxisName(yAxisName),
+	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColors),
+	yAxisNames(yAxisNames),
+	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
 {}
 
-Graph::Graph(RectI screenRegion, Color axisColor, Color pixelColor, std::string yAxisName, Font f)
+Graph::Graph(RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
-	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
-	yAxisName(yAxisName),
+	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColors),
+	yAxisNames(yAxisNames),
+	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
 {}
 
-Graph::Graph(RectI screenRegion, float offset, Color axisColor, Color pixelColor, std::string yAxisName, Font f) 
+Graph::Graph(RectI screenRegion, float offset, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
-	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColor),
-	yAxisName(yAxisName),
+	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColors),
+	yAxisNames(yAxisNames),
+	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
 {}
@@ -386,7 +407,7 @@ void Graph::Update(MouseController& mouseControl)
 	}
 }
 
-void Graph::Draw(std::string name, Graphics& gfx) const
+void Graph::Draw(std::string name, std::string xName, Graphics& gfx) const
 {
 	if (!initialized)
 	{
@@ -403,9 +424,19 @@ void Graph::Draw(std::string name, Graphics& gfx) const
 		coords.GetScreenRegion().top - font.GetHeight() - (int)coords.GetOffset());
 	font.DrawText(name, pos, coords.GetAxisColor(), gfx);
 	coords.Draw(font, gfx, maxXNumber, maxYNumber);
+	//draw yAxis names
+	Vei2 rawPos = Vei2(GetScreenRegion().left - (int)offset, GetScreenRegion().top - font.GetHeight() - (int)offset);
+	int delta = 0;
+	for (int i = 0; i < yAxisNames.size(); i++)
+	{
+		rawPos.x += delta;
+		font.DrawText(yAxisNames.at(i), rawPos,	pixelColors.at(i), gfx);
+		delta = yAxisNames.at(i).size() * (font.GetWidth() + 1);
+	}
+	font.DrawText(xName, Vei2(GetScreenRegion().right - 2 * (int)offset, GetScreenRegion().bottom - (IsNegative() ? GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
 }
 
-void Graph::PutData(float x, float y)
+void Graph::PutData(float x, float y, int system)
 {
 	if (!initialized)
 	{
@@ -425,7 +456,7 @@ void Graph::PutData(float x, float y)
 		maxYNumber = PhilUtil::top(maxYValue);
 		coords.SetYMax(maxYNumber);
 	}
-	coords.PutCoordinate(x, y);
+	coords.PutCoordinate(x, y, system);
 }
 
 bool Graph::IsNegative() const
@@ -453,9 +484,9 @@ RectI Graph::GetScreenRegion() const
 	return coords.GetScreenRegion();
 }
 
-std::string Graph::GetYAxisName() const
+std::vector<std::string> Graph::GetYAxisNames() const
 {
-	return yAxisName;
+	return yAxisNames;
 }
 
 void Graph::Refresh()
@@ -463,7 +494,7 @@ void Graph::Refresh()
 	coords.Refresh(data);
 }
 
-std::unique_ptr<std::unordered_map<int, std::pair<float, float>>> Graph::GetData() const
+std::unique_ptr<std::vector<std::unordered_map<int, std::pair<float, float>>>> Graph::GetData() const
 {
-	return std::make_unique< std::unordered_map<int, std::pair<float, float>>>(data);
+	return std::make_unique<std::vector<std::unordered_map<int, std::pair<float, float>>>>(data);
 }

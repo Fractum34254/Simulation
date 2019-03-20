@@ -329,8 +329,6 @@ void File::Draw(Graphics & gfx) const
 		if (graphs.at(i)->IsVisible())
 		{
 			graphs.at(i)->Draw(ownName, gfx);
-			font.DrawText(yAxisNames.at(i), Vei2(graphs.at(i)->GetScreenRegion().left - (int)offset, graphs.at(i)->GetScreenRegion().top - font.GetHeight() - (int)offset), axisColor, gfx);
-			font.DrawText(timeVar, Vei2(graphs.at(i)->GetScreenRegion().right - 2 * (int)offset, graphs.at(i)->GetScreenRegion().bottom - (graphs.at(i)->IsNegative() ? graphs.at(i)->GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
 			iconbars.at(i).Draw(gfx);
 		}
 	}
