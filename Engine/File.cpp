@@ -458,12 +458,6 @@ void File::Save() const
 	{
 		//get time
 		const float t = data.at(0)->at(i).first;
-		//get y values
-		std::vector<float> y;
-		for (int k = 0; k < mapCount; k++)
-		{
-			y.emplace_back(data.at(k)->at(i).second);
-		}
 		//write time
 		file << "t: " << PhilUtil::Crop(t, cropVal) << " ";
 		//loop through graphs
@@ -473,7 +467,7 @@ void File::Save() const
 			for (int j = 0; j < graphs.at(k)->GetYAxisNames().size(); j++)
 			{
 				//write y values
-				file << graphs.at(k)->GetYAxisNames().at(j) << ": " << PhilUtil::Crop(y.at(k), cropVal) << " ";
+				file << graphs.at(k)->GetYAxisNames().at(j) << ": " << PhilUtil::Crop(data.at(k * graphs.at(k)->GetYAxisNames().size() + j)->at(i).second, cropVal) << " ";
 			}
 		}
 		//put new line character

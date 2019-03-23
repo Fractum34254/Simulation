@@ -202,5 +202,8 @@
     <Text Include="winkel.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="output - winkel.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

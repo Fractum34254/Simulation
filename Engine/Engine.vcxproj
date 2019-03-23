@@ -264,6 +264,7 @@
   <ItemGroup>
     <Text Include="file.txt" />
     <Text Include="files.txt" />
+    <Text Include="output - winkel.txt" />
     <Text Include="stahlkugel.txt" />
     <Text Include="winkel.txt" />
   </ItemGroup>
