@@ -1,7 +1,7 @@
 Time variable: t
 Axis Color: 255 255 255
 Repeating per second: 100
-Graph Color: 0 255 255 255 255 0 0 0 255
+Graph Color: 0 255 255 255 255 0 0 255 255 0 255 0
 y Values: (ySin yTan) (ySin yCos)
 #Head
 t = 0

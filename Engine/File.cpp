@@ -46,6 +46,13 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 				const char bc = PhilUtil::toColorChar(file, "blue graph", ownName);
 				///assemble them in one color
 				pixelColors.emplace_back(Color(rc, gc, bc));
+				///erase all blank spaces
+				c = file.get();
+				while (c == ' ')
+				{
+					c = file.get();
+				}
+				file.unget();
 			}
 		};
 		settingNames[yNameSet].first = [this](std::ifstream& file) {
@@ -245,10 +252,44 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 		const int xDir = pair.second;
 		const int deltaY = screenRegion.GetHeight() / yDir - off;
 		const int deltaX = screenRegion.GetWidth() / xDir - off;
+		int colorCount = 0;
+		///check, if there are enough colors for all graphs
+		{
+			const int colorSize = (int)pixelColors.size();
+			int graphNumber = 0;
+			for (const auto& n : yAxisNames)
+			{
+				graphNumber += (int)n.size();
+			}
+			if (colorSize < graphNumber)
+			{
+				std::string info = "Not enough graph colors found in \"";
+				info += ownName;
+				info += "\"!";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+			else if (colorSize > graphNumber)
+			{
+				std::string info = "Too many graph colors found in \"";
+				info += ownName;
+				info += "\"!";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+		}
+
+
+		//initialize graphs
 		for (int i = 0; i < yAxisNames.size(); i++)
 		{
+			std::vector<Color> pixCol;
+			int j = 0;
+			for (; j < yAxisNames.at(i).size(); j++)
+			{
+				pixCol.emplace_back(pixelColors.at(colorCount + j));
+			}
+			colorCount += j;
 			const RectI rect = RectI({ screenRegion.left + (i % xDir) * (deltaX + off), screenRegion.top + (i / xDir) * (deltaY+off) }, deltaX, deltaY);
-			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, offset, axisColor, pixelColors, yAxisNames.at(i), font)));
+			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, offset, axisColor, pixCol, yAxisNames.at(i), font)));
 		}
 	}
 
