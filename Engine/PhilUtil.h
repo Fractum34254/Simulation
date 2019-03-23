@@ -134,6 +134,7 @@ public:
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
 			}
 		}
+		file.unget();
 		return colorInt;
 	}
 };

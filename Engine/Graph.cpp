@@ -139,7 +139,11 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y, int graph)
 	x += xPixMin;
 	y += xAxis;
 
-	pixel[graph][cur++] = { std::min((float)xPixMax,std::max(x, (float)xPixMin)),std::min((float)yPixMax,std::max(y, (float)yPixMin)) };
+	if (graph >= pixel.size())
+	{
+		pixel.resize(graph + 1);
+	}
+	pixel.at(graph)[cur++] = { std::min((float)xPixMax,std::max(x, (float)xPixMin)),std::min((float)yPixMax,std::max(y, (float)yPixMin)) };
 }
 
 void Graph::CoordinateSystem::SetYMax(float newYMax)
@@ -325,7 +329,14 @@ Graph::Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axi
 	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
-{}
+{
+	cur.resize(yAxisNames.size());
+	data.resize(yAxisNames.size());
+	for (int& i : cur)
+	{
+		i = 0;
+	}
+}
 
 Graph::Graph(RectI screenRegion, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
@@ -334,7 +345,14 @@ Graph::Graph(RectI screenRegion, std::vector<Color> pixelColors, std::vector<std
 	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
-{}
+{
+	cur.resize(yAxisNames.size());
+	data.resize(yAxisNames.size());
+	for (int& i : cur)
+	{
+		i = 0;
+	}
+}
 
 Graph::Graph(RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
@@ -343,7 +361,14 @@ Graph::Graph(RectI screenRegion, Color axisColor, std::vector<Color> pixelColors
 	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
-{}
+{
+	cur.resize(yAxisNames.size());
+	data.resize(yAxisNames.size());
+	for (int& i : cur)
+	{
+		i = 0;
+	}
+}
 
 Graph::Graph(RectI screenRegion, float offset, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
@@ -352,7 +377,14 @@ Graph::Graph(RectI screenRegion, float offset, Color axisColor, std::vector<Colo
 	pixelColors(pixelColors),
 	initialized(true),
 	font(f)
-{}
+{
+	cur.resize(yAxisNames.size());
+	data.resize(yAxisNames.size());
+	for (int& i : cur)
+	{
+		i = 0;
+	}
+}
 
 void Graph::Update(MouseController& mouseControl)
 {
@@ -431,7 +463,7 @@ void Graph::Draw(std::string name, std::string xName, Graphics& gfx) const
 	{
 		rawPos.x += delta;
 		font.DrawText(yAxisNames.at(i), rawPos,	pixelColors.at(i), gfx);
-		delta = yAxisNames.at(i).size() * (font.GetWidth() + 1);
+		delta = (int)yAxisNames.at(i).size() * (font.GetWidth() + 1);
 	}
 	font.DrawText(xName, Vei2(GetScreenRegion().right - 2 * (int)offset, GetScreenRegion().bottom - (IsNegative() ? GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
 }
@@ -443,7 +475,7 @@ void Graph::PutData(float x, float y, int system)
 		std::string info = "Unitialized graph!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
-	data[cur++] = { x,y };
+	data.at(system)[cur.at(system)++] = { x,y };
 	maxXValue = std::max(maxXValue, std::abs(x));
 	maxYValue = std::max(maxYValue, std::abs(y));
 	if (maxXNumber < PhilUtil::top(maxXValue))
@@ -487,6 +519,18 @@ RectI Graph::GetScreenRegion() const
 std::vector<std::string> Graph::GetYAxisNames() const
 {
 	return yAxisNames;
+}
+
+std::string Graph::GetYAxisName() const
+{
+	std::string tempS;
+	tempS = yAxisNames.at(0);
+	for (int i = 1; i < yAxisNames.size(); i++)
+	{
+		tempS += " ";
+		tempS += yAxisNames.at(i);
+	}
+	return tempS;
 }
 
 void Graph::Refresh()

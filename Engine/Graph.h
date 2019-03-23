@@ -88,6 +88,7 @@ public:
 	void SetVisible(bool b);
 	RectI GetScreenRegion() const;
 	std::vector<std::string> GetYAxisNames() const;
+	std::string GetYAxisName() const;
 	void Refresh();
 	std::unique_ptr<std::vector<std::unordered_map<int, std::pair<float, float>>>> GetData() const;
 private:
@@ -109,7 +110,7 @@ private:
 	//coordinate system
 	CoordinateSystem coords;
 	//data
-	int cur = 0;
+	std::vector<int> cur;
 	std::vector<std::unordered_map<int, std::pair<float, float>>> data;
 	float maxYValue = yMaxStart;
 	float maxXValue = xMaxStart;

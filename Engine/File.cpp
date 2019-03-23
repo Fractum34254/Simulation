@@ -31,44 +31,96 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			const unsigned char bc = PhilUtil::toColorChar(file, "blue axis", ownName);
 			///assemble them in one color
 			axisColor = Color(rc, gc, bc);
+			file.get();
 		};
 		settingNames[graphColorSet].first = [this](std::ifstream& file) {
 			file.unget();
-			///red color value
-			const char rc = PhilUtil::toColorChar(file, "red graph", ownName);
-			///green color value
-			const char gc = PhilUtil::toColorChar(file, "green graph", ownName);
-			///blue color value
-			const char bc = PhilUtil::toColorChar(file, "blue graph", ownName);
-			///assemble them in one color
-			pixelColor = Color(rc, gc, bc);
+			for (char c = file.get(); c != '\n'; c = file.get())
+			{
+				file.unget();
+				///red color value
+				const char rc = PhilUtil::toColorChar(file, "red graph", ownName);
+				///green color value
+				const char gc = PhilUtil::toColorChar(file, "green graph", ownName);
+				///blue color value
+				const char bc = PhilUtil::toColorChar(file, "blue graph", ownName);
+				///assemble them in one color
+				pixelColors.emplace_back(Color(rc, gc, bc));
+			}
 		};
 		settingNames[yNameSet].first = [this](std::ifstream& file) {
 			file.unget();
 			bool repeat = false;
+			///count braces
+			int braceNmr = 0;
+			yAxisNames.resize(braceNmr + 1);
 			do {
-				///test for blank space
-				std::string yName;
+				///erase blank spaces
 				char c = file.get();
 				while (c == ' ')
 				{
 					c = file.get();
 				}
-				file.unget();
-				for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n'); c = file.get())
+				///brace
+				if (c != '(')
 				{
-					yName += c;
+					std::string info = "Bad y axis names in file \"";
+					info += ownName;
+					info += "\": Missing opening parenthesis";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
-				yAxisNames.emplace_back(yName);
-				if (c == ' ')
+				///read out the brace
+				for (c = file.get(); c != ')'; c = file.get())
+				{
+					std::string yName;
+					///erase blank spaces
+					while (c == ' ')
+					{
+						c = file.get();
+					}
+					file.unget();
+					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n') && (c != ')'); c = file.get())
+					{
+						yName += c;
+					}
+					file.unget();
+					///test, if line ends
+					if ((c == '\n') || (c == -1))
+					{
+						std::string info = "Bad y axis names in file \"";
+						info += ownName;
+						info += "\": Missing closing parenthesis";
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+					}
+					///c is now definitly == ' '
+					yAxisNames.at(braceNmr).emplace_back(yName);
+				}
+				///erase blank spaces
+				c = file.get();
+				while (c == ' ')
+				{
+					c = file.get();
+				}
+				file.unget();
+				if (c == '(')
 				{
 					repeat = true;
+					braceNmr++;
+					yAxisNames.resize(braceNmr+1);
+				}
+				else if ((c != '\n') && (c != -1))
+				{
+					std::string info = "Bad y axis names in file \"";
+					info += ownName;
+					info += "\": Missing parenthesis\n(found characters out of braces)";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				else
 				{
 					repeat = false;
 				}
 			} while (repeat);
+			file.get();
 		};
 		settingNames[timeName].first = [this](std::ifstream& file) {
 			file.unget();
@@ -196,7 +248,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 		for (int i = 0; i < yAxisNames.size(); i++)
 		{
 			const RectI rect = RectI({ screenRegion.left + (i % xDir) * (deltaX + off), screenRegion.top + (i / xDir) * (deltaY+off) }, deltaX, deltaY);
-			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, offset, axisColor, pixelColor, yAxisNames.at(i), font)));
+			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, offset, axisColor, pixelColors, yAxisNames.at(i), font)));
 		}
 	}
 
@@ -258,13 +310,6 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 	/************************************** CALCULATING CODE ONCE *********************************************************/
 	{
 		CalculateOnce();
-	}
-	/************************************** ASSIGNING VARIABLES TO GRAPH *********************************************************/
-	{
-		for (int i = 0; i < yAxisNames.size(); i++)
-		{
-			graphs.at(i)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(i)));
-		}
 	}
 
 	/************************************** BUTTON SETUP *********************************************************/
@@ -328,7 +373,7 @@ void File::Draw(Graphics & gfx) const
 	{
 		if (graphs.at(i)->IsVisible())
 		{
-			graphs.at(i)->Draw(ownName, gfx);
+			graphs.at(i)->Draw(ownName, timeVar, gfx);
 			iconbars.at(i).Draw(gfx);
 		}
 	}
@@ -349,30 +394,51 @@ int File::GetRepeatVal() const
 
 void File::Save() const
 {
+	//output file name
 	std::string fname = "output - ";
 	fname += ownName;
 	std::ofstream file(fname);
-	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> data;
+	//add all data maps of all graphs together in 'data'
+	std::unique_ptr<std::vector<std::unordered_map<int, std::pair<float, float>>>> data;
 	for (int i = 0; i < graphs.size(); i++)
 	{
-		data.emplace_back(std::move(graphs.at(i)->GetData()));
+		const auto dats = std::move(graphs.at(i)->GetData());
+		for (int j = 0; j < dats->size(); j++)
+		{
+			data->emplace_back(dats->at(j));
+		}
 	}
-	const int cur = (const int)data.at(0)->size();
-	for (int i = 0; i < cur; i++)
+	//get size of unordered maps
+	const int dataSize = (const int)data->at(0).size();
+	//get number of unordered maps
+	const int mapCount = (const int)data->size();
+	//loop through all data points in the maps
+	for (int i = 0; i < dataSize; i++)
 	{
-		const float t = data.at(0)->at(i).first;
+		//get time
+		const float t = data->at(0).at(i).first;
+		//get y values
 		std::vector<float> y;
-		for (int k = 0; k < graphs.size(); k++)
+		for (int k = 0; k < mapCount; k++)
 		{
-			y.emplace_back(data.at(k)->at(i).second);
+			y.emplace_back(data->at(k).at(i).second);
 		}
+		//write time
 		file << "t: " << PhilUtil::Crop(t, cropVal) << " ";
-		for (int k = 0; k < graphs.size(); k++)
+		//loop through maps
+		for (int k = 0; k < mapCount; k++)
 		{
-			file << graphs.at(k)->GetYAxisName() << ": " << PhilUtil::Crop(y.at(k), cropVal) << " ";
+			//loop through y names
+			for (int j = 0; j < graphs.at(k)->GetYAxisNames().size(); j++)
+			{
+				//write y values
+				file << graphs.at(k)->GetYAxisNames().at(j) << ": " << PhilUtil::Crop(y.at(k), cropVal) << " ";
+			}
 		}
+		//put new line character
 		file << "\n";
 	}
+	//create save event
 	std::stringstream tempSS;
 	tempSS << "Successfully saved " << ownName << "!";
 	events.Add(tempSS.str());
@@ -506,8 +572,12 @@ void File::CalculateOnce()
 			parser.Calculate(line, vars, lineNmr++);
 		}
 	} while (!endReached);
-	for (int i = 0; i < yAxisNames.size(); i++)
+
+	for (int j = 0; j < yAxisNames.size(); j++) ///which graph?
 	{
-		graphs.at(i)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(i)));
+		for (int i = 0; i < yAxisNames.at(j).size(); i++) ///which y variable?
+		{
+			graphs.at(j)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(j).at(i)), i);
+		}
 	}
 }

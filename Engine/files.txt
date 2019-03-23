@@ -1,2 +1,1 @@
-stahlkugel.txt
-fähre.txt
+winkel.txt

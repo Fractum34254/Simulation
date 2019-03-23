@@ -1,0 +1,12 @@
+Time variable: t
+Axis Color: 255 255 255
+Repeating per second: 100
+Graph Color: 0 255 255 255 255 0 0 0 255
+y Values: (ySin yTan) (ySin yCos)
+#Head
+t = 0
+#Program
+ySin = sin(t)
+yTan = tan(t)
+yCos = cos(t)
+t = t + 0.0001

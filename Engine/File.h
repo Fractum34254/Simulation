@@ -61,8 +61,8 @@ private:
 	static constexpr float yMaxStart = 1.0f;
 	float offset;
 	Color axisColor;
-	Color pixelColor;
-	std::vector<std::string> yAxisNames;
+	std::vector<Color> pixelColors;
+	std::vector<std::vector<std::string>> yAxisNames;
 	std::string timeVar;
 	int repeatVal;
 	bool calculating = true;
