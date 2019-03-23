@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <unordered_map>
 #include "ChiliException.h"
 
 
@@ -136,6 +137,27 @@ public:
 		}
 		file.unget();
 		return colorInt;
+	}
+	template<typename T, typename U>
+	static void CopyUnorderedMap(const std::unordered_map<T, U>& input, std::unordered_map<T, U>& output)
+	{
+		try
+		{
+			for (const auto& data : input)
+			{
+				output[data.first] = data.second;
+			}
+		}
+		catch (const std::exception&)
+		{
+			std::string info = "Copying of unordered map failed.\ncaught std::exception";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
+		catch (...)
+		{
+			std::string info = "Copying of unordered map failed.\ncaught something, but no std::exception";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, towstring(info));
+		}
 	}
 };
 

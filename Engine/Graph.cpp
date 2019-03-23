@@ -538,7 +538,12 @@ void Graph::Refresh()
 	coords.Refresh(data);
 }
 
-std::unique_ptr<std::vector<std::unordered_map<int, std::pair<float, float>>>> Graph::GetData() const
+std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> Graph::GetData() const
 {
-	return std::make_unique<std::vector<std::unordered_map<int, std::pair<float, float>>>>(data);
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> output;
+	for (const auto& map : data)
+	{
+		output.emplace_back(std::make_unique<std::unordered_map<int, std::pair<float, float>>>(map));
+	}
+	return output;
 }

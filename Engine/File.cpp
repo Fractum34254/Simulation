@@ -440,34 +440,34 @@ void File::Save() const
 	fname += ownName;
 	std::ofstream file(fname);
 	//add all data maps of all graphs together in 'data'
-	std::unique_ptr<std::vector<std::unordered_map<int, std::pair<float, float>>>> data;
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> data;
 	for (int i = 0; i < graphs.size(); i++)
 	{
-		const auto dats = std::move(graphs.at(i)->GetData());
-		for (int j = 0; j < dats->size(); j++)
+		const size_t max = graphs.at(i)->GetData().size();
+		for (int j = 0; j < max; j++)
 		{
-			data->emplace_back(dats->at(j));
+			data.emplace_back(std::move(graphs.at(i)->GetData().at(j)));
 		}
 	}
 	//get size of unordered maps
-	const int dataSize = (const int)data->at(0).size();
+	const int dataSize = (const int)data.at(0)->size();
 	//get number of unordered maps
-	const int mapCount = (const int)data->size();
+	const int mapCount = (const int)data.size();
 	//loop through all data points in the maps
 	for (int i = 0; i < dataSize; i++)
 	{
 		//get time
-		const float t = data->at(0).at(i).first;
+		const float t = data.at(0)->at(i).first;
 		//get y values
 		std::vector<float> y;
 		for (int k = 0; k < mapCount; k++)
 		{
-			y.emplace_back(data->at(k).at(i).second);
+			y.emplace_back(data.at(k)->at(i).second);
 		}
 		//write time
 		file << "t: " << PhilUtil::Crop(t, cropVal) << " ";
-		//loop through maps
-		for (int k = 0; k < mapCount; k++)
+		//loop through graphs
+		for (int k = 0; k < graphs.size(); k++)
 		{
 			//loop through y names
 			for (int j = 0; j < graphs.at(k)->GetYAxisNames().size(); j++)

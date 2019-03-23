@@ -90,7 +90,7 @@ public:
 	std::vector<std::string> GetYAxisNames() const;
 	std::string GetYAxisName() const;
 	void Refresh();
-	std::unique_ptr<std::vector<std::unordered_map<int, std::pair<float, float>>>> GetData() const;
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> GetData() const;
 private:
 	//config values
 	static constexpr int cropVal = 8;
