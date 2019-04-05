@@ -81,7 +81,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 		{
 			gfx.DrawLine(yAxis - lineLength / 2.0f, xAxis + i * deltaY, yAxis + lineLength / 2.0f, xAxis + i * deltaY, axisColor);
 			std::stringstream ss;
-			ss << yMaxAxis / 5.0f * i;
+			ss << -yMaxAxis / 5.0f * i;
 			f.DrawText(ss.str(), Vei2((int)yAxis - lineLength / 2 - f.GetWidth() * (int)ss.str().size() - textOffset, (int)xAxis + i * (int)deltaY - f.GetHeight() / 2 + textOffset), axisColor, gfx);
 			yNumberLength = std::max(yNumberLength, ss.str().size());
 		}
