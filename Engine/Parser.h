@@ -2,6 +2,7 @@
 #include "ChiliException.h"
 #include "PhilUtil.h"
 #include <algorithm>
+#include <random>
 #include <functional>
 #include <cmath>
 #include <string>
@@ -21,6 +22,8 @@ public:
 	};
 public:
 	Parser()
+		:
+		rng(std::random_device()())
 	{
 		operate["-"] = [](float f1, float f2) { return f1 - f2; };
 		operate["+"] = [](float f1, float f2) { return f1 + f2; };
@@ -194,6 +197,7 @@ public:
 		}
 	}
 private:
+	mutable std::mt19937 rng;
 	std::unordered_map<std::string, std::function<float(float f1, float f2)>> operate;
 	std::unordered_map<std::string, std::function<bool(float f1, float f2)>> compare;
 	float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, int line = 0) const
@@ -235,7 +239,7 @@ private:
 					}
 					brace += c;
 				}
-				///test for special opearnts before brace
+				///test for special operants before brace
 				if (s == "sqrt")
 				{
 					vars.emplace_back(std::sqrtf(CalculateRHS(brace, var, line)));
@@ -251,6 +255,11 @@ private:
 				else if (s == "tan")
 				{
 					vars.emplace_back(std::tan(CalculateRHS(brace, var, line)));
+				}
+				else if (s == "rnd")
+				{
+					std::uniform_real_distribution<float> dist(0.0f, CalculateRHS(brace, var, line));
+					vars.emplace_back(dist(rng));
 				}
 				else
 				{
@@ -284,7 +293,11 @@ private:
 					{
 						vars.emplace_back(var.at(s));
 					}
-					else if(!(vars.size() > ops.size()))
+					else if (s == "")
+					{
+						///do not put any string in the vars
+					}
+					else
 					{
 						std::string info = "Uninitialized variable in line ";	///standart-syntax
 						info += line + 48;										///line number (+48 caused by ascii translation)
