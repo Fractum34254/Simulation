@@ -37,7 +37,7 @@ public:
 		compare["=="] = [](float f1, float f2) { return f1 == f2; };
 		compare["!="] = [](float f1, float f2) { return f1 != f2; };
 	}
-	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, int line = 0)
+	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, std::string fileName, int line = 0)
 	{
 		std::string begin;
 		if (term_in.empty())
@@ -73,11 +73,13 @@ public:
 			{
 				if (term.eof())
 				{
-					std::string info = "Uncompleted if statement in line ";	///standart-syntax
+					std::string info = "File \"";
+					info += fileName;
+					info += "\": Uncompleted if statement in line ";	///standart-syntax
 					info += line + 48;										///line number (+48 caused by ascii translation)
 					info += ":\n";
 					info += term_in;
-					info += "\n(missing comparison operator and end brace for test)";
+					info += "\n(missing comparison operator and end brace for test)\n";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				brace += c;
@@ -132,11 +134,13 @@ public:
 			}
 			if (!ended)
 			{
-				std::string info = "Uncompleted if statement in line ";	///standart-syntax
+				std::string info = "File \"";
+				info += fileName;
+				info += "\": Uncompleted if statement in line ";	///standart-syntax
 				info += line + 48;										///line number (+48 caused by ascii translation)
 				info += ":\n";
 				info += term_in;
-				info += "\n(missing comparison operator for test)";
+				info += "\n(missing comparison operator for test)\n";
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 			std::string rightSide;
@@ -144,11 +148,13 @@ public:
 			{
 				if (term.eof())
 				{
-					std::string info = "Uncompleted if statement in line ";	///standart-syntax
+					std::string info = "File \"";
+					info += fileName;
+					info += "\": Uncompleted if statement in line ";	///standart-syntax
 					info += line + 48;										///line number (+48 caused by ascii translation)
 					info += ":\n";
 					info += term_in;
-					info += "\n(missing end brace for test)";
+					info += "\n(missing end brace for test)\n";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				rightSide += c;
@@ -157,7 +163,7 @@ public:
 			///brace:		holds lhs
 			///rightSide:	holds rhs
 			///op:			holds operator
-			if (compare.at(op)(CalculateRHS(brace, vars, line), CalculateRHS(rightSide, vars, line)))
+			if (compare.at(op)(CalculateRHS(brace, vars, fileName, line), CalculateRHS(rightSide, vars, fileName, line)))
 			{
 				std::string calculation;
 				c = term.get();
@@ -166,7 +172,7 @@ public:
 					calculation += c;
 					c = term.get();
 				}
-				Calculate(calculation, vars, line);
+				Calculate(calculation, vars, fileName, line);
 			}
 		}
 		///no if statement
@@ -175,8 +181,11 @@ public:
 			///every mathematical expression needs an assignment operator
 			if (term_in.find('=') == term_in.npos)
 			{
-				std::string info = "Expression without '=' in line ";	///standart-syntax
+				std::string info = "File \"";
+				info += fileName;
+				info += "\": Expression without '=' in line ";			///standart-syntax
 				info += line + 48;										///line number (+48 caused by ascii translation)
+				info += "\n";
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 			std::istringstream term(term_in);
@@ -193,14 +202,14 @@ public:
 			{
 				rval += c;
 			}
-			vars[lval] = CalculateRHS(rval, vars, line);
+			vars[lval] = CalculateRHS(rval, vars, fileName, line);
 		}
 	}
 private:
 	mutable std::mt19937 rng;
 	std::unordered_map<std::string, std::function<float(float f1, float f2)>> operate;
 	std::unordered_map<std::string, std::function<bool(float f1, float f2)>> compare;
-	float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, int line = 0) const
+	float CalculateRHS(std::string rhs_in, const std::unordered_map<std::string, float>& var, std::string fileName, int line = 0) const
 	{
 		std::vector<float> vars;
 		std::vector<std::string> ops;
@@ -242,28 +251,28 @@ private:
 				///test for special operants before brace
 				if (s == "sqrt")
 				{
-					vars.emplace_back(std::sqrtf(CalculateRHS(brace, var, line)));
+					vars.emplace_back(std::sqrtf(CalculateRHS(brace, var, fileName, line)));
 				}
 				else if (s == "sin")
 				{
-					vars.emplace_back(std::sin(CalculateRHS(brace, var, line)));
+					vars.emplace_back(std::sin(CalculateRHS(brace, var, fileName, line)));
 				}
 				else if (s == "cos")
 				{
-					vars.emplace_back(std::cos(CalculateRHS(brace, var, line)));
+					vars.emplace_back(std::cos(CalculateRHS(brace, var, fileName, line)));
 				}
 				else if (s == "tan")
 				{
-					vars.emplace_back(std::tan(CalculateRHS(brace, var, line)));
+					vars.emplace_back(std::tan(CalculateRHS(brace, var, fileName, line)));
 				}
 				else if (s == "rnd")
 				{
-					std::uniform_real_distribution<float> dist(0.0f, CalculateRHS(brace, var, line));
+					std::uniform_real_distribution<float> dist(0.0f, CalculateRHS(brace, var, fileName, line));
 					vars.emplace_back(dist(rng));
 				}
 				else
 				{
-					vars.emplace_back(CalculateRHS(brace, var, line));
+					vars.emplace_back(CalculateRHS(brace, var, fileName, line));
 				}
 				///test if string ends after brace
 				c = rhs.get();
@@ -299,10 +308,13 @@ private:
 					}
 					else
 					{
-						std::string info = "Uninitialized variable in line ";	///standart-syntax
+						std::string info = "File \"";
+						info += fileName;
+						info += "\": Uninitialized variable in line ";			///standart-syntax
 						info += line + 48;										///line number (+48 caused by ascii translation)
 						info += ": ";
 						info += s;												///uninitialized variable name
+						info += "\n";
 						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 					}
 				}
@@ -314,14 +326,17 @@ private:
 			}
 		}
 		//return assembled vectors
-		return AssembleVars(vars, ops, line);
+		return AssembleVars(vars, ops, fileName, line);
 	}
-	float AssembleVars(std::vector<float> varVals, std::vector<std::string> ops, int line) const
+	float AssembleVars(std::vector<float> varVals, std::vector<std::string> ops, std::string fileName, int line) const
 	{
 		if (ops.size() + 1 != varVals.size())
 		{
-			std::string info = "Unmatching operators, variables and numbers in line ";	///standart-syntax
-			info += line + 48;															///line number (+48 caused by ascii translation)									///uninitialized variable name
+			std::string info = "File \"";
+			info += fileName;
+			info += "\": Unmatching operators, variables and numbers in line ";	///standart-syntax
+			info += line + 48;													///line number (+48 caused by ascii translation)	
+			info += "\n";														
 			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 		}
 		///first, calculating '^'
@@ -329,7 +344,7 @@ private:
 		{
 			if (ops.at(i) == "^")
 			{
-				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i + 1));
+				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i + 1), fileName);
 				varVals.erase(varVals.begin() + i + 1);
 				ops.erase(ops.begin() + i);
 				i--;
@@ -340,7 +355,7 @@ private:
 		{
 			if (ops.at(i) == "*" || ops.at(i) == "/")
 			{
-				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i+1));
+				varVals[i] = CalculateValue(ops.at(i), varVals.at(i), varVals.at(i+1), fileName);
 				varVals.erase(varVals.begin() + i + 1);
 				ops.erase(ops.begin() + i);
 				i--;
@@ -350,19 +365,22 @@ private:
 		float result = varVals.at(0);
 		for (int i = 1; i < varVals.size(); i++)
 		{
-			result = CalculateValue(ops.at(i - 1), result, varVals.at(i));
+			result = CalculateValue(ops.at(i - 1), result, varVals.at(i), fileName);
 		}
 		return result;
 	}
-	float CalculateValue(std::string op, float f1, float f2) const
+	float CalculateValue(std::string op, float f1, float f2, std::string fileName) const
 	{
 		try {
 			return operate.at(op)(f1, f2);
 		}
 		catch (const std::exception&)
 		{
-			std::string info = "Unknown operator: ";	
-			info += op;							
+			std::string info = "File \"";
+			info += fileName;
+			info += "\": Unknown operator: ";	
+			info += op;	
+			info += "\n";
 			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 		}
 	}

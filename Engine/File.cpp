@@ -13,7 +13,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 	{
 		std::string info = "Can't open file \"";	
 		info += ownName;
-		info += "\"";
+		info += "\"\n";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 
@@ -22,115 +22,185 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 		///adding setting names together && define functions														|-> ADD NEW SETTINGS HERE
 		std::unordered_map<std::string, std::pair<std::function<void(std::ifstream&)>, bool>> settingNames;
 		settingNames[axisColorSet].first = [this](std::ifstream& file) {
-			file.unget();
-			///red color value
-			const unsigned char rc = PhilUtil::toColorChar(file, "red axis", ownName);
-			///green color value
-			const unsigned char gc = PhilUtil::toColorChar(file, "green axis", ownName);
-			///blue color value
-			const unsigned char bc = PhilUtil::toColorChar(file, "blue axis", ownName);
-			///assemble them in one color
-			axisColor = Color(rc, gc, bc);
-			file.get();
-		};
-		settingNames[graphColorSet].first = [this](std::ifstream& file) {
-			file.unget();
-			for (char c = file.get(); c != '\n'; c = file.get())
+			try
 			{
-				file.unget();
 				///red color value
-				const char rc = PhilUtil::toColorChar(file, "red graph", ownName);
+				const unsigned char rc = PhilUtil::toColorChar(file, "red axis", ownName);
 				///green color value
-				const char gc = PhilUtil::toColorChar(file, "green graph", ownName);
+				const unsigned char gc = PhilUtil::toColorChar(file, "green axis", ownName);
 				///blue color value
-				const char bc = PhilUtil::toColorChar(file, "blue graph", ownName);
+				const unsigned char bc = PhilUtil::toColorChar(file, "blue axis", ownName);
 				///assemble them in one color
-				pixelColors.emplace_back(Color(rc, gc, bc));
-				///erase all blank spaces
-				c = file.get();
-				while (c == ' ')
-				{
-					c = file.get();
-				}
-				file.unget();
+				axisColor = Color(rc, gc, bc);
+			}
+			catch (const Exception& e)
+			{
+				throw e;
+			}
+			catch (const std::exception& e)
+			{
+				const char* textCStr = e.what();
+				const std::string textStr(textCStr);
+				std::string info = "Bad axis color in file \"";
+				info += ownName;
+				info += "\":\nCaught a std::exception:\n\n";
+				info += textStr;
+				info += "\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+			catch (...)
+			{
+				std::string info = "Bad axis color in file \"";
+				info += ownName;
+				info += "\":\nCaught a non-defined exception.\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 		};
-		settingNames[yNameSet].first = [this](std::ifstream& file) {
-			file.unget();
-			bool repeat = false;
-			///count braces
-			int braceNmr = 0;
-			yAxisNames.resize(braceNmr + 1);
-			do {
-				///erase blank spaces
-				char c = file.get();
-				while (c == ' ')
+		settingNames[graphColorSet].first = [this](std::ifstream& file) {
+			try
+			{
+				for (char c = file.get(); c != '\n'; c = file.get())
 				{
+					file.unget();
+					///red color value
+					const char rc = PhilUtil::toColorChar(file, "red graph", ownName);
+					///green color value
+					const char gc = PhilUtil::toColorChar(file, "green graph", ownName);
+					///blue color value
+					const char bc = PhilUtil::toColorChar(file, "blue graph", ownName);
+					///assemble them in one color
+					pixelColors.emplace_back(Color(rc, gc, bc));
+					///erase all blank spaces
 					c = file.get();
-				}
-				///brace
-				if (c != '(')
-				{
-					std::string info = "Bad y axis names in file \"";
-					info += ownName;
-					info += "\": Missing opening parenthesis";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
-				}
-				///read out the brace
-				for (c = file.get(); c != ')'; c = file.get())
-				{
-					std::string yName;
-					///erase blank spaces
 					while (c == ' ')
 					{
 						c = file.get();
 					}
 					file.unget();
-					for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n') && (c != ')'); c = file.get())
+				}
+			}
+			catch (const Exception& e)
+			{
+				throw e;
+			}
+			catch (const std::exception& e)
+			{
+				const char* textCStr = e.what();
+				const std::string textStr(textCStr);
+				std::string info = "Bad graph colors in file \"";
+				info += ownName;
+				info += "\":\nCaught a std::exception:\n\n";
+				info += textStr;
+				info += "\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+			catch (...)
+			{
+				std::string info = "Bad graph colors in file \"";
+				info += ownName;
+				info += "\":\nCaught a non-defined exception.\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+		};
+		settingNames[yNameSet].first = [this](std::ifstream& file) {
+			try
+			{
+				bool repeat = false;
+				///count braces
+				int braceNmr = 0;
+				yAxisNames.resize(braceNmr + 1);
+				do {
+					///erase blank spaces
+					char c = file.get();
+					while (c == ' ')
 					{
-						yName += c;
+						c = file.get();
 					}
-					file.unget();
-					///test, if line ends
-					if ((c == '\n') || (c == -1))
+					///brace
+					if (c != '(')
 					{
 						std::string info = "Bad y axis names in file \"";
 						info += ownName;
-						info += "\": Missing closing parenthesis";
+						info += "\": Missing opening parenthesis\n";
 						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 					}
-					///c is now definitly == ' '
-					yAxisNames.at(braceNmr).emplace_back(yName);
-				}
-				///erase blank spaces
-				c = file.get();
-				while (c == ' ')
-				{
+					///read out the brace
+					for (c = file.get(); c != ')'; c = file.get())
+					{
+						std::string yName;
+						///erase blank spaces
+						while (c == ' ')
+						{
+							c = file.get();
+						}
+						file.unget();
+						for (c = file.get(); (c != ' ') && (c != -1) && (c != '\n') && (c != ')'); c = file.get())
+						{
+							yName += c;
+						}
+						file.unget();
+						///test, if line ends
+						if ((c == '\n') || (c == -1))
+						{
+							std::string info = "Bad y axis names in file \"";
+							info += ownName;
+							info += "\": Missing closing parenthesis\n";
+							throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+						}
+						///c is now definitly == ' '
+						yAxisNames.at(braceNmr).emplace_back(yName);
+					}
+					///erase blank spaces
 					c = file.get();
-				}
-				file.unget();
-				if (c == '(')
-				{
-					repeat = true;
-					braceNmr++;
-					yAxisNames.resize(braceNmr+1);
-				}
-				else if ((c != '\n') && (c != -1))
-				{
-					std::string info = "Bad y axis names in file \"";
-					info += ownName;
-					info += "\": Missing parenthesis\n(found characters out of braces)";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
-				}
-				else
-				{
-					repeat = false;
-				}
-			} while (repeat);
-			file.get();
+					while (c == ' ')
+					{
+						c = file.get();
+					}
+					file.unget();
+					if (c == '(')
+					{
+						repeat = true;
+						braceNmr++;
+						yAxisNames.resize(braceNmr + 1);
+					}
+					else if ((c != '\n') && (c != -1))
+					{
+						std::string info = "Bad y axis names in file \"";
+						info += ownName;
+						info += "\": Missing parenthesis\n(found characters out of braces)\n";
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+					}
+					else
+					{
+						repeat = false;
+					}
+				} while (repeat);
+				file.get();
+			}
+			catch (const Exception& e)
+			{
+				throw e;
+			}
+			catch (const std::exception& e)
+			{
+				const char* textCStr = e.what();
+				const std::string textStr(textCStr);
+				std::string info = "Bad y axis names in file \"";
+				info += ownName;
+				info += "\":\nCaught a std::exception:\n\n";
+				info += textStr;
+				info += "\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+			catch (...)
+			{
+				std::string info = "Bad y axis names in file \"";
+				info += ownName;
+				info += "\":\nCaught a non-defined exception.\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
 		};
 		settingNames[timeName].first = [this](std::ifstream& file) {
-			file.unget();
 			///test for blank space
 			char c = file.get();
 			while (c == ' ')
@@ -142,9 +212,15 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			{
 				timeVar += c;
 			}
+			if (timeVar == "")
+			{
+				std::string info = "Bad time name in file \"";
+				info += ownName;
+				info += "\": <No string could be read>\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
 		};
 		settingNames[repeatingName].first = [this](std::ifstream& file) {
-			file.unget();
 			///test for blank space
 			char c = file.get();
 			while (c == ' ')
@@ -157,17 +233,22 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			{
 				repeatStr += c;
 			}
-			///if conversion fails, a std::exception is thrown -> catch & throw own exception with more informations
+			///if conversion fails, a std::exception is thrown -> catch & throw own exception with more information
 			try
 			{
 				repeatVal = std::stoi(repeatStr);
 			}
 			catch (const std::exception&)
 			{
+				if (repeatStr == "")
+				{
+					repeatStr = "<No string could be read>";
+				}
 				std::string info = "Bad repeating value in file \"";
 				info += ownName;
 				info += "\": ";
 				info += repeatStr;
+				info += "\n";
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 		};
@@ -195,16 +276,20 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 				{
 					std::string info = "Not enough data in file \"";				
 					info += ownName;													
-					info += "\": Reached end of file";
+					info += "\": Reached end of file\n";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
-				setting += c;
+				if (c != '\n')
+				{
+					setting += c;
+				}
 				if (setting.size() > std::max(longestSetting, settingsEnd.size()))
 				{
 					std::string info = "Wrong spelling of setting name in file \"";
 					info += ownName;													
 					info += "\":\n";
 					info += setting;
+					info += "\n";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				if (setting == settingsEnd)
@@ -222,12 +307,23 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 					info += ownName;													
 					info += "\": ";
 					info += setting;
+					info += "\n";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				///now: setting is not already initialized
 				///'switch' on setting string																		|-> can lead to EXCEPTION
 				settingNames.at(setting).first(file);
 				settingNames.at(setting).second = true;
+				///erase all blank spaces and returns
+				char c = file.get();
+				while (c == ' ')
+				{
+					c = file.get();
+				}
+				if (c != '\n')
+				{
+					file.unget();
+				}
 			}
 			else
 			{
@@ -240,6 +336,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 						info += ownName;
 						info += "\":\nMissing setting: ";
 						info += p.first;
+						info += "\n";
 						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 					}
 				}
@@ -265,14 +362,14 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			{
 				std::string info = "Not enough graph colors found in \"";
 				info += ownName;
-				info += "\"!";
+				info += "\"!\n";
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 			else if (colorSize > graphNumber)
 			{
 				std::string info = "Too many graph colors found in \"";
 				info += ownName;
-				info += "\"!";
+				info += "\"!\n";
 				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 			}
 		}
@@ -308,7 +405,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 				{
 					std::string info = "Not enough data in file \"";	
 					info += ownName;
-					info += "\": Reached end of file";
+					info += "\": Reached end of file\n";
 					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 				}
 				else {
@@ -322,7 +419,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			}
 			else {
 				///calculate and save line and advance line number
-				parser.Calculate(line, vars, lineNmr++);
+				parser.Calculate(line, vars, ownName, lineNmr++);
 			}
 		} while (!endReached);
 	}
@@ -604,7 +701,7 @@ void File::CalculateOnce()
 		}
 		if (!endReached) {
 			///calculate and save line and advance line number
-			parser.Calculate(line, vars, lineNmr++);
+			parser.Calculate(line, vars, ownName, lineNmr++);
 		}
 	} while (!endReached);
 
@@ -612,7 +709,32 @@ void File::CalculateOnce()
 	{
 		for (int i = 0; i < yAxisNames.at(j).size(); i++) ///which y variable?
 		{
-			graphs.at(j)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(j).at(i)), i);
+			try 
+			{
+				graphs.at(j)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(j).at(i)), i);
+			}
+			catch (const Exception& e)
+			{
+				throw e;
+			}
+			catch (const std::exception& e)
+			{
+				const char* textCStr = e.what();
+				const std::string textStr(textCStr);
+				std::string info = "Something went wrong calculating \"";
+				info += ownName;
+				info += "\":\nCaught a std::exception:\n\n";
+				info += textStr;
+				info += "\n\nProbably uninitialized variable!\nCheck your y axis names.\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
+			catch (...)
+			{
+				std::string info = "Something went wrong calculating \"";
+				info += ownName;
+				info += "\":\nCaught a non-defined exception.\nProbably uninitialized variable!\nCheck your y axis names.\n";
+				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+			}
 		}
 	}
 }

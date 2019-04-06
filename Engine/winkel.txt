@@ -1,12 +1,12 @@
 Time variable: t
 Axis Color: 230 230 230
 Repeating per second: 120
-Graph Color: 255 255 255 0 255 0
-y Values: (ySin yRnd)
+Graph Color: 255 255 255 0 255 0 255 255 255 0 255 0
+y Values: (yCos yRnd) (ySin yCos)
 #Head
 t = 0
 #Program
 ySin = sin(t)
-yRnd = rnd(cos(t)) + 1
-
+yCos = cos(t)
+yRnd = rnd(yCos)
 t = t + 0.001
