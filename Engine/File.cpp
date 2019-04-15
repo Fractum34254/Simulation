@@ -236,7 +236,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			///if conversion fails, a std::exception is thrown -> catch & throw own exception with more information
 			try
 			{
-				repeatVal = std::stoi(repeatStr);
+				repeatVal = std::stof(repeatStr);
 			}
 			catch (const std::exception&)
 			{
@@ -498,7 +498,7 @@ void File::Calculate(float dt)
 		return;
 	}
 	time += dt;
-	const float delta_t = 1.0f / (float)repeatVal;
+	const float delta_t = 1.0f / repeatVal;
 	for (; delta_t < time; time -= delta_t)
 	{
 		CalculateOnce();
@@ -517,27 +517,27 @@ void File::Draw(Graphics & gfx) const
 	}
 }
 
-void File::SetRepeatValue(int rv)
+void File::SetRepeatValue(float rv)
 {
-	repeatVal = std::min(std::max(rv, 5), 1200);
+	repeatVal = std::min(std::max(rv, 5.0f), 1200.0f);
 	std::stringstream tempSS;
-	tempSS << ownName << ":\nNow calculating " << repeatVal << "/s";
+	tempSS << ownName << ":\nNow calculating " << PhilUtil::Round(repeatVal,0) << "/s";
 	events.Add(tempSS.str());
 }
 
-int File::GetRepeatVal() const
+float File::GetRepeatVal() const
 {
 	return repeatVal;
 }
 
 void File::SpeedUp()
 {
-	SetRepeatValue((int)((float)GetRepeatVal() * 1.2f));
+	SetRepeatValue(GetRepeatVal() * 1.2f);
 }
 
 void File::SpeedDown()
 {
-	SetRepeatValue((int)((float)GetRepeatVal() / 1.2f));
+	SetRepeatValue(GetRepeatVal() / 1.2f);
 }
 
 void File::Save() const

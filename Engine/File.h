@@ -29,8 +29,8 @@ public:
 	void Update(MouseController& mouseControl);
 	void Calculate(float dt);
 	void Draw(Graphics& gfx) const;
-	void SetRepeatValue(int rv);												//Event
-	int GetRepeatVal() const;
+	void SetRepeatValue(float rv);												//Event
+	float GetRepeatVal() const;
 	void SpeedUp();
 	void SpeedDown();
 	void Save() const;															//Event
@@ -66,7 +66,7 @@ private:
 	std::vector<Color> pixelColors;
 	std::vector<std::vector<std::string>> yAxisNames;
 	std::string timeVar;
-	int repeatVal;
+	float repeatVal;
 	bool calculating = true;
 	//Objects
 	std::vector<std::unique_ptr<Graph>> graphs;
