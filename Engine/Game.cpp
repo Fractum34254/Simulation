@@ -28,6 +28,7 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	mouseControl(wnd.mouse)
 {
+	//Open settings file (list of files)
 	std::ifstream settings(settingsFileName);
 	if (!settings)
 	{
@@ -43,7 +44,7 @@ Game::Game( MainWindow& wnd )
 		info += "\"";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
-
+	//assembling list of files
 	std::vector<std::string> names;
 	while (!settings.eof())
 	{
@@ -59,6 +60,7 @@ Game::Game( MainWindow& wnd )
 		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect, events));
 	}
 
+	//top left Iconbar
 	graphIconbar.SetPos({ 3,3 });
 	for (auto& file : files)
 	{
@@ -67,6 +69,7 @@ Game::Game( MainWindow& wnd )
 		});
 	}
 
+	//top right Iconbar
 	settingsIconbar.AddIcon(std::make_unique<GraphIcon>("Toggle all"), [this]() {
 		for (auto& file : files)
 		{
@@ -113,6 +116,7 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	//Mouse control
 	mouseControl.Update();
 	float dt = ft.Mark();
 	graphIconbar.Update(mouseControl);
@@ -122,6 +126,72 @@ void Game::UpdateModel()
 	{
 		file->Calculate(dt);
 		file->Update(mouseControl);
+	}
+
+	//Keyboard Input
+	while (!wnd.kbd.KeyIsEmpty())
+	{
+		const Keyboard::Event key = wnd.kbd.ReadKey();
+		if (key.IsPress())
+		{
+			const unsigned char code = key.GetCode();
+			switch (code)
+			{
+			case VK_ESCAPE:
+				//close program
+				wnd.Kill();
+				break;
+			case 0x43:
+				//close all if code == 'c'
+				for (auto& file : files)
+				{
+					file->CloseAll();
+				}
+				break;
+			case 0x31:
+			case 0x32:
+			case 0x33:
+			case 0x34:
+			case 0x35:
+			case 0x36:
+			case 0x37:
+			case 0x38:
+			case 0x39:
+				//toggle the files on/off
+				if ((int)code - 49 < files.size())
+				{
+					if (files.at((int)code - 49)->AnyVisible())
+					{
+						files.at((int)code - 49)->CloseAll();
+					}
+					else
+					{
+						files.at((int)code - 49)->ToggleVisible();
+					}
+				}
+				break;
+			case VK_ADD:
+				//speed all open files up
+				for (auto& file : files)
+				{
+					if (file->AnyVisible())
+					{
+						file->SpeedUp();
+					}
+				}
+				break;
+			case VK_SUBTRACT:
+				//slow all open files down
+				for (auto& file : files)
+				{
+					if (file->AnyVisible())
+					{
+						file->SpeedDown();
+					}
+				}
+				break;
+			}
+		}
 	}
 }
 

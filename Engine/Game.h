@@ -66,6 +66,7 @@ private:
 	static constexpr int left = 50;
 	static constexpr int top = 70;
 	std::vector<std::unique_ptr<File>> files;
+	std::unordered_map<char, std::function<void()>> keyboardInput;
 	FrameTimer ft;
 	MouseController mouseControl;
 	Iconbar graphIconbar;

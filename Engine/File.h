@@ -31,6 +31,8 @@ public:
 	void Draw(Graphics& gfx) const;
 	void SetRepeatValue(int rv);												//Event
 	int GetRepeatVal() const;
+	void SpeedUp();
+	void SpeedDown();
 	void Save() const;															//Event
 	void RefreshAll();															//Event
 	void RefreshGraph(int i);													//Event

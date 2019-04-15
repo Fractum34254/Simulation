@@ -460,8 +460,8 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 		///DO NOT MODIFY THE PLACE OF THE PLAY && PAUSE BUTTON (else set it up new in the Update() function)
 		iconbars.at(i).AddIcon(std::make_unique<PauseIcon>(), [this]() {SetCalculating(false); }, 3);
 		iconbars.at(i).AddIcon(std::make_unique<PlayIcon>(), [this]() {SetCalculating(true); }, 3);
-		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 0.8f)); }, 5);
-		iconbars.at(i).AddIcon(std::make_unique<ForwardIcon>(), [this]() {SetRepeatValue((int)((float)GetRepeatVal() * 1.2f)); }, 6);
+		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SpeedDown(); }, 5);
+		iconbars.at(i).AddIcon(std::make_unique<ForwardIcon>(), [this]() {SpeedUp(); }, 6);
 		iconbars.at(i).AddIcon(std::make_unique<CloseIcon>("Close " + ownName + ": " + graphs.at(i)->GetYAxisName()), [i, this]() {SetVisible(i, false); }, 8);
 	}
 	SetUpButtons();
@@ -528,6 +528,16 @@ void File::SetRepeatValue(int rv)
 int File::GetRepeatVal() const
 {
 	return repeatVal;
+}
+
+void File::SpeedUp()
+{
+	SetRepeatValue((int)((float)GetRepeatVal() * 1.2f));
+}
+
+void File::SpeedDown()
+{
+	SetRepeatValue((int)((float)GetRepeatVal() / 1.2f));
 }
 
 void File::Save() const
