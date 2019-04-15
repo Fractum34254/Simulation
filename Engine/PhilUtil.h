@@ -32,6 +32,20 @@ public:
 		}
 		return sstr;
 	}
+	static float Round(float f, int n)
+	{
+		const float outF = f * (float)std::pow(10.0, (double)n);
+		const int outInt = (int)outF;
+		const float diff = outF - (float)outInt;
+		if (diff >= 0.5f)
+		{
+			return ((float)(outInt + 1)) / ((float)std::pow(10.0, (double)n));
+		}
+		else
+		{
+			return ((float)outInt) / ((float)std::pow(10.0, (double)n));
+		}
+	}
 	static std::wstring towstring(std::string s)
 	{
 		const char* pc = s.c_str();
