@@ -23,6 +23,12 @@ public:
 		Close,
 		Graph
 	};
+	enum Alignment
+	{
+		left,
+		right,
+		centered
+	};
 	Icon(Surface s, int x = 0, int y = 0, std::string description = "")
 		:
 		surf(s),
@@ -44,7 +50,20 @@ public:
 			if (isHighlighted)
 			{
 				gfx.DrawSprite(pos.x, pos.y, surf, SpriteEffect::Substitution(chroma, highlightedColor));
-				font.DrawText(description, { pos.x, pos.y + GetRect().GetHeight() + 3 }, normalColor, gfx);
+				Vei2 textPos;
+				if (alignment == Alignment::left)
+				{
+					textPos = { pos.x, pos.y + GetRect().GetHeight() + 3 };
+				}
+				else if (alignment == Alignment::right)
+				{
+					textPos = { pos.x + GetRect().GetWidth() - font.GetWidth() * (int)description.size(), pos.y + GetRect().GetHeight() + 3 };
+				}
+				else ///centered
+				{
+					textPos = { pos.x + (GetRect().GetWidth() - font.GetWidth() * (int)description.size()) / 2, pos.y + GetRect().GetHeight() + 3 };
+				}
+				font.DrawText(description, textPos, normalColor, gfx);
 			}
 			else
 			{
@@ -102,13 +121,30 @@ public:
 	{
 		action = newAction;
 	}
+	void SetNormalColor(const Color c)
+	{
+		normalColor = c;
+	}
+	void SetHighlightedColor(const Color c)
+	{
+		highlightedColor = c;
+	}
+	void SetAlignment(Alignment a)
+	{
+		alignment = a;
+	}
+	Alignment GetAlignment() const
+	{
+		return alignment;
+	}
 protected:
 	std::function<void()> action;
 	bool visible = true;
 	static constexpr Color chroma = Colors::White;
-	static constexpr Color highlightedColor = Colors::White;
-	static constexpr Color normalColor = Colors::Gray;
+	Color highlightedColor = Colors::White;
+	Color normalColor = Colors::Gray;
 	bool isHighlighted = false;
+	Alignment alignment = Alignment::left;
 	Vei2 pos;
 	std::string description;
 	Font font;
