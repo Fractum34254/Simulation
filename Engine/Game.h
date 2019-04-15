@@ -71,6 +71,7 @@ private:
 	MouseController mouseControl;
 	Iconbar graphIconbar;
 	Iconbar settingsIconbar;
+	Iconbar closeIcon;
 	Eventmanager events;
 	/********************************/
 };

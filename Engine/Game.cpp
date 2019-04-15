@@ -69,7 +69,7 @@ Game::Game( MainWindow& wnd )
 		});
 	}
 
-	//top right Iconbar
+	//top middle Iconbar
 	settingsIconbar.AddIcon(std::make_unique<GraphIcon>("Toggle all"), [this]() {
 		for (auto& file : files)
 		{
@@ -103,7 +103,17 @@ Game::Game( MainWindow& wnd )
 		{
 			file->CloseAll();
 		}});
+	settingsIconbar.SetAllTextAlignments(Icon::Alignment::centered);
 	settingsIconbar.SetPos({ Graphics::ScreenWidth / 2 - settingsIconbar.GetPixelWidth() / 2, 3 });
+
+	//top right close button
+	closeIcon.AddIcon(std::make_unique<CloseIcon>("Close program"), [&wnd, this]() {
+		wnd.Kill(); 
+	});
+	closeIcon.SetTextAlignment(0, 0, Icon::Alignment::right);
+	closeIcon.SetNormalColor(0, 0, { 150,0,0 });
+	closeIcon.SetHighlightedColor(0, 0, { 255, 0, 0 });
+	closeIcon.SetPos({ Graphics::ScreenWidth - closeIcon.GetPixelWidth() - 3, 3 });
 }
 
 void Game::Go()
@@ -121,6 +131,7 @@ void Game::UpdateModel()
 	float dt = ft.Mark();
 	graphIconbar.Update(mouseControl);
 	settingsIconbar.Update(mouseControl);
+	closeIcon.Update(mouseControl);
 	events.Update(dt, mouseControl);
 	for (auto& file : files)
 	{
@@ -199,6 +210,7 @@ void Game::ComposeFrame()
 {
 	graphIconbar.Draw(gfx);
 	settingsIconbar.Draw(gfx);
+	closeIcon.Draw(gfx);
 	for (const auto& file : files)
 	{
 		file->Draw(gfx);

@@ -463,6 +463,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 		iconbars.at(i).AddIcon(std::make_unique<BackwardIcon>(), [this]() {SpeedDown(); }, 5);
 		iconbars.at(i).AddIcon(std::make_unique<ForwardIcon>(), [this]() {SpeedUp(); }, 6);
 		iconbars.at(i).AddIcon(std::make_unique<CloseIcon>("Close " + ownName + ": " + graphs.at(i)->GetYAxisName()), [i, this]() {SetVisible(i, false); }, 8);
+		iconbars.at(i).SetAllTextAlignments(Icon::Alignment::centered);
 	}
 	SetUpButtons();
 }
