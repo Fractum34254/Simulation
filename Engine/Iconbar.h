@@ -117,6 +117,46 @@ public:
 			}
 		}
 	}
+	void SetTextAlignment(int row, int col, const Icon::Alignment a)
+	{
+		if (row < icons.size())
+		{
+			if (col < icons.at(row).first.size())
+			{
+				icons.at(row).first.at(col)->SetAlignment(a);
+			}
+		}
+	}
+	void SetNormalColor(int row, int col, const Color c)
+	{
+		if (row < icons.size())
+		{
+			if (col < icons.at(row).first.size())
+			{
+				icons.at(row).first.at(col)->SetNormalColor(c);
+			}
+		}
+	}
+	void SetHighlightedColor(int row, int col, const Color c)
+	{
+		if (row < icons.size())
+		{
+			if (col < icons.at(row).first.size())
+			{
+				icons.at(row).first.at(col)->SetHighlightedColor(c);
+			}
+		}
+	}
+	void SetAllTextAlignments(const Icon::Alignment a)
+	{
+		for (int i = 0; i < icons.size(); i++)
+		{
+			for (int j = 0; j < icons.at(i).first.size(); j++)
+			{
+				icons.at(i).first.at(j)->SetAlignment(a);
+			}
+		}
+	}
 private:
 	Vei2 pos = { 0,0 };
 	static constexpr int iconHeight = 20;
