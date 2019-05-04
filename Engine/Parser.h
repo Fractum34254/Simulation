@@ -265,6 +265,10 @@ private:
 				{
 					vars.emplace_back(std::tan(CalculateRHS(brace, var, fileName, line)));
 				}
+				else if (s == "abs")
+				{
+					vars.emplace_back(std::abs(CalculateRHS(brace, var, fileName, line)));
+				}
 				else if (s == "rnd")
 				{
 					std::uniform_real_distribution<float> dist(0.0f, CalculateRHS(brace, var, fileName, line));

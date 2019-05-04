@@ -8,5 +8,5 @@ t = 0
 #Program
 ySin = sin(t)
 yCos = cos(t)
-yRnd = rnd(yCos)
+yRnd = yCos*(rnd(t^2) - t^3)
 t = t + 0.001
