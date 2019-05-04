@@ -564,6 +564,8 @@ void File::Save() const
 	//loop through all data points in the maps
 	for (int i = 0; i < dataSize; i++)
 	{
+		//count current y names
+		int yNames = 0;
 		//get time
 		const float t = data.at(0)->at(i).first;
 		//write time
@@ -575,7 +577,8 @@ void File::Save() const
 			for (int j = 0; j < graphs.at(k)->GetYAxisNames().size(); j++)
 			{
 				//write y values
-				file << graphs.at(k)->GetYAxisNames().at(j) << ": " << PhilUtil::Crop(data.at(k * graphs.at(k)->GetYAxisNames().size() + j)->at(i).second, cropVal) << " ";
+				file << graphs.at(k)->GetYAxisNames().at(j) << ": " << PhilUtil::Crop(data.at(yNames)->at(i).second, cropVal) << " ";
+				yNames++;
 			}
 		}
 		//put new line character

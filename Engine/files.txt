@@ -1,1 +1,2 @@
 winkel.txt
+winkelfkt.txt

@@ -1,0 +1,14 @@
+Axis Color: 211 211 211
+Graph Color: 255 0 0 0 255 0 255 0 0
+y Values: (sinY) (cosY rndY)
+Time variable: t
+Repeating per second: 100
+#Head
+t = 0
+delta_t = 0.001
+#Program
+sinY = sin(t)
+cosY = cos(t)
+rndY = rnd(cosY)
+if(rndY < 0) rndY = -rndY
+t = t + delta_t
