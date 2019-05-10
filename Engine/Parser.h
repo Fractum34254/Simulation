@@ -289,7 +289,7 @@ private:
 			else ///c is not a brace
 			{
 				///if c is a '-', then it's possible that there was no variable or number in front
-				if (c == '-' && s == "")
+				if (c == '-' && s == "" && (vars.size() == ops.size()))
 				{
 					///now setting s to '-1' and c to '*' -> correct further calculation
 					c = '*';
