@@ -17,7 +17,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 {
 	if (!initialized)
 	{
-		std::string info = "Unitialized coordinate system!";
+		std::string info = "Uninitialized coordinate system!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	//drawing coordinate system
@@ -113,7 +113,7 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y, int graph)
 {
 	if (!initialized)
 	{
-		std::string info = "Unitialized coordinate system!";
+		std::string info = "Uninitialized coordinate system!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	if (!negative && y < 0.0f)
@@ -150,7 +150,7 @@ void Graph::CoordinateSystem::SetYMax(float newYMax)
 {
 	if (!initialized)
 	{
-		std::string info = "Unitialized coordinate system!";
+		std::string info = "Uninitialized coordinate system!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	const float scale = yMax / newYMax;
@@ -183,7 +183,7 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 {
 	if (!initialized)
 	{
-		std::string info = "Unitialized coordinate system!";
+		std::string info = "Uninitialized coordinate system!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	const float scale = xMax / newXMax;
@@ -445,7 +445,7 @@ void Graph::Draw(std::string name, std::string xName, Graphics& gfx) const
 {
 	if (!initialized)
 	{
-		std::string info = "Unitialized graph!";
+		std::string info = "Uninitialized graph!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	if (!visible)
@@ -474,7 +474,7 @@ void Graph::PutData(float x, float y, int system)
 {
 	if (!initialized)
 	{
-		std::string info = "Unitialized graph!";
+		std::string info = "Uninitialized graph!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	data.at(system)[cur.at(system)++] = { x,y };
