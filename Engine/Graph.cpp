@@ -429,11 +429,13 @@ void Graph::Update(MouseController& mouseControl)
 		}
 		else if (!mouseControl.mouse.LeftIsPressed())
 		{
+			mouseControl.SetPointer(MouseController::MousePointer::Pointer::cross);
 			mouseInside = true;
 		}
 	}
-	else
+	else if(mouseInside)
 	{
+		mouseControl.SetPointer(MouseController::MousePointer::Pointer::normal);
 		mouseInside = false;
 		coords.SetRectOn(false);
 	}

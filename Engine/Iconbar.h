@@ -49,7 +49,7 @@ public:
 			}
 		}
 	}
-	void Update(const MouseController& mouseControl)
+	void Update(MouseController& mouseControl)
 	{
 		for (int i = 0; i < icons.size(); i++)
 		{
@@ -57,6 +57,8 @@ public:
 			{
 				if (icons.at(i).first.at(icons.at(i).second)->IsInside(mouseControl.GetMousePos()))
 				{
+					mouseControl.SetPointer(MouseController::MousePointer::Pointer::hand);
+					changedCursor = true;
 					icons.at(i).first.at(icons.at(i).second)->SetHighlighted(true);
 					while (!mouseControl.mouse.IsEmpty())
 					{
@@ -81,6 +83,25 @@ public:
 				}
 			}
 		}
+		if (!IsInAny() && changedCursor && (mouseControl.GetPointer() == MouseController::MousePointer::Pointer::hand))
+		{
+			mouseControl.SetPointer(MouseController::MousePointer::Pointer::normal);
+			changedCursor = false;
+		}
+	}
+	bool IsInAny() const
+	{
+		for (int i = 0; i < icons.size(); i++)
+		{
+			if (icons.at(i).first.size() != 0)
+			{
+				if (icons.at(i).first.at(icons.at(i).second)->IsHighlighted())
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	void SetActive(int place, int current)
 	{
@@ -158,6 +179,7 @@ public:
 		}
 	}
 private:
+	bool changedCursor = false;
 	Vei2 pos = { 0,0 };
 	static constexpr int iconHeight = 20;
 	static constexpr int iconWidth = 20;

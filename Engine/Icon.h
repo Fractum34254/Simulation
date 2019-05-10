@@ -137,6 +137,10 @@ public:
 	{
 		return alignment;
 	}
+	bool IsHighlighted() const
+	{
+		return isHighlighted;
+	}
 protected:
 	std::function<void()> action;
 	bool visible = true;
