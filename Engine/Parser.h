@@ -49,7 +49,11 @@ public:
 		char cOut = term_in.at(i);
 		while (cOut == ' ')
 		{
-			cOut = term_in.at(++i);
+			if (term_in.size() == ++i)
+			{
+				return;
+			}
+			cOut = term_in.at(i);
 		}
 		begin += term_in.at(i++);
 		begin += term_in.at(i);
