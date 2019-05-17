@@ -39,174 +39,203 @@ public:
 	}
 	void Calculate(std::string term_in, std::unordered_map<std::string, float>& vars, std::string fileName, int line = 0)
 	{
-		std::string begin;
-		if (term_in.empty())
+		try
 		{
-			return;
-		}
-		///test for blank spaces
-		int i = 0;
-		char cOut = term_in.at(i);
-		while (cOut == ' ')
-		{
-			if (term_in.size() == ++i)
+			std::string begin;
+			if (term_in.empty())
 			{
 				return;
 			}
-			cOut = term_in.at(i);
-		}
-		begin += term_in.at(i++);
-		begin += term_in.at(i);
-		///test for commentary -> immediate return
-		if (begin == "//")
-		{
-			return;
-		}
-		///test for if statement
-		if (begin == "if")
-		{
-			int braces = 0;
-			std::string brace;
-			std::string op;
-			std::istringstream term(term_in);
-			///going forward to the brace after 'if'
-			for (char c = term.get(); c != '('; c = term.get());
-			char c = term.get();
-			bool ended = false;
-			while (((c != ')') || (braces != 0)) && !ended)
+			///test for blank spaces
+			int i = 0;
+			char cOut = term_in.at(i);
+			while (cOut == ' ')
 			{
-				if (term.eof())
+				if (term_in.size() == ++i)
 				{
-					std::string info = "File \"";
-					info += fileName;
-					info += "\": Uncompleted if statement in line ";	///standart-syntax
-					info += line + 48;										///line number (+48 caused by ascii translation)
-					info += ":\n";
-					info += term_in;
-					info += "\n(missing comparison operator and end brace for test)\n";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+					return;
 				}
-				brace += c;
-				///test for another brace opening
-				if (c == '(')
+				cOut = term_in.at(i);
+			}
+			begin += term_in.at(i++);
+			begin += term_in.at(i);
+			///test for commentary -> immediate return
+			if (begin == "//")
+			{
+				return;
+			}
+			///test for if statement
+			if (begin == "if")
+			{
+				int braces = 0;
+				std::string brace;
+				std::string op;
+				std::istringstream term(term_in);
+				///going forward to the brace after 'if'
+				for (char c = term.get(); c != '('; c = term.get());
+				char c = term.get();
+				bool ended = false;
+				while (((c != ')') || (braces != 0)) && !ended)
 				{
-					braces++;
-				}
-				else if (c == ')')
-				{
-					braces--;
-				}
-				///test for wider comparator
-				if (IsComparator(c))
-				{
-					std::string posOp;
-					posOp += c;
-					posOp += term.get();
-					term.unget();
-					if (IsComparator(posOp))
+					if (term.eof())
 					{
-						brace += term.get();
+						std::string info = "File \"";
+						info += fileName;
+						info += "\": Uncompleted if statement in line ";	///standart-syntax
+						info += line + 48;										///line number (+48 caused by ascii translation)
+						info += ":\n";
+						info += term_in;
+						info += "\n(missing comparison operator and end brace for test)\n";
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 					}
-				}
-				///search for operator
-				if (std::any_of(compare.begin(), compare.end(),
-					[&brace, &op](const std::pair<const std::string, std::function<bool(float f1, float f2)>>& pair)
+					brace += c;
+					///test for another brace opening
+					if (c == '(')
+					{
+						braces++;
+					}
+					else if (c == ')')
+					{
+						braces--;
+					}
+					///test for wider comparator
+					if (IsComparator(c))
+					{
+						std::string posOp;
+						posOp += c;
+						posOp += term.get();
+						term.unget();
+						if (IsComparator(posOp))
 						{
-							const size_t length = std::min(pair.first.size(), brace.size());
-							std::string end;
-							for (size_t i = 0; i < length; i++)
-							{
-								end += brace.at(brace.size() - length + i);
-							}
-							if (end == pair.first)
-							{
-								op = pair.first;
-								return true;
-							}
-							return false;
-						}))
-				{
-					const size_t length = op.size();
-					///eliminate operator from string
-					for (size_t i = 0; i < length; i++)
-					{
-						brace.pop_back();
+							brace += term.get();
+						}
 					}
-					ended = true;
-				}
-				c = term.get();
-			}
-			if (!ended)
-			{
-				std::string info = "File \"";
-				info += fileName;
-				info += "\": Uncompleted if statement in line ";	///standart-syntax
-				info += line + 48;										///line number (+48 caused by ascii translation)
-				info += ":\n";
-				info += term_in;
-				info += "\n(missing comparison operator for test)\n";
-				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
-			}
-			std::string rightSide;
-			while (c != ')')
-			{
-				if (term.eof())
-				{
-					std::string info = "File \"";
-					info += fileName;
-					info += "\": Uncompleted if statement in line ";	///standart-syntax
-					info += line + 48;										///line number (+48 caused by ascii translation)
-					info += ":\n";
-					info += term_in;
-					info += "\n(missing end brace for test)\n";
-					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
-				}
-				rightSide += c;
-				c = term.get();
-			}
-			///brace:		holds lhs
-			///rightSide:	holds rhs
-			///op:			holds operator
-			if (compare.at(op)(CalculateRHS(brace, vars, fileName, line), CalculateRHS(rightSide, vars, fileName, line)))
-			{
-				std::string calculation;
-				c = term.get();
-				while (!term.eof())
-				{
-					calculation += c;
+					///search for operator
+					if (std::any_of(compare.begin(), compare.end(),
+						[&brace, &op](const std::pair<const std::string, std::function<bool(float f1, float f2)>>& pair)
+					{
+						const size_t length = std::min(pair.first.size(), brace.size());
+						std::string end;
+						for (size_t i = 0; i < length; i++)
+						{
+							end += brace.at(brace.size() - length + i);
+						}
+						if (end == pair.first)
+						{
+							op = pair.first;
+							return true;
+						}
+						return false;
+					}))
+					{
+						const size_t length = op.size();
+						///eliminate operator from string
+						for (size_t i = 0; i < length; i++)
+						{
+							brace.pop_back();
+						}
+						ended = true;
+					}
 					c = term.get();
 				}
-				Calculate(calculation, vars, fileName, line);
-			}
-		}
-		///no if statement
-		else
-		{
-			///every mathematical expression needs an assignment operator
-			if (term_in.find('=') == term_in.npos)
-			{
-				std::string info = "File \"";
-				info += fileName;
-				info += "\": Expression without '=' in line ";			///standart-syntax
-				info += line + 48;										///line number (+48 caused by ascii translation)
-				info += "\n";
-				throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
-			}
-			std::istringstream term(term_in);
-			std::string lval;
-			std::string rval;
-			for (char c = term.get(); c != '='; c = term.get())
-			{
-				if (c != ' ')
+				if (!ended)
 				{
-					lval += c;
+					std::string info = "File \"";
+					info += fileName;
+					info += "\": Uncompleted if statement in line ";	///standart-syntax
+					info += line + 48;										///line number (+48 caused by ascii translation)
+					info += ":\n";
+					info += term_in;
+					info += "\n(missing comparison operator for test)\n";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+				}
+				std::string rightSide;
+				while (c != ')')
+				{
+					if (term.eof())
+					{
+						std::string info = "File \"";
+						info += fileName;
+						info += "\": Uncompleted if statement in line ";	///standart-syntax
+						info += line + 48;										///line number (+48 caused by ascii translation)
+						info += ":\n";
+						info += term_in;
+						info += "\n(missing end brace for test)\n";
+						throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+					}
+					rightSide += c;
+					c = term.get();
+				}
+				///brace:		holds lhs
+				///rightSide:	holds rhs
+				///op:			holds operator
+				if (compare.at(op)(CalculateRHS(brace, vars, fileName, line), CalculateRHS(rightSide, vars, fileName, line)))
+				{
+					std::string calculation;
+					c = term.get();
+					while (!term.eof())
+					{
+						calculation += c;
+						c = term.get();
+					}
+					Calculate(calculation, vars, fileName, line);
 				}
 			}
-			for (char c = term.get(); !term.eof(); c = term.get())
+			///no if statement
+			else
 			{
-				rval += c;
+				///every mathematical expression needs an assignment operator
+				if (term_in.find('=') == term_in.npos)
+				{
+					std::string info = "File \"";
+					info += fileName;
+					info += "\": Expression without '=' in line ";			///standart-syntax
+					info += line + 48;										///line number (+48 caused by ascii translation)
+					info += "\n";
+					throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+				}
+				std::istringstream term(term_in);
+				std::string lval;
+				std::string rval;
+				for (char c = term.get(); c != '='; c = term.get())
+				{
+					if (c != ' ')
+					{
+						lval += c;
+					}
+				}
+				for (char c = term.get(); !term.eof(); c = term.get())
+				{
+					rval += c;
+				}
+				vars[lval] = CalculateRHS(rval, vars, fileName, line);
 			}
-			vars[lval] = CalculateRHS(rval, vars, fileName, line);
+		}
+		catch (const Exception& e)
+		{
+			throw e;
+		}
+		catch (const std::exception& e)
+		{
+			const char* textCStr = e.what();
+			const std::string textStr(textCStr);
+			std::string info = "Something went wrong calculating the file \"";
+			info += fileName;
+			info += "\" in line ";
+			info += line;
+			info += ":\nCaught a std::exception:\n\n";
+			info += textStr;
+			info += "\n";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+		}
+		catch (...)
+		{
+			std::string info = "Something went wrong calculating the file \"";
+			info += fileName;
+			info += "\" in line ";
+			info += line;
+			info += ":\nCaught a non-defined exception.\n";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 		}
 	}
 private:
