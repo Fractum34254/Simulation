@@ -569,7 +569,7 @@ void File::Save() const
 		//get time
 		const float t = data.at(0)->at(i).first;
 		//write time
-		file << "t: " << PhilUtil::Crop(t, cropVal) << " ";
+		file << timeVar << ": " << PhilUtil::Crop(t, cropVal) << " ";
 		//loop through graphs
 		for (int k = 0; k < graphs.size(); k++)
 		{
