@@ -4,7 +4,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 	:
 	ownName(name),
 	offset(offset),
-	font("Bitmaps\\Font.bmp"),
+	font(IDB_BITMAP1),
 	events(e)
 {
 	std::ifstream file(ownName);

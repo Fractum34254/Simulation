@@ -18,7 +18,7 @@ public:
 			:
 			text(text),
 			pos(pos),
-			font("Bitmaps\\Font.bmp")
+			font(IDB_BITMAP1)
 		{}
 		std::string GetInfo() const
 		{
