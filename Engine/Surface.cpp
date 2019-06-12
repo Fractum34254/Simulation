@@ -77,6 +77,34 @@ Surface::Surface(Surface && donor)
 	donor.height = 0;
 }
 
+Surface::Surface(int resource)
+{
+	//receive bitmap
+	HBITMAP hBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(resource));
+	BITMAP bitmap;
+	GetObject(hBitmap, sizeof(bitmap), &bitmap);
+	///extract dimensions
+	width = (int)bitmap.bmWidth;
+	height = (int)bitmap.bmHeight;
+	pixels.resize(width * height);
+	///get a HDC out of the bitmap
+	HDC hdcBmp = CreateCompatibleDC(NULL);
+	SelectObject(hdcBmp, hBitmap);
+
+	///loop through dimensions && extract pixel colors
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			COLORREF pixel = GetPixel(hdcBmp, x, y);
+			unsigned char r = (unsigned char)GetRValue(pixel);
+			unsigned char g = (unsigned char)GetGValue(pixel);
+			unsigned char b = (unsigned char)GetBValue(pixel);
+			PutPixel(x, y, { r,g,b });
+		}
+	}
+}
+
 Surface & Surface::operator=(Surface && rhs)
 {
 	width = rhs.width;
@@ -96,7 +124,7 @@ void Surface::PutPixel(int x, int y, Color c)
 	pixels.data()[y * width + x] = c;
 }
 
-Color Surface::GetPixel(int x, int y) const
+Color Surface::GetSurfacePixel(int x, int y) const
 {
 	assert(x >= 0);
 	assert(x < width);

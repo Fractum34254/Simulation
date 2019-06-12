@@ -155,7 +155,7 @@ public:
 		for (int sy = srcRect.top; sy < srcRect.bottom; sy++) {
 			for (int sx = srcRect.left; sx < srcRect.right; sx++) {
 				effect(
-					s.GetPixel(sx, sy),
+					s.GetSurfacePixel(sx, sy),
 					x + sx - srcRect.left,
 					y + sy - srcRect.top,
 					*this
