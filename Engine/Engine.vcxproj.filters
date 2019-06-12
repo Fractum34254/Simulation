@@ -161,31 +161,31 @@
     <Image Include="Chili.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\backward-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\Font.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\Font.bmp">
+    <Image Include="..\Bitmaps for Resource\forward.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\forward-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\backward.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\pause-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\close.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\play-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\graph-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\refresh-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\pause-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\save-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\play-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\graph-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\refresh-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Bitmaps\close-icon.bmp">
+    <Image Include="..\Bitmaps for Resource\save-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
