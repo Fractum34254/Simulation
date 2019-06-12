@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
+#include "Resource.h"
 #include "Rect.h"
 #include "Vec2.h"
 #include "SpriteEffect.h"
@@ -34,14 +35,14 @@ public:
 		surf(s),
 		pos(x,y),
 		description(description),
-		font("Bitmaps\\Font.bmp")
+		font(IDB_BITMAP1)
 	{}
 	Icon(Surface s, Vei2 v = { 0,0 }, std::string description = "")
 		:
 		surf(s),
 		pos(v),
 		description(description),
-		font("Bitmaps\\Font.bmp")
+		font(IDB_BITMAP1)
 	{}
 	void Draw(Graphics& gfx) const
 	{
@@ -160,7 +161,7 @@ class CloseIcon : public Icon
 public:
 	CloseIcon(std::string description = "Close")
 		:
-		Icon(Surface("Bitmaps\\close-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP4), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -172,7 +173,7 @@ class GraphIcon : public Icon
 public:
 	GraphIcon(std::string description = "")
 		:
-		Icon(Surface("Bitmaps\\graph-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP5), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -184,7 +185,7 @@ class SaveIcon : public Icon
 public:
 	SaveIcon(std::string description = "Save")
 		:
-		Icon(Surface("Bitmaps\\save-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP9), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -197,7 +198,7 @@ class RefreshIcon : public Icon
 public:
 	RefreshIcon(std::string description = "Refresh")
 		:
-		Icon(Surface("Bitmaps\\refresh-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP8), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -210,7 +211,7 @@ class PauseIcon : public Icon
 public:
 	PauseIcon(std::string description = "Pause")
 		:
-		Icon(Surface("Bitmaps\\pause-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP6), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -223,7 +224,7 @@ class PlayIcon : public Icon
 public:
 	PlayIcon(std::string description = "Play")
 		:
-		Icon(Surface("Bitmaps\\play-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP7), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -236,7 +237,7 @@ class ForwardIcon : public Icon
 public:
 	ForwardIcon(std::string description = "Faster")
 		:
-		Icon(Surface("Bitmaps\\forward-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP2), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
@@ -249,7 +250,7 @@ class BackwardIcon : public Icon
 public:
 	BackwardIcon(std::string description = "Slower")
 		:
-		Icon(Surface("Bitmaps\\backward-icon.bmp"), 0, 0, description)
+		Icon(Surface(IDB_BITMAP3), 0, 0, description)
 	{}
 	Type GetType() const override
 	{
