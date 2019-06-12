@@ -13,6 +13,17 @@ Font::Font(const std::string & filename, Color chroma)
 	assert(glyphHeight * nRows == surface.GetHeight());
 }
 
+Font::Font(int resource, Color chroma)
+	:
+	surface(resource),
+	glyphWidth(surface.GetWidth() / nColumns),
+	glyphHeight(surface.GetHeight() / nRows),
+	chroma(chroma)
+{
+	assert(glyphWidth * nColumns == surface.GetWidth());
+	assert(glyphHeight * nRows == surface.GetHeight());
+}
+
 void Font::DrawText(const std::string & text, const Vei2 & pos, Color color, Graphics & gfx) const
 {
 	SpriteEffect::Substitution e{ chroma,color };
