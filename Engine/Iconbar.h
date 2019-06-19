@@ -178,6 +178,16 @@ public:
 			}
 		}
 	}
+	void Activate(int n)
+	{
+		if (n < icons.size())
+		{
+			if (icons.at(n).first.size() > 0)
+			{
+				icons.at(n).first.at(icons.at(n).second)->Action();
+			}
+		}
+	}
 private:
 	bool changedCursor = false;
 	Vei2 pos = { 0,0 };
