@@ -81,11 +81,29 @@ Surface::Surface(int resource)
 {
 	//receive bitmap
 	HBITMAP hBitmap = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(resource));
+	if (hBitmap == NULL)
+	{
+		std::string info = "Could not open the bitmap with resource ID \"";
+		info += std::to_string(resource);
+		info += "\"!";
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+	}
 	BITMAP bitmap;
 	GetObject(hBitmap, sizeof(bitmap), &bitmap);
 	///extract dimensions
 	width = (int)bitmap.bmWidth;
 	height = (int)bitmap.bmHeight;
+	if (!width || !height)
+	{
+		std::string info = "Loading of bitmap with resource ID \"";
+		info += std::to_string(resource);
+		info += "\" failed:\nAt least one dimension is zero!\n\nHeight: ";
+		info += std::to_string(height);
+		info += "  Width: ";
+		info += std::to_string(width);
+		info += "\n";
+		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+	}
 	pixels.resize(width * height);
 	///get a HDC out of the bitmap
 	HDC hdcBmp = CreateCompatibleDC(NULL);
@@ -97,9 +115,9 @@ Surface::Surface(int resource)
 		for (int x = 0; x < width; x++)
 		{
 			COLORREF pixel = GetPixel(hdcBmp, x, y);
-			unsigned char r = (unsigned char)GetRValue(pixel);
-			unsigned char g = (unsigned char)GetGValue(pixel);
-			unsigned char b = (unsigned char)GetBValue(pixel);
+			const unsigned char r = (const unsigned char)GetRValue(pixel);
+			const unsigned char g = (const unsigned char)GetGValue(pixel);
+			const unsigned char b = (const unsigned char)GetBValue(pixel);
 			PutPixel(x, y, { r,g,b });
 		}
 	}
