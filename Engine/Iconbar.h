@@ -39,13 +39,13 @@ public:
 		std::vector<std::unique_ptr<Icon>> next;
 		icons.emplace_back(std::make_pair(std::move(next),0));
 	}
-	void Draw(Graphics& gfx) const
+	void Draw(Graphics& gfx, const Font& f) const
 	{
 		for (int i = 0; i < icons.size(); i++)
 		{
 			if (icons.at(i).first.size() != 0)
 			{
-				icons.at(i).first.at(icons.at(i).second)->Draw(gfx);
+				icons.at(i).first.at(icons.at(i).second)->Draw(gfx, f);
 			}
 		}
 	}

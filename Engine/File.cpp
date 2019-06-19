@@ -513,7 +513,7 @@ void File::Draw(Graphics & gfx) const
 		if (graphs.at(i)->IsVisible())
 		{
 			graphs.at(i)->Draw(ownName, timeVar, gfx);
-			iconbars.at(i).Draw(gfx);
+			iconbars.at(i).Draw(gfx, font);
 		}
 	}
 }

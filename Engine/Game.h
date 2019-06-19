@@ -35,6 +35,7 @@
 #include "Iconbar.h"
 #include "Eventmanager.h"
 #include "PhilUtil.h"
+#include "Font.h"
 
 class Game
 {
@@ -73,5 +74,6 @@ private:
 	Iconbar settingsIconbar;
 	Iconbar closeIcon;
 	Eventmanager events;
+	Font font;
 	/********************************/
 };

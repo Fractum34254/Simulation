@@ -26,7 +26,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	mouseControl(wnd.mouse)
+	mouseControl(wnd.mouse),
+	font(IDB_BITMAP1)
 {
 	//Open settings file (list of files)
 	std::ifstream settings(settingsFileName);
@@ -208,9 +209,9 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	graphIconbar.Draw(gfx);
-	settingsIconbar.Draw(gfx);
-	closeIcon.Draw(gfx);
+	graphIconbar.Draw(gfx, font);
+	settingsIconbar.Draw(gfx, font);
+	closeIcon.Draw(gfx, font);
 	for (const auto& file : files)
 	{
 		file->Draw(gfx);

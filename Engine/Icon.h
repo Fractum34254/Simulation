@@ -34,17 +34,15 @@ public:
 		:
 		surf(s),
 		pos(x,y),
-		description(description),
-		font(IDB_BITMAP1)
+		description(description)
 	{}
 	Icon(Surface s, Vei2 v = { 0,0 }, std::string description = "")
 		:
 		surf(s),
 		pos(v),
-		description(description),
-		font(IDB_BITMAP1)
+		description(description)
 	{}
-	void Draw(Graphics& gfx) const
+	void Draw(Graphics& gfx, const Font& font) const
 	{
 		if (visible)
 		{
@@ -152,7 +150,6 @@ protected:
 	Alignment alignment = Alignment::left;
 	Vei2 pos;
 	std::string description;
-	Font font;
 	Surface surf;
 };
 
