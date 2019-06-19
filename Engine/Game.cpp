@@ -147,11 +147,20 @@ void Game::UpdateModel()
 		if (key.IsPress())
 		{
 			const unsigned char code = key.GetCode();
+			bool play = false;
 			switch (code)
 			{
 			case VK_ESCAPE:
 				//close program
 				wnd.Kill();
+				break;
+			case VK_SPACE:
+				//pause/play all
+				for (auto& file : files)
+				{
+					play = file->GetCalculating() || play;
+				}
+				settingsIconbar.Activate(play? 6:5);
 				break;
 			case 0x43:
 				//close all if code == 'c'
