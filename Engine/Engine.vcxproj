@@ -259,6 +259,7 @@
     <Image Include="..\Bitmaps for Resource\pause-icon.bmp" />
     <Image Include="..\Bitmaps for Resource\play-icon.bmp" />
     <Image Include="..\Bitmaps for Resource\refresh-icon.bmp" />
+    <Image Include="..\Bitmaps for Resource\reload.bmp" />
     <Image Include="..\Bitmaps for Resource\save-icon.bmp" />
     <Image Include="Chili.ico" />
   </ItemGroup>

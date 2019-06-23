@@ -71,35 +71,35 @@ Game::Game( MainWindow& wnd )
 	}
 
 	//top middle Iconbar
-	settingsIconbar.AddIcon(std::make_unique<GraphIcon>("Toggle all"), [this]() {
+	settingsIconbar.AddIcon(std::make_unique<GraphIcon>("Toggle all"), [this]() {				/* 0 */
 		for (auto& file : files)
 		{
 			file->ToggleVisible();
 		}});
-	settingsIconbar.AddVoid();
-	settingsIconbar.AddIcon(std::make_unique<SaveIcon>("Save all"), [this]() {
+	settingsIconbar.AddVoid();																	/* 1 */
+	settingsIconbar.AddIcon(std::make_unique<SaveIcon>("Save all"), [this]() {					/* 2 */
 		for (const auto& file : files)
 		{
 			file->Save();
-		}});
-	settingsIconbar.AddIcon(std::make_unique<RefreshIcon>("Refresh all"), [this]() {
+		}});	
+	settingsIconbar.AddIcon(std::make_unique<RefreshIcon>("Refresh all"), [this]() {			/* 3 */
 		for (auto& file : files)
 		{
 			file->RefreshAll();
 		}});
-	settingsIconbar.AddVoid();
-	settingsIconbar.AddIcon(std::make_unique<PlayIcon>("Continue all"), [this]() {
+	settingsIconbar.AddVoid();																	/* 4 */
+	settingsIconbar.AddIcon(std::make_unique<PlayIcon>("Continue all"), [this]() {				/* 5 */
 		for (auto& file : files)
 		{
 			file->SetCalculating(true);
 		}});
-	settingsIconbar.AddIcon(std::make_unique<PauseIcon>("Pause all"), [this]() {
+	settingsIconbar.AddIcon(std::make_unique<PauseIcon>("Pause all"), [this]() {				/* 6 */
 		for (auto& file : files)
 		{
 			file->SetCalculating(false);
 		}});
-	settingsIconbar.AddVoid();
-	settingsIconbar.AddIcon(std::make_unique<CloseIcon>("Close all"), [this]() {
+	settingsIconbar.AddVoid();																	/* 7 */
+	settingsIconbar.AddIcon(std::make_unique<CloseIcon>("Close all"), [this]() {				/* 8 */
 		for (auto& file : files)
 		{
 			file->CloseAll();
@@ -161,6 +161,14 @@ void Game::UpdateModel()
 					play = file->GetCalculating() || play;
 				}
 				settingsIconbar.Activate(play? 6:5);
+				break;
+			case 'S':
+				//save all
+				settingsIconbar.Activate(2);
+				break;
+			case 'R':
+				//refresh all
+				settingsIconbar.Activate(3);
 				break;
 			case 0x43:
 				//close all if code == 'c'

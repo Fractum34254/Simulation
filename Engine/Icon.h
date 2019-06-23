@@ -22,7 +22,8 @@ public:
 		Play,
 		Pause,
 		Close,
-		Graph
+		Graph,
+		Reload
 	};
 	enum Alignment
 	{
@@ -252,5 +253,18 @@ public:
 	Type GetType() const override
 	{
 		return Type::Backward;
+	}
+};
+
+class ReloadIcon : public Icon
+{
+public:
+	ReloadIcon(std::string description = "Reload")
+		:
+		Icon(Surface(IDB_BITMAP10), 0, 0, description)
+	{}
+	Type GetType() const override
+	{
+		return Type::Reload;
 	}
 };

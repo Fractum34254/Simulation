@@ -191,6 +191,9 @@
     <Image Include="..\Bitmaps for Resource\save-icon.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\Bitmaps for Resource\reload.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="file.txt">
