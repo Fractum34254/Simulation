@@ -1,2 +1,3 @@
 winkel.txt
+stahlkugel.txt
 winkelfkt.txt

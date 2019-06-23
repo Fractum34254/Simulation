@@ -56,6 +56,7 @@ Game::Game( MainWindow& wnd )
 	const int right = gfx.GetScreenRect().right + 50;
 	const int bottom = gfx.GetScreenRect().bottom + 30;
 	const RectI fileRect = {left, right, top, bottom};
+	files.reserve(maxFiles);
 	for (int i = 0; i < names.size(); i++)
 	{
 		files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect, events));
@@ -107,13 +108,59 @@ Game::Game( MainWindow& wnd )
 	settingsIconbar.SetAllTextAlignments(Icon::Alignment::centered);
 	settingsIconbar.SetPos({ Graphics::ScreenWidth / 2 - settingsIconbar.GetPixelWidth() / 2, 3 });
 
-	//top right close button
+	//top right close button + reload button
+	closeIcon.AddIcon(std::make_unique<ReloadIcon>("Reload 'files.txt'"), [&wnd, this]() {
+		//Open settings file (list of files)
+		std::ifstream settings(settingsFileName);
+		if (!settings)
+		{
+			std::string info = "Can't open file \"";
+			info += settingsFileName;
+			info += "\": File not found";
+			throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
+		}
+		//assembling list of all files
+		std::vector<std::string> names;
+		while (!settings.eof())
+		{
+			std::string temp;
+			settings >> temp;
+			names.emplace_back(temp);
+		}
+		//delete already existing files
+		names.erase(std::remove_if(names.begin(), names.end(), [this](std::string s)
+		{
+			for (int i = 0; i < files.size(); i++)
+			{
+				if (files.at(i)->GetName() == s)
+				{
+					return true;
+				}
+			}
+			return false;
+		}), names.end());
+		const int right = gfx.GetScreenRect().right + 50;
+		const int bottom = gfx.GetScreenRect().bottom + 30;
+		const RectI fileRect = { left, right, top, bottom };
+		const int actFiles = (int)files.size();
+		for (int i = 0; i < names.size() && files.size() < maxFiles; i++)
+		{
+			files.emplace_back(std::make_unique<File>(names.at(i), (float)offset, fileRect, events));
+		}
+		//add new files to top left Iconbar
+		for (int i = actFiles; i < files.size(); i++)
+		{
+			graphIconbar.AddIcon(std::make_unique<GraphIcon>(files.at(i)->GetName()), [this, i]() {
+				files.at(i)->ToggleVisible();
+			});
+		}
+	});
 	closeIcon.AddIcon(std::make_unique<CloseIcon>("Close program"), [&wnd, this]() {
 		wnd.Kill(); 
 	});
-	closeIcon.SetTextAlignment(0, 0, Icon::Alignment::right);
-	closeIcon.SetNormalColor(0, 0, { 150,0,0 });
-	closeIcon.SetHighlightedColor(0, 0, { 255, 0, 0 });
+	closeIcon.SetAllTextAlignments(Icon::Alignment::right);
+	closeIcon.SetNormalColor(1, 0, { 150,0,0 });
+	closeIcon.SetHighlightedColor(1, 0, { 255, 0, 0 });
 	closeIcon.SetPos({ Graphics::ScreenWidth - closeIcon.GetPixelWidth() - 3, 3 });
 }
 

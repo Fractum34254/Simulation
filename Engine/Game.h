@@ -66,6 +66,7 @@ private:
 	static constexpr int offset = 10;
 	static constexpr int left = 50;
 	static constexpr int top = 70;
+	static constexpr int maxFiles = 9;
 	std::vector<std::unique_ptr<File>> files;
 	std::unordered_map<char, std::function<void()>> keyboardInput;
 	FrameTimer ft;
