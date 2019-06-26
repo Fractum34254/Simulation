@@ -64,7 +64,7 @@ public:
 									// thx to: Bill the Lizard from stackoverflow.com
 		return iss.eof() && !iss.fail();
 	}
-	static float top(float in)
+	static double top(double in)
 	{
 		///calculating tens potency floor
 		int f = 0;
@@ -85,12 +85,12 @@ public:
 		}
 		///calculating factor in front of tens potency
 		int n = 1;
-		const float floor = (float)std::pow(10, f);
-		while (floor * (float)n < in)
+		const double floor = std::pow(10, f);
+		while (floor * (double)n < in)
 		{
 			n++;
 		}
-		return (float)n * floor;
+		return (double)n * floor;
 	}
 	static std::string toString(int i)
 	{
