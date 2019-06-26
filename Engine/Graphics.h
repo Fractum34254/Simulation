@@ -65,11 +65,19 @@ public:
 	}
 	void PutPixel( int x,int y,Color c );
 	void DrawLine(Vec2 p0, Vec2 p1, Color c);
+	void DrawLine(Ved2 p0, Ved2 p1, Color c)
+	{
+		DrawLine((Vec2)p0, (Vec2)p1, c);
+	}
 	void DrawLine(float x0, float y0, float x1, float y1, Color c)
 	{
 		DrawLine(Vec2(x0, y0), Vec2(x1, y1), c);
 	}
 	void DrawLine(int x0, int y0, int x1, int y1, Color c)
+	{
+		DrawLine((float)x0, (float)y0, (float)x1, (float)y1, c);
+	}
+	void DrawLine(double x0, double y0, double x1, double y1, Color c)
 	{
 		DrawLine((float)x0, (float)y0, (float)x1, (float)y1, c);
 	}
