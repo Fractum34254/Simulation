@@ -386,7 +386,7 @@ File::File(std::string name, float offset, RectI screenRegion, Eventmanager& e)
 			}
 			colorCount += j;
 			const RectI rect = RectI({ screenRegion.left + (i % xDir) * (deltaX + off), screenRegion.top + (i / xDir) * (deltaY+off) }, deltaX, deltaY);
-			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, offset, axisColor, pixCol, yAxisNames.at(i), font)));
+			graphs.emplace_back(std::make_unique<Graph>(Graph(rect, (double)offset, axisColor, pixCol, yAxisNames.at(i), font)));
 		}
 	}
 
@@ -548,7 +548,7 @@ void File::Save() const
 	fname += ownName;
 	std::ofstream file(fname);
 	//add all data maps of all graphs together in 'data'
-	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> data;
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<double, double>>>> data;
 	for (int i = 0; i < graphs.size(); i++)
 	{
 		const size_t max = graphs.at(i)->GetData().size();
@@ -567,7 +567,7 @@ void File::Save() const
 		//count current y names
 		int yNames = 0;
 		//get time
-		const float t = data.at(0)->at(i).first;
+		const double t = data.at(0)->at(i).first;
 		//write time
 		file << timeVar << ": " << PhilUtil::Crop(t, cropVal) << " ";
 		//loop through graphs
@@ -725,7 +725,7 @@ void File::CalculateOnce()
 		{
 			try 
 			{
-				graphs.at(j)->PutData(vars.at(timeVar), vars.at(yAxisNames.at(j).at(i)), i);
+				graphs.at(j)->PutData((double)vars.at(timeVar), (double)vars.at(yAxisNames.at(j).at(i)), i);
 			}
 			catch (const Exception& e)
 			{

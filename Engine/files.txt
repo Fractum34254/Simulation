@@ -1,3 +1,4 @@
 winkel.txt
 stahlkugel.txt
 winkelfkt.txt
+induktion.txt

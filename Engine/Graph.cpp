@@ -1,6 +1,6 @@
 #include "Graph.h"
 
-Graph::CoordinateSystem::CoordinateSystem(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors)
+Graph::CoordinateSystem::CoordinateSystem(double xMax, double yMax, double offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors)
 	:
 	xMax(xMax),
 	yMax(yMax),
@@ -13,7 +13,7 @@ Graph::CoordinateSystem::CoordinateSystem(float xMax, float yMax, float offset, 
 	pixel.reserve(pixelColors.size());
 }
 
-void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxis, float yMaxAxis) const
+void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, double xMaxAxis, double yMaxAxis) const
 {
 	if (!initialized)
 	{
@@ -21,16 +21,16 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
 	//drawing coordinate system
-	const Vec2 leftTop = { offset + (float)screenRegion.left, (float)screenRegion.top - offset};
-	const Vec2 leftBottom = { offset + (float)screenRegion.left, (float)screenRegion.bottom - offset };
+	const Ved2 leftTop = { offset + (double)screenRegion.left, (double)screenRegion.top - offset};
+	const Ved2 leftBottom = { offset + (double)screenRegion.left, (double)screenRegion.bottom - offset };
 	gfx.DrawLine(leftTop, leftBottom, axisColor);
 	///arrow drawing
 	gfx.DrawLine(leftTop, { leftTop.x - arrowWidth / 2, leftTop.y + arrowLength }, axisColor);
 	gfx.DrawLine(leftTop, { leftTop.x + arrowWidth / 2, leftTop.y + arrowLength }, axisColor);
 	if (negative)
 	{
-		const Vec2 leftMiddle = { offset + (float)screenRegion.left, ((float)screenRegion.bottom - (float)screenRegion.top) / 2 + (float)screenRegion.top };
-		const Vec2 rightMiddle = { (float)screenRegion.right - offset, ((float)screenRegion.bottom - (float)screenRegion.top) / 2 + (float)screenRegion.top };
+		const Ved2 leftMiddle = { offset + (double)screenRegion.left, ((double)screenRegion.bottom - (double)screenRegion.top) / 2 + (double)screenRegion.top };
+		const Ved2 rightMiddle = { (double)screenRegion.right - offset, ((double)screenRegion.bottom - (double)screenRegion.top) / 2 + (double)screenRegion.top };
 		gfx.DrawLine(leftMiddle, rightMiddle, axisColor);
 		///arrow drawing
 		gfx.DrawLine(rightMiddle, { rightMiddle.x - arrowLength, rightMiddle.y - arrowWidth / 2 }, axisColor);
@@ -38,7 +38,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	}
 	else
 	{
-		const Vec2 rightBottom = { (float)screenRegion.right - offset, (float)screenRegion.bottom - offset };
+		const Ved2 rightBottom = { (double)screenRegion.right - offset, (double)screenRegion.bottom - offset };
 		gfx.DrawLine(leftBottom, rightBottom, axisColor);
 		///arrow drawing
 		gfx.DrawLine(rightBottom, { rightBottom.x - arrowLength, rightBottom.y - arrowWidth / 2 }, axisColor);
@@ -48,17 +48,17 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	//drawing the pixels
 	for (int i = 0; i < pixel.size(); i++)
 	{
-		for (const std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		for (const std::pair<const int, std::pair<double, double>>& c : pixel.at(i))
 		{
 			gfx.PutPixel((int)c.second.first, (int)c.second.second, pixelColors.at(i));
 		}
 	}
 
 	//drawing the axis division
-	const float deltaY = GetHeight() / (IsNegative() ? 20.0f : 10.0f) * 2.0f;
-	const float deltaX = GetWidth() / 10.0f * 2.0f;
-	const float yAxis = GetYAxis();
-	const float xAxis = GetXAxis();
+	const double deltaY = GetHeight() / (IsNegative() ? 20.0f : 10.0f) * 2.0f;
+	const double deltaX = GetWidth() / 10.0f * 2.0f;
+	const double yAxis = GetYAxis();
+	const double xAxis = GetXAxis();
 	const int textOffset = 2;
 
 	///0
@@ -109,7 +109,7 @@ void Graph::CoordinateSystem::Draw(const Font & f, Graphics & gfx, float xMaxAxi
 	}
 }
 
-void Graph::CoordinateSystem::PutCoordinate(float x, float y, int graph)
+void Graph::CoordinateSystem::PutCoordinate(double x, double y, int graph)
 {
 	if (!initialized)
 	{
@@ -128,10 +128,10 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y, int graph)
 	const int deltaX = xPixMax - xPixMin;
 	const int deltaY = yPixMax - yPixMin;
 
-	const float xScale = (float)deltaX / xMax;
-	const float yScale = (float)deltaY / (yMax * (negative ? 2.0f : 1.0f));
+	const double xScale = (double)deltaX / xMax;
+	const double yScale = (double)deltaY / (yMax * (negative ? 2.0f : 1.0f));
 
-	const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
+	const double xAxis = negative ? ((double)yPixMin + (double)deltaY / 2) : (double)yPixMax;
 
 	x *= xScale;
 	y *= -yScale;
@@ -143,31 +143,31 @@ void Graph::CoordinateSystem::PutCoordinate(float x, float y, int graph)
 	{
 		pixel.resize(graph + 1);
 	}
-	pixel.at(graph)[cur++] = { std::min((float)xPixMax,std::max(x, (float)xPixMin)),std::min((float)yPixMax,std::max(y, (float)yPixMin)) };
+	pixel.at(graph)[cur++] = { std::min((double)xPixMax,std::max(x, (double)xPixMin)),std::min((double)yPixMax,std::max(y, (double)yPixMin)) };
 }
 
-void Graph::CoordinateSystem::SetYMax(float newYMax)
+void Graph::CoordinateSystem::SetYMax(double newYMax)
 {
 	if (!initialized)
 	{
 		std::string info = "Uninitialized coordinate system!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
-	const float scale = yMax / newYMax;
+	const double scale = yMax / newYMax;
 
 	const int yPixMax = screenRegion.bottom - (int)offset;
 	const int yPixMin = screenRegion.top + (int)offset;
 
 	const int deltaY = yPixMax - yPixMin;
 
-	const float yScale = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
+	const double yScale = (double)deltaY / ((double)yMax * negative ? 2.0f : 1.0f);
 
-	const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
+	const double xAxis = negative ? ((double)yPixMin + (double)deltaY / 2) : (double)yPixMax;
 
 
 	for (int i = 0; i < pixel.size(); i++)
 	{
-		for (std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		for (std::pair<const int, std::pair<double, double>>& c : pixel.at(i))
 		{
 			c.second.second -= xAxis;
 			c.second.second /= yScale;
@@ -179,25 +179,25 @@ void Graph::CoordinateSystem::SetYMax(float newYMax)
 	yMax = newYMax;
 }
 
-void Graph::CoordinateSystem::SetXMax(float newXMax)
+void Graph::CoordinateSystem::SetXMax(double newXMax)
 {
 	if (!initialized)
 	{
 		std::string info = "Uninitialized coordinate system!";
 		throw Exception(_CRT_WIDE(__FILE__), __LINE__, PhilUtil::towstring(info));
 	}
-	const float scale = xMax / newXMax;
+	const double scale = xMax / newXMax;
 
 	const int xPixMax = screenRegion.right - (int)offset;
 	const int xPixMin = screenRegion.left + (int)offset;
 
 	const int deltaX = xPixMax - xPixMin;
 
-	const float xScale = (float)deltaX / (float)xMax;
+	const double xScale = (double)deltaX / (double)xMax;
 
 	for (int i = 0; i < pixel.size(); i++)
 	{
-		for (std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		for (std::pair<const int, std::pair<double, double>>& c : pixel.at(i))
 		{
 			c.second.first -= xPixMin;
 			c.second.first /= xScale;
@@ -209,7 +209,7 @@ void Graph::CoordinateSystem::SetXMax(float newXMax)
 	xMax = newXMax;
 }
 
-void Graph::CoordinateSystem::Refresh(const std::vector<std::unordered_map<int, std::pair<float, float>>>& data)
+void Graph::CoordinateSystem::Refresh(const std::vector<std::unordered_map<int, std::pair<double, double>>>& data)
 {
 	pixel.clear();
 	for (int i = 0; i < data.size(); i++)
@@ -231,35 +231,35 @@ bool Graph::CoordinateSystem::IsNegative() const
 	return negative;
 }
 
-float Graph::CoordinateSystem::GetOffset() const
+double Graph::CoordinateSystem::GetOffset() const
 {
 	return offset;
 }
 
-float Graph::CoordinateSystem::GetHeight() const
+double Graph::CoordinateSystem::GetHeight() const
 {
 	return screenRegion.GetHeight() - 2 * offset;
 }
 
-float Graph::CoordinateSystem::GetWidth() const
+double Graph::CoordinateSystem::GetWidth() const
 {
 	return screenRegion.GetWidth() - 2 * offset;
 }
 
-float Graph::CoordinateSystem::GetYAxis() const
+double Graph::CoordinateSystem::GetYAxis() const
 {
-	return (float)screenRegion.left + offset;
+	return (double)screenRegion.left + offset;
 }
 
-float Graph::CoordinateSystem::GetXAxis() const
+double Graph::CoordinateSystem::GetXAxis() const
 {
 	if (IsNegative())
 	{
-		return (float)screenRegion.bottom - (float)screenRegion.GetHeight() / 2.0f;
+		return (double)screenRegion.bottom - (double)screenRegion.GetHeight() / 2.0f;
 	}
 	else
 	{
-		return (float)screenRegion.bottom - offset;
+		return (double)screenRegion.bottom - offset;
 	}
 }
 
@@ -278,12 +278,12 @@ void Graph::CoordinateSystem::ResizeScreenRegion(const Vei2 & v)
 	screenRegion.Resize(v);
 }
 
-float Graph::CoordinateSystem::GetXMax() const
+double Graph::CoordinateSystem::GetXMax() const
 {
 	return xMax;
 }
 
-float Graph::CoordinateSystem::GetYMax() const
+double Graph::CoordinateSystem::GetYMax() const
 {
 	return yMax;
 }
@@ -300,19 +300,19 @@ void Graph::CoordinateSystem::ConvertToNegative()
 
 	const int deltaY = yPixMax - yPixMin;
 
-	const float yScale = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
+	const double yScale = (double)deltaY / ((double)yMax * negative ? 2.0f : 1.0f);
 
-	const float xAxis = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
+	const double xAxis = negative ? ((double)yPixMin + (double)deltaY / 2) : (double)yPixMax;
 
 	negative = true;
 
-	const float yScaleNew = (float)deltaY / ((float)yMax * negative ? 2.0f : 1.0f);
+	const double yScaleNew = (double)deltaY / ((double)yMax * negative ? 2.0f : 1.0f);
 
-	const float xAxisNew = negative ? ((float)yPixMin + (float)deltaY / 2) : (float)yPixMax;
+	const double xAxisNew = negative ? ((double)yPixMin + (double)deltaY / 2) : (double)yPixMax;
 
 	for (int i = 0; i < pixel.size(); i++)
 	{
-		for (std::pair<const int, std::pair<float, float>>& c : pixel.at(i))
+		for (std::pair<const int, std::pair<double, double>>& c : pixel.at(i))
 		{
 			c.second.second -= xAxis;
 			c.second.second /= yScale;
@@ -322,7 +322,7 @@ void Graph::CoordinateSystem::ConvertToNegative()
 	}
 }
 
-Graph::Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
+Graph::Graph(double xMax, double yMax, double offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
 	coords(xMax, yMax, offset, screenRegion, axisColor, pixelColors),
 	yAxisNames(yAxisNames),
@@ -370,7 +370,7 @@ Graph::Graph(RectI screenRegion, Color axisColor, std::vector<Color> pixelColors
 	}
 }
 
-Graph::Graph(RectI screenRegion, float offset, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
+Graph::Graph(RectI screenRegion, double offset, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f)
 	:
 	coords(xMaxStart, yMaxStart, offset, screenRegion, axisColor, pixelColors),
 	yAxisNames(yAxisNames),
@@ -470,7 +470,7 @@ void Graph::Draw(std::string name, std::string xName, Graphics& gfx) const
 	font.DrawText(xName, Vei2(GetScreenRegion().right - 2 * (int)offset, GetScreenRegion().bottom - (IsNegative() ? GetScreenRegion().GetHeight() / 2 - (int)offset : 0)), axisColor, gfx);
 }
 
-void Graph::PutData(float x, float y, int system)
+void Graph::PutData(double x, double y, int system)
 {
 	if (!initialized)
 	{
@@ -540,12 +540,12 @@ void Graph::Refresh()
 	coords.Refresh(data);
 }
 
-std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> Graph::GetData() const
+std::vector<std::unique_ptr<std::unordered_map<int, std::pair<double, double>>>> Graph::GetData() const
 {
-	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> output;
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<double, double>>>> output;
 	for (const auto& map : data)
 	{
-		output.emplace_back(std::make_unique<std::unordered_map<int, std::pair<float, float>>>(map));
+		output.emplace_back(std::make_unique<std::unordered_map<int, std::pair<double, double>>>(map));
 	}
 	return output;
 }

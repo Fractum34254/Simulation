@@ -36,33 +36,33 @@ private:
 		};
 	public:
 		CoordinateSystem() = default;
-		CoordinateSystem(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors);
-		void Draw(const Font& f, Graphics& gfx, float xMaxAxis, float yMaxAxis) const;
-		void PutCoordinate(float x, float y, int graph);
-		void SetYMax(float newYMax);
-		void SetXMax(float newXMax);
-		void Refresh(const std::vector<std::unordered_map<int, std::pair<float, float>>>& data);
+		CoordinateSystem(double xMax, double yMax, double offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors);
+		void Draw(const Font& f, Graphics& gfx, double xMaxAxis, double yMaxAxis) const;
+		void PutCoordinate(double x, double y, int graph);
+		void SetYMax(double newYMax);
+		void SetXMax(double newXMax);
+		void Refresh(const std::vector<std::unordered_map<int, std::pair<double, double>>>& data);
 		void SetRectOn(bool b);
 		bool IsNegative() const;
-		float GetOffset() const;
-		float GetHeight() const;
-		float GetWidth() const;
-		float GetYAxis() const;
-		float GetXAxis() const;
+		double GetOffset() const;
+		double GetHeight() const;
+		double GetWidth() const;
+		double GetYAxis() const;
+		double GetXAxis() const;
 		RectI GetScreenRegion() const;
 		void TranslateScreenRegion(const Vei2& v);
 		void ResizeScreenRegion(const Vei2& v);
-		float GetXMax() const;
-		float GetYMax() const;
+		double GetXMax() const;
+		double GetYMax() const;
 		Color GetAxisColor() const;
 	private:
 		void ConvertToNegative();
 	private:
 		bool rectOn = false;
 		bool initialized = false;
-		float xMax;
-		float yMax;
-		float offset;
+		double xMax;
+		double yMax;
+		double offset;
 		bool negative = false;
 		RectI screenRegion;
 		Color axisColor;
@@ -71,17 +71,17 @@ private:
 		static constexpr int arrowLength = 7;
 		static constexpr int lineLength = 4;
 		int cur = 0;
-		std::vector<std::unordered_map<int, std::pair<float, float>>> pixel;
+		std::vector<std::unordered_map<int, std::pair<double, double>>> pixel;
 	};
 public:
 	Graph() = default;
-	Graph(float xMax, float yMax, float offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f);
+	Graph(double xMax, double yMax, double offset, RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f);
 	Graph(RectI screenRegion, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f);
 	Graph(RectI screenRegion, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f);
-	Graph(RectI screenRegion, float offset, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f);
+	Graph(RectI screenRegion, double offset, Color axisColor, std::vector<Color> pixelColors, std::vector<std::string> yAxisNames, Font f);
 	void Update(MouseController& mouseControl);									//uses visible
 	void Draw(std::string name, std::string xName, Graphics& gfx) const;		//uses visible
-	void PutData(float x, float y, int system);
+	void PutData(double x, double y, int system);
 	bool IsNegative() const;
 	bool IsVisible() const;
 	void ToggleVisible();
@@ -90,7 +90,7 @@ public:
 	std::vector<std::string> GetYAxisNames() const;
 	std::string GetYAxisName() const;
 	void Refresh();
-	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<float, float>>>> GetData() const;
+	std::vector<std::unique_ptr<std::unordered_map<int, std::pair<double, double>>>> GetData() const;
 private:
 	//config values
 	static constexpr int cropVal = 8;
@@ -100,9 +100,9 @@ private:
 	bool visible = false;
 	Font font;
 	//coordinate system start values
-	static constexpr float xMaxStart = 0.0001f;		//minimal start x
-	static constexpr float yMaxStart = 0.0001f;		//minimal start y
-	static constexpr float offset = 7.0f;
+	static constexpr double xMaxStart = 0.0000000000000001;		//minimal start x
+	static constexpr double yMaxStart = 0.0000000000000001;		//minimal start y
+	static constexpr double offset = 7.0;
 	static constexpr Color axisColor = Colors::White;
 	//yAxis
 	std::vector<std::string> yAxisNames;
@@ -111,9 +111,9 @@ private:
 	CoordinateSystem coords;
 	//data
 	std::vector<int> cur;
-	std::vector<std::unordered_map<int, std::pair<float, float>>> data;
-	float maxYValue = yMaxStart;
-	float maxXValue = xMaxStart;
-	float maxXNumber = maxXValue * 10.0f;		//floor value
-	float maxYNumber = maxYValue * 10.0f;		//floor value
+	std::vector<std::unordered_map<int, std::pair<double, double>>> data;
+	double maxYValue = yMaxStart;
+	double maxXValue = xMaxStart;
+	double maxXNumber = maxXValue * 10.0;		//floor value
+	double maxYNumber = maxYValue * 10.0;		//floor value
 };
