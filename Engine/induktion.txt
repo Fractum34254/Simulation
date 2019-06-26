@@ -1,0 +1,21 @@
+Time variable: t
+Axis Color: 255 255 255
+Repeating per second: 10
+Graph Color: 255 110 13 255 255 0
+y Values: (Ui) (A)
+#Head
+t = 0
+Bmax = 0.8
+t0 = 1
+a = 0.2
+delta_t = 0.001
+b = 0.05
+N = 5
+#Program
+if (t<t0) A = b*a/2*t^2
+if (t<t0) B = Bmax/t0*t
+if (t<t0) Ui = N*3/2*a*b*Bmax/t0*t^2
+if (t>=t0) A = b*a/2*t^2
+if (t>=t0) B = Bmax
+if (t>=t0) Ui = N*Bmax*b*a*t
+t = t + delta_t
