@@ -75,7 +75,7 @@ private:
 	Parser parser;
 	Eventmanager& events;
 	//File values
-	static constexpr int cropVal = 8;
+	static constexpr int cropVal = 11;
 	std::string ownName;
 	std::string code;
 	std::string startVars;
