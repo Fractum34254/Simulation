@@ -398,7 +398,7 @@ void Graph::Update(MouseController& mouseControl)
 	rect.left -= 3 * font.GetWidth();
 	rect.right += 10;
 
-	if (rect.Contains(mouseControl.GetMousePos()))
+	if (rect.Contains(mouseControl.GetMousePos()) || mouseZooming)
 	{
 		coords.SetRectOn(true);
 		if (mouseInside)
@@ -408,14 +408,14 @@ void Graph::Update(MouseController& mouseControl)
 				const Vei2 corner = Vei2( coords.GetScreenRegion().right, coords.GetScreenRegion().bottom + font.GetHeight() + (int)coords.GetOffset());
 				RectI zoomRect = RectI::FromCenter(corner, 10, 10);
 
-				if (zoomRect.Contains(mouseControl.GetMousePos()))
+				if (zoomRect.Contains(mouseControl.GetMousePos()) || mouseZooming)
 				{
 					//zooming
 					mouseZooming = true;
 					coords.ResizeScreenRegion(mouseControl.diff);
 					coords.Refresh(data);
 				}
-				else if(!mouseZooming)
+				else
 				{
 					//translation
 					coords.TranslateScreenRegion(mouseControl.diff);
